@@ -21,7 +21,6 @@ export class AuthController {
       const user = await AuthService.register(data);
       return res.status(201).json({
         success: true,
-        data: { user },
         message: "User registered successfully",
       });
     } catch (error) {
@@ -39,7 +38,6 @@ export class AuthController {
       const user = await AuthService.registerInstruktur(data);
       return res.status(201).json({
         success: true,
-        data: { user },
         message: "User registered successfully",
       });
     } catch (error) {

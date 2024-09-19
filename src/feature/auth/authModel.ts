@@ -9,7 +9,7 @@ export type LoginResponse = {
 };
 
 export type RegisterRequest = {
-  username: string;
+  fullName: string;
   country: string;
   city: string;
   phoneNumber: string;
@@ -21,7 +21,7 @@ export type RegisterRequest = {
 
 export type RegisterResponse = {
   email: string;
-  username: string;
+  fullName: string;
   country: string;
   city: string;
   phoneNumber: string;
