@@ -1,0 +1,239 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Auth {
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  email String @unique
+  password String
+  verified Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("auths")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  fullName String @db.VarChar(100)
+  image String?
+  phoneNumber String @db.VarChar(15)
+  role RoleType
+  tanggalLahir  DateTime
+  city String
+  country String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transaction Transaction?
+  auth Auth?
+  course Course[]
+  courseUser CourseUser[]
+
+  @@map("users")
+}
+
+model Course {
+  id Int @id @default(autoincrement())
+  categoryId Int @unique
+  userId Int @unique
+  courseLevelId Int @unique
+  typeCourseId Int @unique
+  courseCode String
+  courseName String
+  image String
+  aboutCourse String
+  intendedFor String
+  courseDiscountPercent Int
+  coursePrice Float
+  rating Float
+  publish Publish
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chapters Chapter[]
+  courseUser CourseUser[]
+  transaction Transaction?
+  category Category @relation(fields: [categoryId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  courseLevel CourseLevel @relation(fields: [courseLevelId], references: [id])
+  typeCourse TypeCourse @relation(fields: [typeCourseId], references: [id])
+
+  @@map("course")
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  categoryName String
+  image String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course Course?
+
+  @@map("categories")
+}
+
+model CourseLevel {
+  id Int @id @default(autoincrement())
+  levelName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course Course?
+
+  @@map("course_levels")
+}
+
+model TypeCourse {
+  id Int @id @default(autoincrement())
+  typeName String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  course Course?
+
+  @@map("type_courses")
+}
+
+model Chapter {
+  id Int @id @default(autoincrement())
+  courseId Int @unique
+  chapterTitle String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  contents Content[]
+
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("chapters")
+}
+
+model Content {
+  id Int @id @default(autoincrement())
+  chapterId Int @unique
+  interpreterId Int @unique
+  contentTitle String
+  contentUrl String
+  duration String
+  teks String
+  interpreterStatus Boolean
+  contentStatus Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chapter Chapter @relation(fields: [chapterId], references: [id])
+  interpreter Interpreter @relation(fields: [interpreterId], references: [id])
+
+  @@map("contents")
+}
+
+model Interpreter {
+  id Int @id @default(autoincrement())
+  languageInterpreter LanguageInterpreter
+  sourceCode String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content Content?
+
+  @@map("interpreters")
+}
+
+model CourseUser {
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  courseId Int @unique
+  contentFinish Float
+  courseStatus CourseStatus 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  certificate Certificate?
+
+  user User @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_users")
+}
+
+model Certificate {
+  id Int @id @default(autoincrement())
+  courseUserId Int @unique
+  certificateNumber String
+  issueDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courseUser CourseUser @relation(fields: [courseUserId], references: [id])
+
+  @@map("certificates")
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  courseId Int @unique
+  courseName String
+  orderId Int
+  ppn Float
+  price Float
+  totalPrice Float
+  paymentStatus PaymentStatus
+  paymentMethod PaymentMethod
+  linkPayment String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("transactions")
+}
+
+enum RoleType {
+  User
+  Instruktur
+  Admin
+}
+
+enum Publish {
+  Published
+  Archived
+}
+
+enum LanguageInterpreter {
+  Python
+  Java
+  Kotlin
+  JavaScript
+  PHP
+  Swift
+  Dart
+}
+
+enum CourseStatus {
+  NotStarted
+  InProgress
+  Completed
+}
+
+enum PaymentStatus {
+  Pending
+  Success
+  Failed
+}
+
+enum PaymentMethod {
+  Debit
+  Credit
+  Qris
+}
