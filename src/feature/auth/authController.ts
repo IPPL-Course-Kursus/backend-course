@@ -44,4 +44,30 @@ export class AuthController {
       next(error);
     }
   }
+
+  static async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      await AuthService.forgotPassword(email);
+      return res.status(200).json({
+        success: true,
+        message: "Please check your email for password reset link",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await AuthService.resetPassword(data);
+      return res.status(200).json({
+        success: true,
+        message: "Password reset successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

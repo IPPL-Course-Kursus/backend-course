@@ -33,3 +33,14 @@ export type AuthRequest = {
   password: string;
   userId: number;
 };
+export type ResetPasswordRequest = {
+  token: string;
+  password: string;
+};
+
+export type ChangePasswordRequest = {
+  userId: number;
+  oldPassword: string;
+  newPassword: string;
+  comfirmNewPassword: string;
+};
