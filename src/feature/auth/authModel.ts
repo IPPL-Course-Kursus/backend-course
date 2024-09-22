@@ -5,7 +5,6 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   token: string;
-  role: string;
 };
 
 export type RegisterRequest = {

@@ -67,7 +67,6 @@ export class AuthService {
 
     const data = {
       token: token,
-      role: userRole.role,
     };
 
     return data;
