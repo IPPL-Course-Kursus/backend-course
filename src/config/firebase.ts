@@ -10,17 +10,15 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 
-import firebase from "firebase/compat/app"; // Gunakan 'compat' untuk mendukung versi lama
+import firebase from "firebase/compat/app";
 import admin from "firebase-admin";
 
-import serviceAccount from "../config/serviceAccountKey.json"; // Pastikan menggunakan default import
+import serviceAccount from "../config/serviceAccountKey.json";
 
-// Inisialisasi admin SDK
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
 });
 
-// Konfigurasi Firebase
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -30,7 +28,6 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID,
 };
 
-// Inisialisasi Firebase
 firebase.initializeApp(firebaseConfig);
 
 export {
