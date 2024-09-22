@@ -1,5 +1,6 @@
 import { ErrorResponse } from "../models/error_response";
-import jwt from "jsonwebtoken";
+import { admin } from "../config/firebase";
+import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { Request, Response, NextFunction } from "express";
 import { Token } from "../models/token_model";
 const dotenv = require("dotenv");
@@ -8,12 +9,14 @@ dotenv.config();
 export class JWTMiddleware {
   static async verifyToken(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = req.headers.authorization?.split(" ")[1];
-      if (!token) {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
         throw new ErrorResponse("Unauthorized", 401, ["token"], "UNAUTHORIZED");
       }
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-      res.locals.user = decoded as Token;
+
+      const idToken = authHeader.split("Bearer ")[1];
+      const decoded: DecodedIdToken = await admin.auth().verifyIdToken(idToken);
+      res.locals.user = decoded;
       next();
     } catch (error) {
       next(error);

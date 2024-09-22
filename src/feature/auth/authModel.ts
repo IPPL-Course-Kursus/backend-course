@@ -8,12 +8,18 @@ export type LoginResponse = {
 };
 
 export type RegisterRequest = {
+  uid: string;
   fullName: string;
   country: string;
   city: string;
   phoneNumber: string;
   tanggalLahir: Date;
   role: string;
+  email: string;
+  password: string;
+};
+
+export type RegisterRequest1 = {
   email: string;
   password: string;
 };
@@ -32,9 +38,8 @@ export type AuthRequest = {
   password: string;
   userId: number;
 };
-export type ResetPasswordRequest = {
-  token: string;
-  password: string;
+export type ForgotPasswordRequest = {
+  email: string;
 };
 
 export type ChangePasswordRequest = {

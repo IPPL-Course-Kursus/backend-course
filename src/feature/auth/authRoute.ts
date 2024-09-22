@@ -8,7 +8,12 @@ authRoute.post("/login", AuthController.login);
 authRoute.post("/register", AuthController.register);
 authRoute.post("/register-instruktur", AuthController.registerInstruktur);
 authRoute.post("/forgot-password", AuthController.forgotPassword);
-authRoute.post("/reset-password", AuthController.resetPassword);
+
+authRoute.post(
+  "/logout-user",
+  JWTMiddleware.verifyToken,
+  AuthController.logoutUser
+);
 
 authRoute.get(
   "/test",
