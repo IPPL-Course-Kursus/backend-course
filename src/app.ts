@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-
+import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { ErrorMiddleware } from "./middleware/error_middleware";
@@ -8,6 +8,7 @@ import authRoute from "./feature/auth/authRoute";
 dotenv.config();
 const app: Express = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));

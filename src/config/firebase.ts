@@ -8,16 +8,19 @@ import {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from "firebase/auth";
 
 import firebase from "firebase/compat/app";
 import admin from "firebase-admin";
 
-// import serviceAccount from "../config/serviceAccountKey.json";
+import serviceAccount from "../config/serviceAccountKey.json";
 
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-// });
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+});
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -37,5 +40,8 @@ export {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   admin,
 };

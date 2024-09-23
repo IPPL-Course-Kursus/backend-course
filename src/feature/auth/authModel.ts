@@ -18,3 +18,16 @@ export type RegisterRequest = {
 export type ForgotPasswordRequest = {
   email: string;
 };
+
+export type UserProfile = {
+  fullName: string;
+  phoneNumber: string;
+  tanggalLahir: Date;
+  city: string;
+  country: string;
+};
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};
