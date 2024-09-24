@@ -111,11 +111,22 @@ export class AuthController {
     try {
       const user = res.locals.user;
       const data = req.body;
-      if (!user) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
       await AuthService.changePassword(user.uid, user.email, data);
       res.status(200).json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await AuthService.resetPassword(data);
+      return res.status(200).json({
+        success: true,
+        message: "Password has been reset successfully!",
+      });
     } catch (error) {
       console.error(error);
       next(error);

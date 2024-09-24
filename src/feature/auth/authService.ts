@@ -6,6 +6,7 @@ import {
   ForgotPasswordRequest,
   UserProfile,
   ChangePasswordRequest,
+  ResetPasswordRequest,
 } from "./authModel";
 import {
   getAuth,
@@ -17,6 +18,7 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  confirmPasswordReset,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
@@ -216,7 +218,6 @@ export class AuthService {
       requests.currentPassword
     );
     const currentUser = auth.currentUser;
-    console.log("Current User:", currentUser);
     if (!currentUser) {
       throw new ErrorResponse("User not authenticated", 401, [
         "authentication",
@@ -224,5 +225,21 @@ export class AuthService {
     }
     await reauthenticateWithCredential(currentUser, credential);
     await updatePassword(currentUser, requests.newPassword);
+  }
+
+  static async resetPassword(data: ResetPasswordRequest): Promise<any> {
+    const requests = Validation.validate(AuthValidation.RESET_PASSWORD, data);
+    if (!requests.oobCode || !requests.newPassword) {
+      throw new ErrorResponse("Invalid obbCode or newPassword", 400, [
+        "obbCode",
+        "newPassword",
+      ]);
+    }
+    if (requests.newPassword !== requests.confirmPassword) {
+      throw new ErrorResponse("Password does not match", 400, [
+        "confirmPassword",
+      ]);
+    }
+    await confirmPasswordReset(auth, requests.oobCode, requests.newPassword);
   }
 }

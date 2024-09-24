@@ -14,6 +14,8 @@ authRoute.post(
   AuthController.changePassword
 );
 
+authRoute.post("/reset-password", AuthController.resetPassword);
+
 authRoute.post(
   "/logout-user",
   JWTMiddleware.verifyToken,

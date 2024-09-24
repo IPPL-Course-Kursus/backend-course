@@ -11,6 +11,7 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  confirmPasswordReset,
 } from "firebase/auth";
 
 import firebase from "firebase/compat/app";
@@ -43,5 +44,6 @@ export {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  confirmPasswordReset,
   admin,
 };

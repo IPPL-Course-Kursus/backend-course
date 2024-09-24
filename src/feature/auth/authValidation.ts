@@ -32,4 +32,10 @@ export class AuthValidation {
     currentPassword: z.string().min(6).max(20),
     newPassword: z.string().min(6).max(20),
   });
+
+  static readonly RESET_PASSWORD: ZodType = z.object({
+    oobCode: z.string(),
+    newPassword: z.string().min(6).max(20),
+    confirmPassword: z.string().min(6).max(20),
+  });
 }

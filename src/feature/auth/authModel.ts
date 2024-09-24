@@ -31,3 +31,9 @@ export type ChangePasswordRequest = {
   currentPassword: string;
   newPassword: string;
 };
+
+export type ResetPasswordRequest = {
+  oobCode: string;
+  newPassword: string;
+  confirmPassword: string;
+};
