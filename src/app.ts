@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import { ErrorMiddleware } from "./middleware/error_middleware";
 import authRoute from "./feature/auth/authRoute";
 import typeCourseRoute from "./feature/typeCourse/typeCourseRoute";
+import contentRoutes from './feature/content/contentRoute';
+
 
 dotenv.config();
 const app: Express = express();
@@ -18,6 +20,8 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoute);
 
 app.use('/api/type-courses', typeCourseRoute);
+app.use('/contents', contentRoutes);
+
 
 
 
