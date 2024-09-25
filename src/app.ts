@@ -7,7 +7,7 @@ import authRoute from "./feature/auth/authRoute";
 import typeCourseRoute from "./feature/typeCourse/typeCourseRoute";
 import contentRoutes from './feature/content/contentRoute';
 import interpreterRoutes from './feature/interpreter/interpreterRoute';
-
+import certificateRoutes from './feature/certificate/certificateRoutes';
 
 dotenv.config();
 const app: Express = express();
@@ -23,6 +23,7 @@ app.use("/auth", authRoute);
 app.use('/api/type-courses', typeCourseRoute);
 app.use('/contents', contentRoutes);
 app.use('/api/interpreters', interpreterRoutes);
+app.use('/api/certificates', certificateRoutes);
 
 
 app.use(ErrorMiddleware.notFound);
