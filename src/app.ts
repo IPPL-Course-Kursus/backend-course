@@ -17,12 +17,10 @@ app.get("/", (req, res) => {
 });
 app.use("/auth", authRoute);
 
-app.use('/api', typeCourseRoute);
+app.use('/api/type-courses', typeCourseRoute);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+
 
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);

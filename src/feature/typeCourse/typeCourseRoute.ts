@@ -1,21 +1,18 @@
-import { Router } from 'express';
+import express from 'express';
 import {
-  createType,
-  getTypes,
-  getTypeById,
-  updateType,
-  deleteType,
+  createTypeHandler,
+  getTypesHandler,
+  getTypeByIdHandler,
+  updateTypeHandler,
+  deleteTypeHandler,
 } from './typeCourseController';
 
-const router = Router();
-router.get("/", (req, res) => {
-    res.send("Type Course Route");
-});
+const router = express.Router();
 
-router.post('/types', createType);        // Create Type
-router.get('/types', getTypes);           // Get all Types
-router.get('/types/:id', getTypeById);    // Get Type by ID
-router.put('/types/:id', updateType);     // Update Type
-router.delete('/types/:id', deleteType);  // Delete Type
+router.post('/', createTypeHandler);
+router.get('/', getTypesHandler);
+router.get('/:id', getTypeByIdHandler);
+router.put('/:id', updateTypeHandler);
+router.delete('/:id', deleteTypeHandler);
 
 export default router;
