@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import {
   create,
-  getAll,
-  getById,
   update,
   remove,
 } from './categoryController';
+import {
+  getAll,
+  getById,
+} from './categoryService';
 
 const router = Router();
 
