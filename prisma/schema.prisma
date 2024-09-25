@@ -140,15 +140,17 @@ model Content {
 }
 
 model Interpreter {
-  id Int @id @default(autoincrement())
+  id                 Int                @id @default(autoincrement())
   languageInterpreter LanguageInterpreter
-  sourceCode String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  content Content?
+  sourceCode         String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  content            Content?
 
   @@map("interpreters")
 }
+
+
 
 model CourseUser {
   id Int @id @default(autoincrement())
