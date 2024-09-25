@@ -77,4 +77,59 @@ export class AuthController {
       next(error);
     }
   }
+
+  static async getProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.user;
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const response = await AuthService.getProfile(user.uid);
+      res.status(200).json({ message: response });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.user;
+      const data = req.body;
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const response = await AuthService.updateProfile(user.uid, data);
+      res.status(200).json({ message: response });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.user;
+      const data = req.body;
+      await AuthService.changePassword(user.uid, user.email, data);
+      res.status(200).json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await AuthService.resetPassword(data);
+      return res.status(200).json({
+        success: true,
+        message: "Password has been reset successfully!",
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
 }

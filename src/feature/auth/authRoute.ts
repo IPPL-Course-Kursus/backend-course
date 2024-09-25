@@ -8,6 +8,13 @@ authRoute.post("/login", AuthController.login);
 authRoute.post("/register", AuthController.register);
 authRoute.post("/register-instruktur", AuthController.registerInstruktur);
 authRoute.post("/forgot-password", AuthController.forgotPassword);
+authRoute.post(
+  "/change-password",
+  JWTMiddleware.verifyToken,
+  AuthController.changePassword
+);
+
+authRoute.post("/reset-password", AuthController.resetPassword);
 
 authRoute.post(
   "/logout-user",
@@ -15,13 +22,16 @@ authRoute.post(
   AuthController.logoutUser
 );
 
-authRoute.get(
-  "/test",
+authRoute.get("/profile", JWTMiddleware.verifyToken, AuthController.getProfile);
+
+authRoute.put(
+  "/update-profile",
   JWTMiddleware.verifyToken,
-  JWTMiddleware.userOnly,
-  (req, res) => {
-    res.send("Hello World");
-  }
+  AuthController.updateProfile
 );
+
+authRoute.get("/test", JWTMiddleware.verifyToken, (req, res) => {
+  res.send("Hello World");
+});
 
 export default authRoute;

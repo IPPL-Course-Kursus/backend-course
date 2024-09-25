@@ -8,6 +8,10 @@ import {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  confirmPasswordReset,
 } from "firebase/auth";
 
 import firebase from "firebase/compat/app";
@@ -37,5 +41,9 @@ export {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  confirmPasswordReset,
   admin,
 };
