@@ -30,9 +30,14 @@ authRoute.put(
   AuthController.updateProfile
 );
 
-authRoute.get("/test", JWTMiddleware.verifyToken, (req, res) => {
-  res.send("Hello World");
-});
+authRoute.get(
+  "/test",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
+  (req, res) => {
+    res.send("Hello World");
+  }
+);
 
 authRoute.post("/verify-email", AuthController.verifyEmail);
 

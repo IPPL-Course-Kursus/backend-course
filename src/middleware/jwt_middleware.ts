@@ -3,6 +3,7 @@ import { admin } from "../config/firebase";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { Request, Response, NextFunction } from "express";
 import { Token } from "../models/token_model";
+import { prisma } from "../application/database";
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -16,7 +17,18 @@ export class JWTMiddleware {
 
       const idToken = authHeader.split("Bearer ")[1];
       const decoded: DecodedIdToken = await admin.auth().verifyIdToken(idToken);
-      res.locals.user = decoded;
+
+      const user = await prisma.user.findUnique({
+        where: { uid: decoded.uid },
+        select: { role: true },
+      });
+
+      if (!user) {
+        throw new ErrorResponse("User not found", 404, ["user"], "NOT_FOUND");
+      }
+
+      console.log(user);
+      res.locals.user = { uid: decoded.uid, role: user.role };
       next();
     } catch (error) {
       next(error);
