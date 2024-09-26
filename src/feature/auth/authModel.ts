@@ -37,3 +37,7 @@ export type ResetPasswordRequest = {
   newPassword: string;
   confirmPassword: string;
 };
+
+export type VerifyEmailRequest = {
+  oobCode: string;
+};

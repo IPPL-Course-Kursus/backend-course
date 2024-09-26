@@ -7,6 +7,7 @@ import {
   UserProfile,
   ChangePasswordRequest,
   ResetPasswordRequest,
+  VerifyEmailRequest,
 } from "./authModel";
 import {
   getAuth,
@@ -19,6 +20,7 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   confirmPasswordReset,
+  applyActionCode,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
@@ -61,6 +63,13 @@ export class AuthService {
     await sendEmailVerification(userCredential.user);
   }
 
+  static async verifyEmail(data: VerifyEmailRequest): Promise<any> {
+    if (!data.oobCode) {
+      throw new ErrorResponse("Invalid oobCode", 400, ["oobCode"]);
+    }
+    await applyActionCode(auth, data.oobCode);
+  }
+
   static async registerInstruktur(user: RegisterRequest): Promise<void> {
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const {
@@ -95,8 +104,8 @@ export class AuthService {
     await sendEmailVerification(userCredential.user);
   }
 
-  static async login(user: LoginRequest): Promise<string> {
-    const requests = Validation.validate(AuthValidation.LOGIN, user);
+  static async login(data: LoginRequest): Promise<string> {
+    const requests = Validation.validate(AuthValidation.LOGIN, data);
     const { email, password } = requests;
     if (!email || !password) {
       throw new ErrorResponse("Invalid email or password", 400, [
@@ -110,6 +119,15 @@ export class AuthService {
       email,
       password
     );
+
+    const user = userCredential.user;
+
+    if (!user.emailVerified) {
+      throw new ErrorResponse(
+        "Email not verified. Please verify your email before logging in.",
+        403
+      );
+    }
     return userCredential.user.getIdToken();
   }
 

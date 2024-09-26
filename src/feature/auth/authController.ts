@@ -132,4 +132,18 @@ export class AuthController {
       next(error);
     }
   }
+
+  static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await AuthService.verifyEmail(data);
+      return res.status(200).json({
+        success: true,
+        message: "Email has been verified successfully!",
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
 }

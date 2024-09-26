@@ -12,6 +12,7 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   confirmPasswordReset,
+  applyActionCode,
 } from "firebase/auth";
 
 import firebase from "firebase/compat/app";
@@ -45,5 +46,6 @@ export {
   reauthenticateWithCredential,
   EmailAuthProvider,
   confirmPasswordReset,
+  applyActionCode,
   admin,
 };
