@@ -50,18 +50,19 @@ model User {
 model Course {
   id Int @id @default(autoincrement())
   categoryId Int @unique
-  userId Int @unique
+  userId String @unique
   courseLevelId Int @unique
   typeCourseId Int @unique
-  courseCode String
+  courseCode String @unique
   courseName String
   image String
   aboutCourse String
   intendedFor String
-  courseDiscountPercent Int
+  courseDiscountPercent Int @default(0)
   coursePrice Float
-  rating Float
+  courseDiscountPrice Float @default(0)
   publish Publish
+  totalDuration Float @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -69,7 +70,7 @@ model Course {
   courseUser CourseUser[]
   transaction Transaction?
   category Category @relation(fields: [categoryId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [uid])
   courseLevel CourseLevel @relation(fields: [courseLevelId], references: [id])
   typeCourse TypeCourse @relation(fields: [typeCourseId], references: [id])
 
@@ -79,6 +80,7 @@ model Course {
 model Category {
   id Int @id @default(autoincrement())
   categoryName String
+  categoryCode String @unique
   image String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

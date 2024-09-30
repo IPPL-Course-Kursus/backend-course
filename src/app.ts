@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { ErrorMiddleware } from "./middleware/error_middleware";
 import authRoute from "./feature/auth/authRoute";
+import courseRoute from "./feature/course/courseRoute";
 
 dotenv.config();
 const app: Express = express();
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 app.use("/auth", authRoute);
+app.use("/course", courseRoute);
 
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);

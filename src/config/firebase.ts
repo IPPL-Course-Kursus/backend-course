@@ -15,9 +15,14 @@ import {
   applyActionCode,
 } from "firebase/auth";
 
-import firebase from "firebase/compat/app";
+import { initializeApp } from "firebase/app";
 import admin from "firebase-admin";
-
+import {
+  getStorage,
+  getDownloadURL,
+  uploadBytesResumable,
+  ref,
+} from "firebase/storage";
 import serviceAccount from "../config/serviceAccountKey.json";
 
 admin.initializeApp({
@@ -33,10 +38,15 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID,
 };
 
-firebase.initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+
+const auth = getAuth(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 export {
   getAuth,
+  auth,
+  storage,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -48,4 +58,7 @@ export {
   confirmPasswordReset,
   applyActionCode,
   admin,
+  getDownloadURL,
+  uploadBytesResumable,
+  ref,
 };

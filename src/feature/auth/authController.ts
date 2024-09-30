@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { AuthService } from "./authService";
 
 export class AuthController {
@@ -8,9 +9,22 @@ export class AuthController {
       await AuthService.register(data);
       return res.status(201).json({
         success: true,
-        message: "Verification email sent! User created successfully!",
+        message:
+          "Registarion User Successful.Verification email sent! User created successfully!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -25,9 +39,22 @@ export class AuthController {
       await AuthService.registerInstruktur(data);
       return res.status(201).json({
         success: true,
-        message: "Verification email sent! User created successfully!",
+        message:
+          "Registarion instruktur Successful. Verification email sent! User created successfully!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -45,6 +72,18 @@ export class AuthController {
         },
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -74,6 +113,18 @@ export class AuthController {
         message: "Reset password email sent!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -85,7 +136,11 @@ export class AuthController {
         return res.status(401).json({ error: "Unauthorized" });
       }
       const response = await AuthService.getProfile(user.uid);
-      res.status(200).json({ message: response });
+      return res.status(200).json({
+        success: true,
+        message: "Get profile successful",
+        data: response,
+      });
     } catch (error) {
       console.error(error);
       next(error);
@@ -96,12 +151,29 @@ export class AuthController {
     try {
       const user = res.locals.user;
       const data = req.body;
+      const image = req.file;
       if (!user) {
         return res.status(401).json({ error: "Unauthorized" });
       }
-      const response = await AuthService.updateProfile(user.uid, data);
-      res.status(200).json({ message: response });
+      const response = await AuthService.updateProfile(user.uid, data, image);
+      return res.status(200).json({
+        success: true,
+        message: "Update profile successful",
+        data: response,
+      });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       console.error(error);
       next(error);
     }
@@ -112,8 +184,20 @@ export class AuthController {
       const user = res.locals.user;
       const data = req.body;
       await AuthService.changePassword(user.uid, user.email, data);
-      res.status(200).json({ message: "Password changed successfully" });
+      res.status(200).json({ message: "Password changed successfully!" });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       console.error(error);
       next(error);
     }
@@ -128,6 +212,18 @@ export class AuthController {
         message: "Password has been reset successfully!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       console.error(error);
       next(error);
     }
@@ -146,4 +242,18 @@ export class AuthController {
       next(error);
     }
   }
+
+  // static async uploadImage(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const image = req.file;
+  //     const response = await AuthService.uploadImage(image);
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: response,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     next(error);
+  //   }
+  // }
 }

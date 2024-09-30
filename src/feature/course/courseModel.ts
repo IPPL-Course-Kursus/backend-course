@@ -1,15 +1,34 @@
-export type CourseRequest = {
+export enum Publish {
+  Published = "Published",
+  Archived = "Archived",
+}
+
+export type UpdateCourseRequest = {
   categoryId: number;
   courseLevelId: number;
   typeCourseId: number;
-  userId: number;
   courseCode: string;
   courseName: string;
-  image: string;
-  about: string;
+  aboutCourse: string;
   intendedFor: string;
-  courseDiscountPercent: number;
+  courseDiscountPercent?: number;
+  courseDiscountPrice?: number;
   coursePrice: number;
-  coursePriceAfterDiscount?: number | null;
-  publish: string;
+  publish: Publish;
+  totalDuration?: number;
+};
+
+export type CreateCourseRequest = {
+  categoryId: number;
+  courseLevelId: number;
+  typeCourseId: number;
+  userId: string;
+  courseName: string;
+  aboutCourse: string;
+  intendedFor: string;
+  courseDiscountPercent?: number;
+  courseDiscountPrice?: number;
+  coursePrice: number;
+  publish: Publish;
+  totalDuration?: number;
 };

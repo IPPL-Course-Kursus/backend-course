@@ -10,7 +10,7 @@ import {
   VerifyEmailRequest,
 } from "./authModel";
 import {
-  getAuth,
+  auth,
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -24,13 +24,31 @@ import {
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
+import { imagekit } from "../../utils/image_kit";
 const dotenv = require("dotenv");
 dotenv.config();
 
-const auth = getAuth();
-
 export class AuthService {
   static async register(user: RegisterRequest): Promise<void> {
+    if (
+      !user.fullName ||
+      !user.phoneNumber ||
+      !user.tanggalLahir ||
+      !user.city ||
+      !user.country ||
+      !user.email ||
+      !user.password
+    ) {
+      throw new ErrorResponse("Register Data is Empty", 400, [
+        "fullName",
+        "phoneNumber",
+        "tanggalLahir",
+        "city",
+        "country",
+        "email",
+        "password",
+      ]);
+    }
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const {
       email,
@@ -105,14 +123,14 @@ export class AuthService {
   }
 
   static async login(data: LoginRequest): Promise<string> {
-    const requests = Validation.validate(AuthValidation.LOGIN, data);
-    const { email, password } = requests;
-    if (!email || !password) {
-      throw new ErrorResponse("Invalid email or password", 400, [
+    if (!data.email || !data.password) {
+      throw new ErrorResponse("email or password is empty", 400, [
         "email",
         "password",
       ]);
     }
+    const requests = Validation.validate(AuthValidation.LOGIN, data);
+    const { email, password } = requests;
 
     const userCredential = await signInWithEmailAndPassword(
       auth,
@@ -146,11 +164,11 @@ export class AuthService {
   }
 
   static async forgotPassword(user: ForgotPasswordRequest): Promise<void> {
+    if (!user.email) {
+      throw new ErrorResponse("email is empty", 400, ["email"]);
+    }
     const requests = Validation.validate(AuthValidation.FORGOT_PASSWORD, user);
     const { email } = requests;
-    if (!email) {
-      throw new ErrorResponse("Invalid email", 400, ["email"]);
-    }
 
     const userForgotPassword = await sendPasswordResetEmail(auth, email);
     return userForgotPassword;
@@ -173,15 +191,20 @@ export class AuthService {
       city: user.city,
       country: user.country,
       tanggalLahir: user.tanggalLahir,
+      image: user.image,
     };
 
     return response;
   }
 
-  static async updateProfile(uid: string, data: UserProfile): Promise<any> {
-    const validData = Validation.validate(AuthValidation.UPDATE_PROFILE, data);
-    const users = await prisma.user.findUnique({ where: { uid } });
-    if (!users) {
+  static async updateProfile(
+    uid: string,
+    data: UserProfile,
+    file: any
+  ): Promise<any> {
+    const user = await prisma.user.findUnique({ where: { uid } });
+
+    if (!user) {
       throw new ErrorResponse(
         "User not found",
         404,
@@ -189,28 +212,40 @@ export class AuthService {
         "USER_NOT_FOUND"
       );
     }
+
+    let imageUrl = user.image;
+
+    const validFileTypes = ["image/jpeg", "image/png"];
+
+    if (file && validFileTypes.includes(file.mimetype)) {
+      try {
+        const result = await imagekit.upload({
+          file: file.buffer,
+          fileName: `${uid}-${Date.now()}-${file.originalname}`,
+          folder: "/photoProfile",
+        });
+
+        imageUrl = result.url;
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { uid },
       data: {
-        fullName: validData.fullName,
-        phoneNumber: validData.phoneNumber,
-        city: validData.city,
-        country: validData.country,
-        tanggalLahir: validData.tanggalLahir
-          ? new Date(validData.tanggalLahir)
-          : undefined,
+        ...data,
+        image: imageUrl,
+        tanggalLahir: data.tanggalLahir
+          ? new Date(data.tanggalLahir)
+          : user.tanggalLahir,
       },
     });
 
-    const response = {
-      fullName: updatedUser.fullName,
-      phoneNumber: updatedUser.phoneNumber,
-      city: updatedUser.city,
-      country: updatedUser.country,
-      tanggalLahir: updatedUser.tanggalLahir,
+    return {
+      data: updatedUser,
     };
-
-    return response;
   }
 
   static async changePassword(
@@ -218,6 +253,12 @@ export class AuthService {
     email: string,
     request: ChangePasswordRequest
   ): Promise<void> {
+    if (!request.currentPassword || !request.newPassword) {
+      throw new ErrorResponse("currentPassword or newPassword is empty", 400, [
+        "currentPassword",
+        "newPassword",
+      ]);
+    }
     const requests = Validation.validate(
       AuthValidation.CHANGE_PASSWORD,
       request
@@ -246,13 +287,14 @@ export class AuthService {
   }
 
   static async resetPassword(data: ResetPasswordRequest): Promise<any> {
-    const requests = Validation.validate(AuthValidation.RESET_PASSWORD, data);
-    if (!requests.oobCode || !requests.newPassword) {
-      throw new ErrorResponse("Invalid obbCode or newPassword", 400, [
-        "obbCode",
-        "newPassword",
-      ]);
+    if (!data.oobCode || !data.newPassword || !data.confirmPassword) {
+      throw new ErrorResponse(
+        "obbCode or newPassword or confirmPassword is empty",
+        400,
+        ["obbCode", "newPassword", "confirmPassword"]
+      );
     }
+    const requests = Validation.validate(AuthValidation.RESET_PASSWORD, data);
     if (requests.newPassword !== requests.confirmPassword) {
       throw new ErrorResponse("Password does not match", 400, [
         "confirmPassword",
@@ -260,4 +302,43 @@ export class AuthService {
     }
     await confirmPasswordReset(auth, requests.oobCode, requests.newPassword);
   }
+
+  // static async uploadImage(image: any): Promise<any> {
+  //   if (!image) {
+  //     throw new ErrorResponse("Image is empty", 400, ["image"]);
+  //   }
+
+  //   try {
+  //     let imageUrl;
+  //     const storageRef = ref(storage, `${image.originalname}`); // Unique filename
+  //     const metadata = { contentType: image.mimetype };
+  //     const uploadTask = uploadBytesResumable(
+  //       storageRef,
+  //       image.buffer,
+  //       metadata
+  //     ); // Use image.buffer
+
+  //     return new Promise((resolve, reject) => {
+  //       uploadTask.on(
+  //         "state_changed",
+  //         (snapshot) => {
+  //           const progress =
+  //             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //           console.log("Upload is " + progress + "% done");
+  //         },
+  //         (error) => {
+  //           console.error("Error uploading file:", error);
+  //           reject(new ErrorResponse("Failed to upload file", 500, ["upload"]));
+  //         },
+  //         async () => {
+  //           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+  //           imageUrl = downloadURL;
+  //           resolve(imageUrl); // Resolve the URL after upload is done
+  //         }
+  //       );
+  //     });
+  //   } catch (error) {
+  //     throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
+  //   }
+  // }
 }
