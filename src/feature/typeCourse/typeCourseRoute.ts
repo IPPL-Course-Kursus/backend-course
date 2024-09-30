@@ -1,18 +1,36 @@
-import express from 'express';
-import {
-  createTypeHandler,
-  getTypesHandler,
-  getTypeByIdHandler,
-  updateTypeHandler,
-  deleteTypeHandler,
-} from './typeCourseController';
+import { Router } from 'express';
+import { TypeCourseController } from './typeCourseController'; // Adjust the path as needed
 
-const router = express.Router();
+const typeCourseRoute: Router = Router();
 
-router.post('/', createTypeHandler);
-router.get('/', getTypesHandler);
-router.get('/:id', getTypeByIdHandler);
-router.put('/:id', updateTypeHandler);
-router.delete('/:id', deleteTypeHandler);
+// Create a new type course
+typeCourseRoute.post(
+  '/',
+  TypeCourseController.createTypeCourse
+);
 
-export default router;
+// Get all type courses
+typeCourseRoute.get(
+  '/',
+  TypeCourseController.getAllTypeCourses
+);
+
+// Get a specific type course by ID
+typeCourseRoute.get(
+  '/:id',
+  TypeCourseController.getTypeCourseById
+);
+
+// Update a type course by ID
+typeCourseRoute.put(
+  '/:id',
+  TypeCourseController.updateTypeCourse
+);
+
+// Delete a type course by ID
+typeCourseRoute.delete(
+  '/:id',
+  TypeCourseController.deleteTypeCourse
+);
+
+export default typeCourseRoute;

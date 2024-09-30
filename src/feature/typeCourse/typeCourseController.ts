@@ -1,60 +1,76 @@
-// src/controllers/typeCourseController.ts
-import { Request, Response } from 'express';
-import {
-  createType,
-  getAllTypes,
-  getType,
-  updateType,
-  removeType,
-} from './typeCourseServis';
+import { Request, Response, NextFunction } from 'express';
+import { TypeCourseService } from './typeCourseService'; // Adjust the path as needed
 
-export const createTypeHandler = async (req: Request, res: Response) => {
-  try {
-    const { typeName } = req.body;
-    const newType = await createType(typeName);
-    res.status(201).json(newType);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create type course' });
+export class TypeCourseController {
+  
+  // Create a new type course
+  static async createTypeCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await TypeCourseService.createTypeCourse(data);
+      return res.status(201).json({
+        success: true,
+        message: 'Type course created successfully!',
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-};
 
-export const getTypesHandler = async (req: Request, res: Response) => {
-  try {
-    const types = await getAllTypes();
-    res.status(200).json(types);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve types' });
+  // Get all type courses
+  static async getAllTypeCourses(req: Request, res: Response, next: NextFunction) {
+    try {
+      const types = await TypeCourseService.getAllTypeCourses();
+      return res.status(200).json({
+        success: true,
+        data: types,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-};
 
-export const getTypeByIdHandler = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const type = await getType(Number(id));
-    if (!type) return res.status(404).json({ error: 'Type not found' });
-    res.status(200).json(type);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve type' });
-  }
-};
+  // Get a type course by ID
+  static async getTypeCourseById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const type = await TypeCourseService.getTypeCourseById(Number(id));
 
-export const updateTypeHandler = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { typeName } = req.body;
-    const updatedType = await updateType(Number(id), typeName);
-    res.status(200).json(updatedType);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update type' });
+      return res.status(200).json({
+        success: true,
+        data: type,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-};
 
-export const deleteTypeHandler = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    await removeType(Number(id));
-    res.status(200).json({ message: 'Type deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete type' });
+  // Update an existing type course
+  static async updateTypeCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      await TypeCourseService.updateTypeCourse({ id: Number(id), ...data });
+      return res.status(200).json({
+        success: true,
+        message: 'Type course updated successfully!',
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-};
+
+  // Delete a type course by ID
+  static async deleteTypeCourse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      await TypeCourseService.deleteTypeCourse(Number(id));
+      return res.status(200).json({
+        success: true,
+        message: 'Type course deleted successfully!',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
