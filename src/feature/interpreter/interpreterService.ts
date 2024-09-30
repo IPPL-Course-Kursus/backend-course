@@ -1,7 +1,6 @@
 import { LanguageInterpreter } from '@prisma/client';
 import { createInterpreter, getInterpreters, getInterpreterById, updateInterpreter, deleteInterpreter } from '../../models/interpreter_model';
 
-
 export const createInterpreterService = async (languageInterpreter: LanguageInterpreter, sourceCode: string) => {
   return createInterpreter(languageInterpreter, sourceCode);
 };
