@@ -12,7 +12,6 @@ export type UpdateCourseRequest = {
   aboutCourse: string;
   intendedFor: string;
   courseDiscountPercent?: number;
-  courseDiscountPrice?: number;
   coursePrice: number;
   publish: Publish;
   totalDuration?: number;
@@ -27,7 +26,6 @@ export type CreateCourseRequest = {
   aboutCourse: string;
   intendedFor: string;
   courseDiscountPercent?: number;
-  courseDiscountPrice?: number;
   coursePrice: number;
   publish: Publish;
   totalDuration?: number;

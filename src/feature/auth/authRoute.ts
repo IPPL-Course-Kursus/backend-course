@@ -39,14 +39,13 @@ authRoute.put(
   AuthController.updateProfile
 );
 
-authRoute.get(
-  "/test",
-  JWTMiddleware.verifyToken,
-  JWTMiddleware.userOnly,
-  (req, res) => {
-    res.send("Hello World");
-  }
-);
+authRoute.get("/test", (req, res) => {
+  res.send("Hello World");
+});
+
+authRoute.get("/home", JWTMiddleware.verifyToken, (req, res) => {
+  res.send("Success");
+});
 
 // authRoute.post(
 //   "/upload-image",

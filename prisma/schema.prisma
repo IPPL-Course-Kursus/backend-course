@@ -61,6 +61,7 @@ model Course {
   courseDiscountPercent Int @default(0)
   coursePrice Float
   courseDiscountPrice Float @default(0)
+  promoStatus Boolean @default(false) @unique
   publish Publish
   totalDuration Float @default(0)
   createdAt DateTime @default(now())
@@ -154,15 +155,15 @@ model Interpreter {
 
 model CourseUser {
   id Int @id @default(autoincrement())
-  userId Int @unique
+  userId String @unique
   courseId Int @unique
-  contentFinish Float
-  courseStatus CourseStatus 
+  contentFinish Float @default(0)
+  courseStatus CourseStatus @default(NotStarted)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   certificate Certificate?
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [uid])
   course Course @relation(fields: [courseId], references: [id])
 
   @@map("course_users")
@@ -183,7 +184,7 @@ model Certificate {
 
 model Transaction {
   id Int @id @default(autoincrement())
-  userId Int @unique
+  userId String @unique
   courseId Int @unique
   courseName String
   orderId Int
@@ -196,7 +197,7 @@ model Transaction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [uid])
   course Course @relation(fields: [courseId], references: [id])
 
   @@map("transactions")

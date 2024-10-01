@@ -23,17 +23,17 @@ export class CourseService {
     });
   }
 
-  // static async getCourseById(id: number): Promise<any> {
-  //   return await prisma.course.findUnique({
-  //     where: { id },
-  //     include: {
-  //       user: true,
-  //       courseLevel: true,
-  //       typeCourse: true,
-  //       category: true,
-  //     },
-  //   });
-  // }
+  static async getCourseById(userId: string): Promise<any> {
+    return await prisma.course.findUnique({
+      where: { userId },
+      include: {
+        user: true,
+        courseLevel: true,
+        typeCourse: true,
+        category: true,
+      },
+    });
+  }
 
   static async getCourseByCategory(categoryId: number): Promise<any> {
     return await prisma.course.findMany({
@@ -187,8 +187,9 @@ export class CourseService {
     }
 
     let imageUrl: string = "";
-
     const validFileTypes = ["image/jpeg", "image/png"];
+    let courseDiscountPrice: number | undefined;
+    let promoStatus: boolean = false;
 
     if (file && validFileTypes.includes(file.mimetype)) {
       try {
@@ -205,6 +206,13 @@ export class CourseService {
       }
     }
 
+    if (data.courseDiscountPercent) {
+      courseDiscountPrice =
+        data.coursePrice -
+        (data.coursePrice * data.courseDiscountPercent) / 100;
+      promoStatus = true;
+    }
+
     await prisma.course.create({
       data: {
         categoryId: data.categoryId,
@@ -217,8 +225,9 @@ export class CourseService {
         aboutCourse: data.aboutCourse,
         intendedFor: data.intendedFor,
         courseDiscountPercent: data.courseDiscountPercent,
-        courseDiscountPrice: data.courseDiscountPrice,
+        courseDiscountPrice: courseDiscountPrice,
         coursePrice: data.coursePrice,
+        promoStatus: promoStatus,
         publish: data.publish,
         totalDuration: data.totalDuration,
       },
@@ -235,8 +244,9 @@ export class CourseService {
     });
 
     let imageUrl = course?.image;
-
     const validFileTypes = ["image/jpeg", "image/png"];
+    let courseDiscountPrice: number | undefined;
+    let promoStatus: boolean = false;
 
     if (file && validFileTypes.includes(file.mimetype)) {
       try {
@@ -253,6 +263,16 @@ export class CourseService {
       }
     }
 
+    if (data.courseDiscountPercent) {
+      courseDiscountPrice =
+        data.coursePrice -
+        (data.coursePrice * data.courseDiscountPercent) / 100;
+      promoStatus = true;
+    } else {
+      courseDiscountPrice = undefined;
+      promoStatus = false;
+    }
+
     await prisma.course.update({
       where: { id },
       data: {
@@ -265,8 +285,9 @@ export class CourseService {
         aboutCourse: data.aboutCourse,
         intendedFor: data.intendedFor,
         courseDiscountPercent: data.courseDiscountPercent,
-        courseDiscountPrice: data.courseDiscountPrice,
+        courseDiscountPrice: courseDiscountPrice,
         coursePrice: data.coursePrice,
+        promoStatus: promoStatus,
         publish: data.publish,
         totalDuration: data.totalDuration,
       },
@@ -276,6 +297,48 @@ export class CourseService {
   static async deleteCourse(id: number): Promise<any> {
     await prisma.course.delete({
       where: { id },
+    });
+  }
+
+  static async getCoursesByFilter(
+    typeId?: number,
+    categoryId?: number,
+    levelId?: number,
+    promoStatus?: boolean
+  ): Promise<any> {
+    let whereClause: any = {
+      publish: "Published",
+    };
+
+    if (typeId) {
+      whereClause.typeCourseId = typeId;
+    }
+
+    if (categoryId) {
+      whereClause.categoryId = categoryId;
+    }
+
+    if (levelId) {
+      whereClause.courseLevelId = levelId;
+    }
+
+    if (promoStatus) {
+      whereClause.promoStatus = promoStatus;
+    }
+
+    return await prisma.course.findMany({
+      where: whereClause,
+      include: {
+        user: true,
+        courseLevel: true,
+        typeCourse: true,
+        category: true,
+        _count: {
+          select: {
+            chapters: true,
+          },
+        },
+      },
     });
   }
 }

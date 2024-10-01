@@ -11,20 +11,19 @@ export class CourseController {
     }
   }
 
-  //   static async getCourseById(req: Request, res: Response, next: NextFunction) {
-  //     try {
-  //       const { id } = req.params;
-  //       const courseId = parseInt(id, 10);
-
-  //       if (isNaN(courseId)) {
-  //         return res.status(400).json({ message: "Invalid course ID" });
-  //       }
-  //       const course = await CourseService.getCourseById(courseId);
-  //       res.status(200).json(course);
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   }
+  static async getCourseByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { userId } = res.locals.user.uid;
+      const course = await CourseService.getCourseById(userId);
+      res.status(200).json(course);
+    } catch (error) {
+      next(error);
+    }
+  }
 
   static async getCourseByCategory(
     req: Request,
@@ -150,6 +149,36 @@ export class CourseController {
       }
       const course = await CourseService.updateCourse(courseId, data);
       res.status(200).json({ message: "Course updated successfully", course });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getCoursesByFilter(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const typeId = req.query.typeId
+        ? parseInt(req.query.typeId as string, 10)
+        : undefined;
+      const categoryId = req.query.categoryId
+        ? parseInt(req.query.categoryId as string, 10)
+        : undefined;
+      const levelId = req.query.levelId
+        ? parseInt(req.query.levelId as string, 10)
+        : undefined;
+      const promoStatus = req.query.promoStatus === "true" ? true : undefined;
+
+      const courses = await CourseService.getCoursesByFilter(
+        typeId,
+        categoryId,
+        levelId,
+        promoStatus
+      );
+
+      res.status(200).json(courses);
     } catch (error) {
       next(error);
     }
