@@ -1,20 +1,31 @@
 import { Router } from 'express';
-import {
-  create,
-  update,
-  remove,
-} from './categoryController';
-import {
-  getAll,
-  getById,
-} from './categoryService';
+import {CategoryController} from './categoryController';
 
-const router = Router();
+const CategoryRoute : Router = Router();
 
-router.post('/', create);            // Create Category
-router.get('/', getAll);             // Get all Categories
-router.get('/:id', getById);         // Get Category by ID
-router.put('/:id', update);          // Update Category
-router.delete('/:id', remove);       // Delete Category
+CategoryRoute.post(
+  '/',
+  CategoryController.createCategory
+);
 
-export default router;
+CategoryRoute.get(
+  '/',
+  CategoryController.getAll
+);
+
+CategoryRoute.get(
+  '/:id',
+  CategoryController.getById
+);
+
+CategoryRoute.put(
+  '/:id',
+  CategoryController.updateCategory
+);
+
+CategoryRoute.delete(
+  '/:id',
+  CategoryController.delete
+);
+
+export default CategoryRoute;
