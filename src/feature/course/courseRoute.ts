@@ -14,7 +14,7 @@ const upload = multer({
 
 courseRoute.get("/", CourseController.getAllCourses);
 courseRoute.get(
-  "/:search",
+  "/search/:search",
   JWTMiddleware.verifyToken,
   CourseController.getCourseBySearch
 );
@@ -24,7 +24,7 @@ courseRoute.get(
   CourseController.getCourseByType
 );
 courseRoute.get(
-  "/:id",
+  "/detail-course/:id",
   JWTMiddleware.verifyToken,
   CourseController.getDetailCourse
 );
@@ -45,10 +45,7 @@ courseRoute.get(
   CourseController.getCourseByUserId
 );
 
-courseRoute.get(
-  "/type/:typeId/category/:categoryId/level/:levelId",
-  CourseController.getCoursesByFilter
-);
+courseRoute.get("/filter", CourseController.getCoursesByFilter);
 
 courseRoute.post(
   "/createCourse",
@@ -59,7 +56,7 @@ courseRoute.post(
 );
 
 courseRoute.put(
-  "/:id",
+  "/update-course/:id",
   JWTMiddleware.verifyToken,
   JWTMiddleware.instrukturOnly,
   upload.single("image"),
@@ -67,7 +64,7 @@ courseRoute.put(
 );
 
 courseRoute.delete(
-  "/:id",
+  "/delete-course/:id",
   JWTMiddleware.verifyToken,
   JWTMiddleware.instrukturOnly,
   CourseController.deleteCourse

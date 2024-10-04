@@ -144,10 +144,11 @@ export class CourseController {
       const { id } = req.params;
       const courseId = parseInt(id, 10);
       const data = req.body;
+      const image = req.file;
       if (isNaN(courseId)) {
         return res.status(400).json({ message: "Invalid course ID" });
       }
-      const course = await CourseService.updateCourse(courseId, data);
+      const course = await CourseService.updateCourse(courseId, data, image);
       res.status(200).json({ message: "Course updated successfully", course });
     } catch (error) {
       next(error);
@@ -169,7 +170,12 @@ export class CourseController {
       const levelId = req.query.levelId
         ? parseInt(req.query.levelId as string, 10)
         : undefined;
-      const promoStatus = req.query.promoStatus === "true" ? true : undefined;
+      const promoStatus =
+        req.query.promoStatus === "true"
+          ? true
+          : req.query.promoStatus === "false"
+          ? false
+          : undefined;
 
       const courses = await CourseService.getCoursesByFilter(
         typeId,

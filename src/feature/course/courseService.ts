@@ -5,7 +5,7 @@ import { imagekit } from "../../utils/image_kit";
 
 export class CourseService {
   static async getAllCourses(): Promise<any> {
-    return await prisma.course.findMany({
+    const courses = await prisma.course.findMany({
       where: {
         publish: "Published",
       },
@@ -21,10 +21,16 @@ export class CourseService {
         },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found", 404);
+    }
+
+    return courses;
   }
 
   static async getCourseById(userId: string): Promise<any> {
-    return await prisma.course.findUnique({
+    const courses = await prisma.course.findMany({
       where: { userId },
       include: {
         user: true,
@@ -33,10 +39,16 @@ export class CourseService {
         category: true,
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found for this user", 404);
+    }
+
+    return courses;
   }
 
   static async getCourseByCategory(categoryId: number): Promise<any> {
-    return await prisma.course.findMany({
+    const courses = await prisma.course.findMany({
       where: {
         categoryId,
       },
@@ -52,10 +64,16 @@ export class CourseService {
         },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found for this category", 404);
+    }
+
+    return courses;
   }
 
-  static getCourseByLevel(levelId: number): Promise<any> {
-    return prisma.course.findMany({
+  static async getCourseByLevel(levelId: number): Promise<any> {
+    const courses = await prisma.course.findMany({
       where: {
         courseLevelId: levelId,
       },
@@ -71,10 +89,16 @@ export class CourseService {
         },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found for this level", 404);
+    }
+
+    return courses;
   }
 
   static async getCourseByType(typeId: number): Promise<any> {
-    return await prisma.course.findMany({
+    const courses = await prisma.course.findMany({
       where: {
         typeCourseId: typeId,
       },
@@ -90,10 +114,16 @@ export class CourseService {
         },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found for this type", 404);
+    }
+
+    return courses;
   }
 
   static async getCourseBySearch(courseName: string): Promise<any> {
-    return await prisma.course.findMany({
+    const courses = await prisma.course.findMany({
       where: {
         courseName: {
           contains: courseName,
@@ -113,6 +143,12 @@ export class CourseService {
         },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse(`No courses found matching "${courseName}"`, 404);
+    }
+
+    return courses;
   }
 
   static async getDetailCourse(courseId: number): Promise<any> {
@@ -128,9 +164,11 @@ export class CourseService {
         },
       },
     });
+
     if (!courseDetail) {
-      throw new Error("Course not found");
+      throw new ErrorResponse("Course not found", 404);
     }
+
     const totalContents = courseDetail.chapters.reduce((total, chapter) => {
       return total + (chapter._count.contents || 0);
     }, 0);
@@ -166,7 +204,7 @@ export class CourseService {
     });
 
     if (!category) {
-      throw new Error("Category not found");
+      throw new ErrorResponse("Category not found", 404);
     }
 
     let uniqueCourseCode: string;
@@ -201,7 +239,6 @@ export class CourseService {
 
         imageUrl = result.url;
       } catch (error) {
-        console.error("Failed to upload image:", error);
         throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
       }
     }
@@ -211,6 +248,9 @@ export class CourseService {
         data.coursePrice -
         (data.coursePrice * data.courseDiscountPercent) / 100;
       promoStatus = true;
+    } else {
+      courseDiscountPrice = 0;
+      promoStatus = false;
     }
 
     await prisma.course.create({
@@ -243,22 +283,51 @@ export class CourseService {
       where: { id },
     });
 
-    let imageUrl = course?.image;
+    if (!course) {
+      throw new ErrorResponse("Course not found", 404);
+    }
+
+    let imageUrl = course.image;
     const validFileTypes = ["image/jpeg", "image/png"];
     let courseDiscountPrice: number | undefined;
     let promoStatus: boolean = false;
+    let newCourseCode = course.courseCode;
+
+    if (data.categoryId && data.categoryId !== course.categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: data.categoryId },
+        select: { categoryCode: true },
+      });
+
+      if (!category) {
+        throw new ErrorResponse("New category not found", 404);
+      }
+
+      let isUnique = false;
+
+      while (!isUnique) {
+        const randomNumber = Math.floor(Math.random() * 10000);
+        newCourseCode = `${category.categoryCode}-${randomNumber}`;
+        const existingCourse = await prisma.course.findUnique({
+          where: { courseCode: newCourseCode },
+        });
+
+        if (!existingCourse) {
+          isUnique = true;
+        }
+      }
+    }
 
     if (file && validFileTypes.includes(file.mimetype)) {
       try {
         const result = await imagekit.upload({
           file: file.buffer,
-          fileName: `${course?.courseCode}-${file.originalname}`,
+          fileName: `${newCourseCode}-${file.originalname}`,
           folder: "/course",
         });
 
         imageUrl = result.url;
       } catch (error) {
-        console.error("Failed to upload image:", error);
         throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
       }
     }
@@ -279,7 +348,7 @@ export class CourseService {
         categoryId: data.categoryId,
         courseLevelId: data.courseLevelId,
         typeCourseId: data.typeCourseId,
-        courseCode: data.courseCode,
+        courseCode: newCourseCode,
         courseName: data.courseName,
         image: imageUrl,
         aboutCourse: data.aboutCourse,
@@ -295,6 +364,14 @@ export class CourseService {
   }
 
   static async deleteCourse(id: number): Promise<any> {
+    const course = await prisma.course.findUnique({
+      where: { id },
+    });
+
+    if (!course) {
+      throw new ErrorResponse("Course not found", 404);
+    }
+
     await prisma.course.delete({
       where: { id },
     });
@@ -322,11 +399,11 @@ export class CourseService {
       whereClause.courseLevelId = levelId;
     }
 
-    if (promoStatus) {
+    if (promoStatus !== undefined) {
       whereClause.promoStatus = promoStatus;
     }
 
-    return await prisma.course.findMany({
+    const courses = await prisma.course.findMany({
       where: whereClause,
       include: {
         user: true,
@@ -340,5 +417,11 @@ export class CourseService {
         },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found for this filter", 404);
+    }
+
+    return courses;
   }
 }

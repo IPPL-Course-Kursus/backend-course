@@ -14,19 +14,18 @@ export type UpdateCourseRequest = {
   courseDiscountPercent?: number;
   coursePrice: number;
   publish: Publish;
-  totalDuration?: number;
+  totalDuration: number;
 };
 
 export type CreateCourseRequest = {
   categoryId: number;
   courseLevelId: number;
   typeCourseId: number;
-  userId: string;
   courseName: string;
   aboutCourse: string;
   intendedFor: string;
   courseDiscountPercent?: number;
   coursePrice: number;
   publish: Publish;
-  totalDuration?: number;
+  totalDuration: number;
 };
