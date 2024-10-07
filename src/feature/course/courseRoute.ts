@@ -13,32 +13,60 @@ const upload = multer({
 });
 
 courseRoute.get("/", CourseController.getAllCourses);
-courseRoute.get("/:search", CourseController.getCourseBySearch);
-courseRoute.get("/type/:typeId", CourseController.getCourseByType);
-courseRoute.get("/:id", CourseController.getDetailCourse);
-courseRoute.get("/level/:levelId", CourseController.getCourseByLevel);
-courseRoute.get("/category/:categoryId", CourseController.getCourseByCategory);
+courseRoute.get(
+  "/search/:search",
+  JWTMiddleware.verifyToken,
+  CourseController.getCourseBySearch
+);
+courseRoute.get(
+  "/type/:typeId",
+  JWTMiddleware.verifyToken,
+  CourseController.getCourseByType
+);
+courseRoute.get(
+  "/detail-course/:id",
+  JWTMiddleware.verifyToken,
+  CourseController.getDetailCourse
+);
+courseRoute.get(
+  "/level/:levelId",
+  JWTMiddleware.verifyToken,
+  CourseController.getCourseByLevel
+);
+courseRoute.get(
+  "/category/:categoryId",
+  JWTMiddleware.verifyToken,
+  CourseController.getCourseByCategory
+);
+courseRoute.get(
+  "/user",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.instrukturOnly,
+  CourseController.getCourseByUserId
+);
+
+courseRoute.get("/filter", CourseController.getCoursesByFilter);
 
 courseRoute.post(
-  "/",
+  "/createCourse",
   JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
+  JWTMiddleware.instrukturOnly,
   upload.single("image"),
   CourseController.createCourse
 );
 
 courseRoute.put(
-  "/:id",
+  "/update-course/:id",
   JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
+  JWTMiddleware.instrukturOnly,
   upload.single("image"),
   CourseController.updateCourse
 );
 
 courseRoute.delete(
-  "/:id",
+  "/delete-course/:id",
   JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
+  JWTMiddleware.instrukturOnly,
   CourseController.deleteCourse
 );
 

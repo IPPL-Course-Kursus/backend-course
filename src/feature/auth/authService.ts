@@ -140,12 +140,13 @@ export class AuthService {
 
     const user = userCredential.user;
 
-    if (!user.emailVerified) {
-      throw new ErrorResponse(
-        "Email not verified. Please verify your email before logging in.",
-        403
-      );
-    }
+    // if (!user.emailVerified) {
+    //   await sendEmailVerification(user);
+    //   throw new ErrorResponse(
+    //     "Email not verified. Please check your email to verify your account before logging in.",
+    //     403
+    //   );
+    // }
     return userCredential.user.getIdToken();
   }
 
