@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoute);
 app.use("/course", courseRoute);
 
+
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);
 
