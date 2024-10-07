@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { categoryService } from "./categoryService";
-import { types } from "joi";
 
 export class CategoryController {
   static async createCategory(req: Request, res: Response, next: NextFunction) {

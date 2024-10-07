@@ -6,6 +6,7 @@ import { ErrorMiddleware } from "./middleware/error_middleware";
 import authRoute from "./feature/auth/authRoute";
 import categoryRoutes from './feature/category/categoryRoute';
 
+
 dotenv.config();
 const app: Express = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/categories', categoryRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Hello World");

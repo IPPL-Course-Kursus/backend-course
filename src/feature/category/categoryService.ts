@@ -8,11 +8,11 @@ import { Validation } from '../../validations/validation';
 export class categoryService{
   static async createCategory(request: CreateCategoryRequest): Promise<void> {
     const validatedRequest = Validation.validate(categoryValidation.CREATE, request);
-    const{ categoryName } = validatedRequest;
-  
+    const{ categoryName, image } = validatedRequest;
+    
     try{
       await prisma.category.create({
-        data:{ categoryName },
+        data :{ categoryName, image},
       });
     } catch (error){
       console.error("eror during category creation:", error);
@@ -48,7 +48,7 @@ export class categoryService{
     }catch (error){
       console.error("error during fetching category by ID:", error);
       throw new ErrorResponse(
-        "failed to retrieve cactegory from database",
+        "failed to retrieve category from database",
         500,
         ["database", "id"]
       );
