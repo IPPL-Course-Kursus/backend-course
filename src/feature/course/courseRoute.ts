@@ -13,30 +13,16 @@ const upload = multer({
 });
 
 courseRoute.get("/", CourseController.getAllCourses);
+courseRoute.get("/search/:search", CourseController.getCourseBySearch);
+courseRoute.get("/type/:typeId", CourseController.getCourseByType);
+courseRoute.get("/detail-course/:id", CourseController.getDetailCourse);
+courseRoute.get("/level/:levelId", CourseController.getCourseByLevel);
+courseRoute.get("/category/:categoryId", CourseController.getCourseByCategory);
 courseRoute.get(
-  "/search/:search",
+  "/:id",
   JWTMiddleware.verifyToken,
-  CourseController.getCourseBySearch
-);
-courseRoute.get(
-  "/type/:typeId",
-  JWTMiddleware.verifyToken,
-  CourseController.getCourseByType
-);
-courseRoute.get(
-  "/detail-course/:id",
-  JWTMiddleware.verifyToken,
-  CourseController.getDetailCourse
-);
-courseRoute.get(
-  "/level/:levelId",
-  JWTMiddleware.verifyToken,
-  CourseController.getCourseByLevel
-);
-courseRoute.get(
-  "/category/:categoryId",
-  JWTMiddleware.verifyToken,
-  CourseController.getCourseByCategory
+  JWTMiddleware.instrukturOnly,
+  CourseController.getCourseById
 );
 courseRoute.get(
   "/user",

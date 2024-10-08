@@ -29,7 +29,7 @@ export class CourseService {
     return courses;
   }
 
-  static async getCourseById(userId: string): Promise<any> {
+  static async getCourseByUserId(userId: string): Promise<any> {
     const courses = await prisma.course.findMany({
       where: { userId },
       include: {
@@ -45,6 +45,24 @@ export class CourseService {
     }
 
     return courses;
+  }
+
+  static async getCourseById(id: number): Promise<any> {
+    const course = await prisma.course.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        courseLevel: true,
+        typeCourse: true,
+        category: true,
+      },
+    });
+
+    if (!course) {
+      throw new ErrorResponse("Course not found", 404);
+    }
+
+    return course;
   }
 
   static async getCourseByCategory(categoryId: number): Promise<any> {
@@ -198,6 +216,28 @@ export class CourseService {
     file: any,
     uid: string
   ): Promise<any> {
+    const existingCourse = await prisma.course.findFirst({
+      where: { courseName: data.courseName },
+    });
+
+    if (existingCourse) {
+      throw new ErrorResponse("Course already exists", 400);
+    }
+    const courseLevel = await prisma.courseLevel.findUnique({
+      where: { id: data.courseLevelId },
+    });
+
+    if (!courseLevel) {
+      throw new ErrorResponse("Course level not found", 404);
+    }
+
+    const typeCourse = await prisma.typeCourse.findUnique({
+      where: { id: data.typeCourseId },
+    });
+
+    if (!typeCourse) {
+      throw new ErrorResponse("Type course not found", 404);
+    }
     const category = await prisma.category.findUnique({
       where: { id: data.categoryId },
       select: { categoryCode: true },
@@ -234,7 +274,7 @@ export class CourseService {
         const result = await imagekit.upload({
           file: file.buffer,
           fileName: `${uniqueCourseCode}-${file.originalname}`,
-          folder: "/course",
+          folder: "/Course",
         });
 
         imageUrl = result.url;
@@ -269,6 +309,7 @@ export class CourseService {
         coursePrice: data.coursePrice,
         promoStatus: promoStatus,
         publish: data.publish,
+        certificateStatus: data.certificateStatus,
         totalDuration: data.totalDuration,
       },
     });
@@ -358,6 +399,7 @@ export class CourseService {
         coursePrice: data.coursePrice,
         promoStatus: promoStatus,
         publish: data.publish,
+        certificateStatus: data.certificateStatus,
         totalDuration: data.totalDuration,
       },
     });

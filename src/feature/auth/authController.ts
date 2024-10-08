@@ -139,7 +139,10 @@ export class AuthController {
       return res.status(200).json({
         success: true,
         message: "Get profile successful",
-        data: response,
+        data: {
+          ...response,
+          email: user.email,
+        },
       });
     } catch (error) {
       console.error(error);

@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { TypeCourseService } from "./typeCourseService"; // Adjust the path as needed
+import { TypeCourseService } from "./typeCourseService";
 
 export class TypeCourseController {
-  // Create a new type course
   static async createTypeCourse(
     req: Request,
     res: Response,
@@ -19,8 +18,6 @@ export class TypeCourseController {
       next(error);
     }
   }
-
-  // Get all type courses
   static async getAllTypeCourses(
     req: Request,
     res: Response,
@@ -36,8 +33,6 @@ export class TypeCourseController {
       next(error);
     }
   }
-
-  // Get a type course by ID
   static async getTypeCourseById(
     req: Request,
     res: Response,
@@ -45,7 +40,10 @@ export class TypeCourseController {
   ) {
     try {
       const { id } = req.params;
-      const type = await TypeCourseService.getTypeCourseById(Number(id));
+      const typeCourseId = parseInt(id, 10);
+      const type = await TypeCourseService.getTypeCourseById({
+        id: typeCourseId,
+      });
 
       return res.status(200).json({
         success: true,
@@ -56,7 +54,6 @@ export class TypeCourseController {
     }
   }
 
-  // Update an existing type course
   static async updateTypeCourse(
     req: Request,
     res: Response,
@@ -74,8 +71,6 @@ export class TypeCourseController {
       next(error);
     }
   }
-
-  // Delete a type course by ID
   static async deleteTypeCourse(
     req: Request,
     res: Response,
@@ -83,7 +78,8 @@ export class TypeCourseController {
   ) {
     try {
       const { id } = req.params;
-      await TypeCourseService.deleteTypeCourse(Number(id));
+      const typeCourseId = parseInt(id, 10);
+      await TypeCourseService.deleteTypeCourse({ id: typeCourseId });
       return res.status(200).json({
         success: true,
         message: "Type course deleted successfully!",

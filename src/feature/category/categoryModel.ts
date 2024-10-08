@@ -1,11 +1,11 @@
 export type createCategoryRequest = {
   categoryName: string;
-  image: string;
+  categoryCode: string;
 };
 
 export type updateCategoryRequest = {
   categoryName: string;
-  image: string;
+  categoryCode: string;
 };
 
 export type deleteCategoryRequest = {

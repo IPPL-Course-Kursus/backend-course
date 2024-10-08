@@ -14,6 +14,7 @@ export type UpdateCourseRequest = {
   courseDiscountPercent?: number;
   coursePrice: number;
   publish: Publish;
+  certificateStatus?: boolean;
   totalDuration: number;
 };
 
@@ -27,5 +28,6 @@ export type CreateCourseRequest = {
   courseDiscountPercent?: number;
   coursePrice: number;
   publish: Publish;
+  certificateStatus?: boolean;
   totalDuration: number;
 };

@@ -1,21 +1,37 @@
 import { Router } from "express";
-import { TypeCourseController } from "./typeCourseController"; // Adjust the path as needed
+import { TypeCourseController } from "./typeCourseController";
+import { JWTMiddleware } from "../../middleware/jwt_middleware";
 
 const typeCourseRoute: Router = Router();
 
-// Create a new type course
-typeCourseRoute.post("/", TypeCourseController.createTypeCourse);
+typeCourseRoute.post(
+  "/create-type-course/",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  TypeCourseController.createTypeCourse
+);
 
-// Get all type courses
 typeCourseRoute.get("/", TypeCourseController.getAllTypeCourses);
 
-// Get a specific type course by ID
-typeCourseRoute.get("/:id", TypeCourseController.getTypeCourseById);
+typeCourseRoute.get(
+  "/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  TypeCourseController.getTypeCourseById
+);
 
-// Update a type course by ID
-typeCourseRoute.put("/:id", TypeCourseController.updateTypeCourse);
+typeCourseRoute.put(
+  "/update/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  TypeCourseController.updateTypeCourse
+);
 
-// Delete a type course by ID
-typeCourseRoute.delete("/:id", TypeCourseController.deleteTypeCourse);
+typeCourseRoute.delete(
+  "/delete/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  TypeCourseController.deleteTypeCourse
+);
 
 export default typeCourseRoute;

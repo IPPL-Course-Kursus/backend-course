@@ -25,8 +25,8 @@ import {
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
 import { imagekit } from "../../utils/image_kit";
-const dotenv = require("dotenv");
-dotenv.config();
+// const dotenv = require("dotenv");
+// dotenv.config();
 
 export class AuthService {
   static async register(user: RegisterRequest): Promise<void> {
@@ -140,13 +140,13 @@ export class AuthService {
 
     const user = userCredential.user;
 
-    // if (!user.emailVerified) {
-    //   await sendEmailVerification(user);
-    //   throw new ErrorResponse(
-    //     "Email not verified. Please check your email to verify your account before logging in.",
-    //     403
-    //   );
-    // }
+    if (!user.emailVerified) {
+      await sendEmailVerification(user);
+      throw new ErrorResponse(
+        "Email not verified. Please check your email to verify your account before logging in.",
+        403
+      );
+    }
     return userCredential.user.getIdToken();
   }
 

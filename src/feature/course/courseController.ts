@@ -18,7 +18,18 @@ export class CourseController {
   ) {
     try {
       const { userId } = res.locals.user.uid;
-      const course = await CourseService.getCourseById(userId);
+      const course = await CourseService.getCourseByUserId(userId);
+      res.status(200).json(course);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getCourseById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const idCourse = parseInt(id, 10);
+      const course = await CourseService.getCourseById(idCourse);
       res.status(200).json(course);
     } catch (error) {
       next(error);
@@ -144,7 +155,7 @@ export class CourseController {
       const { id } = req.params;
       const courseId = parseInt(id, 10);
       const data = req.body;
-      const image = req.file;
+      const image = req.file ? req.file : undefined;
       if (isNaN(courseId)) {
         return res.status(400).json({ message: "Invalid course ID" });
       }

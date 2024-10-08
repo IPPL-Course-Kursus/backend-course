@@ -1,14 +1,15 @@
-import { prisma } from "../../application/database"; // Adjust the path as needed
-import { ErrorResponse } from "../../models/error_response"; // Adjust the path as needed
+import { prisma } from "../../application/database";
+import { ErrorResponse } from "../../models/error_response";
 import {
   CreateTypeCourseRequest,
   UpdateTypeCourseRequest,
-} from "./typeCourseModel"; // Adjust the path as needed
-import { TypeCourseValidation } from "./typeCourseValidation"; // Assuming you have validation for type courses
-import { Validation } from "../../validations/validation"; // Adjust the path as needed
+  DeleteTypeCourseRequest,
+  GetTypeCourseByIdRequest,
+} from "./typeCourseModel";
+import { TypeCourseValidation } from "./typeCourseValidation";
+import { Validation } from "../../validations/validation";
 
 export class TypeCourseService {
-  // Create a new TypeCourse
   static async createTypeCourse(
     request: CreateTypeCourseRequest
   ): Promise<void> {
@@ -17,6 +18,14 @@ export class TypeCourseService {
       request
     );
     const { typeName } = validatedRequest;
+
+    const existingTypeCourse = await prisma.typeCourse.findFirst({
+      where: { typeName },
+    });
+
+    if (existingTypeCourse) {
+      throw new ErrorResponse("Type course already exists", 400);
+    }
 
     try {
       await prisma.typeCourse.create({
@@ -31,8 +40,6 @@ export class TypeCourseService {
       );
     }
   }
-
-  // Get all TypeCourses
   static async getAllTypeCourses(): Promise<any> {
     try {
       const types = await prisma.typeCourse.findMany();
@@ -46,12 +53,12 @@ export class TypeCourseService {
       );
     }
   }
-
-  // Get a TypeCourse by ID
-  static async getTypeCourseById(id: number): Promise<any> {
+  static async getTypeCourseById(
+    request: GetTypeCourseByIdRequest
+  ): Promise<any> {
     try {
       const type = await prisma.typeCourse.findUnique({
-        where: { id },
+        where: { id: request.id },
       });
       if (!type) {
         throw new ErrorResponse("Type course not found", 404, ["id"]);
@@ -66,19 +73,16 @@ export class TypeCourseService {
       );
     }
   }
-
-  // Update an existing TypeCourse
-  static async updateTypeCourse(data: { id: number; typeName: string }) {
-    const { id, typeName } = data;
-
+  static async updateTypeCourse(
+    request: UpdateTypeCourseRequest
+  ): Promise<any> {
     try {
-      // Memastikan bahwa ID ada dan valid
       const updatedTypeCourse = await prisma.typeCourse.update({
         where: {
-          id: id, // ID harus dikirim dengan benar di where clause
+          id: request.id,
         },
         data: {
-          typeName: typeName, // Update typeName
+          typeName: request.typeName,
         },
       });
 
@@ -89,16 +93,18 @@ export class TypeCourseService {
     }
   }
 
-  static async deleteTypeCourse(id: number): Promise<void> {
+  static async deleteTypeCourse(
+    request: DeleteTypeCourseRequest
+  ): Promise<void> {
     try {
-      // Cek apakah ada course yang terhubung
       const relatedCourses = await prisma.course.findMany({
-        where: { typeCourseId: id },
-        select: { courseName: true, id: true }, // Menampilkan hanya nama dan ID course
+        where: { typeCourseId: request.id },
+        select: { courseName: true, id: true },
       });
 
       if (relatedCourses.length > 0) {
         const courseNames = relatedCourses
+          .slice(0, 5)
           .map((course) => course.courseName)
           .join(", ");
         throw new ErrorResponse(
@@ -106,10 +112,8 @@ export class TypeCourseService {
           400
         );
       }
-
-      // Sekarang hapus TypeCourse jika tidak ada yang terkait
       await prisma.typeCourse.delete({
-        where: { id },
+        where: { id: request.id },
       });
     } catch (error) {
       console.error("Error during type course deletion:", error);
