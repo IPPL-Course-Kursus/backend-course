@@ -13,11 +13,13 @@ const upload = multer({
 });
 
 courseRoute.get("/", CourseController.getAllCourses);
+courseRoute.get("/count", CourseController.countCoursesByType);
 courseRoute.get("/search/:search", CourseController.getCourseBySearch);
 courseRoute.get("/type/:typeId", CourseController.getCourseByType);
 courseRoute.get("/detail-course/:id", CourseController.getDetailCourse);
 courseRoute.get("/level/:levelId", CourseController.getCourseByLevel);
 courseRoute.get("/category/:categoryId", CourseController.getCourseByCategory);
+courseRoute.get("/popular", CourseController.getPopularCourses);
 courseRoute.get(
   "/:id",
   JWTMiddleware.verifyToken,

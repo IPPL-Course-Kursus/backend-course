@@ -11,10 +11,10 @@ export type UpdateCourseRequest = {
   courseName: string;
   aboutCourse: string;
   intendedFor: string;
-  courseDiscountPercent?: number;
+  courseDiscountPercent: number;
   coursePrice: number;
   publish: Publish;
-  certificateStatus?: boolean;
+  certificateStatus: boolean;
   totalDuration: number;
 };
 
@@ -25,9 +25,10 @@ export type CreateCourseRequest = {
   courseName: string;
   aboutCourse: string;
   intendedFor: string;
-  courseDiscountPercent?: number;
+  courseDiscountPercent: number;
   coursePrice: number;
   publish: Publish;
-  certificateStatus?: boolean;
+  image: string;
+  certificateStatus: boolean;
   totalDuration: number;
 };

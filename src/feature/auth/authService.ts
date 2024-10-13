@@ -304,6 +304,26 @@ export class AuthService {
     await confirmPasswordReset(auth, requests.oobCode, requests.newPassword);
   }
 
+  static async getCountUserByRole(): Promise<any> {
+    const userCount = await prisma.user.count({
+      where: {
+        role: "User",
+      },
+    });
+    const instrukturCount = await prisma.user.count({
+      where: {
+        role: "Instruktur",
+      },
+    });
+    if (!userCount || !instrukturCount) {
+      throw new ErrorResponse("User not found", 404, ["user_id"]);
+    }
+    return {
+      userCount,
+      instrukturCount,
+    };
+  }
+
   // static async uploadImage(image: any): Promise<any> {
   //   if (!image) {
   //     throw new ErrorResponse("Image is empty", 400, ["image"]);

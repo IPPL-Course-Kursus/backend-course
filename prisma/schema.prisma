@@ -133,12 +133,13 @@ model Content {
   duration String
   teks String
   interpreterStatus Boolean
-  contentStatus Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  userContentProgress UserContentProgress[]
   chapter Chapter @relation(fields: [chapterId], references: [id])
   interpreter Interpreter? @relation(fields: [interpreterId], references: [id])
+
 
   @@map("contents")
 }
@@ -156,18 +157,33 @@ model Interpreter {
 
 model CourseUser {
   id Int @id @default(autoincrement())
-  userId String @unique
+  userId String
   courseId Int @unique
   contentFinish Float @default(0)
   courseStatus CourseStatus @default(NotStarted)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  userContentProgress UserContentProgress[]
   certificate Certificate[]
 
   user User @relation(fields: [userId], references: [uid])
   course Course @relation(fields: [courseId], references: [id])
 
   @@map("course_users")
+}
+
+model UserContentProgress {
+  id              Int      @id @default(autoincrement())
+  courseUserId   Int  
+  contentId      Int     
+  contentStatus   Boolean @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  courseUser     CourseUser @relation(fields: [courseUserId], references: [id])
+  content        Content     @relation(fields: [contentId], references: [id])
+
+  @@map("user_content_progress")
 }
 
 model Certificate {
@@ -185,15 +201,15 @@ model Certificate {
 
 model Transaction {
   id Int @id @default(autoincrement())
-  userId String @unique
-  courseId Int @unique
+  userId String 
+  courseId Int 
   courseName String
-  orderId Int
+  orderId String @unique
   ppn Float
   price Float
   totalPrice Float
   paymentStatus PaymentStatus
-  paymentMethod PaymentMethod
+  paymentMethod String
   linkPayment String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -232,13 +248,17 @@ enum CourseStatus {
 }
 
 enum PaymentStatus {
-  Pending
-  Success
-  Failed
+  pending
+  success
+  failure
+  expire
+  cancel
+  deny
+  settlement
+  capture
 }
 
-enum PaymentMethod {
-  Debit
-  Credit
-  Qris
-}
+// enum PaymentMethod {
+//   snapMidtrans
+//   Free
+// }

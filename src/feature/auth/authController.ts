@@ -246,6 +246,24 @@ export class AuthController {
     }
   }
 
+  static async getCountUserByRole(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const response = await AuthService.getCountUserByRole();
+      return res.status(200).json({
+        success: true,
+        message: "Get all user by role successful",
+        data: response,
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
   // static async uploadImage(req: Request, res: Response, next: NextFunction) {
   //   try {
   //     const image = req.file;

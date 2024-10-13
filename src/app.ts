@@ -9,6 +9,7 @@ import courseUserRoute from "./feature/courseUser/courseUserRoute";
 import typeCourseRoute from "./feature/typeCourse/typeCourseRoute";
 import categoryRoute from "./feature/category/categoryRoute";
 import courseLevelRoute from "./feature/courseLevel/courseLevelRoute";
+import transactionRoute from "./feature/transaction/transactionRoute";
 import morgan from "morgan";
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use("/course-user", courseUserRoute);
 app.use("/type-course", typeCourseRoute);
 app.use("/category", categoryRoute);
 app.use("/course-level", courseLevelRoute);
+app.use("/transaction", transactionRoute);
 
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);

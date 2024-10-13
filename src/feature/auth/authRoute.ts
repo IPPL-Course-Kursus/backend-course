@@ -47,6 +47,8 @@ authRoute.get("/home", JWTMiddleware.verifyToken, (req, res) => {
   res.send("Success");
 });
 
+authRoute.get("/count-by-role", AuthController.getCountUserByRole);
+
 // authRoute.post(
 //   "/upload-image",
 //   upload.single("image"),

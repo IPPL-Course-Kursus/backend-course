@@ -5,15 +5,15 @@ import { CourseUserController } from "./courseUserController";
 const courseUserRoute: Router = Router();
 
 courseUserRoute.get(
-  "/:uid",
+  "/",
   JWTMiddleware.verifyToken,
   CourseUserController.getCourseUser
 );
 
-courseUserRoute.post(
-  "/",
+courseUserRoute.get(
+  "/detail/:id",
   JWTMiddleware.verifyToken,
-  CourseUserController.createCourseUser
+  CourseUserController.getCourseUserDetail
 );
 
 export default courseUserRoute;

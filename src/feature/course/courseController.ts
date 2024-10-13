@@ -200,4 +200,32 @@ export class CourseController {
       next(error);
     }
   }
+
+  static async countCoursesByType(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const count = await CourseService.countCoursesByType();
+      res
+        .status(200)
+        .json({ messege: "success get course by type", data: count });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getPopularCourses(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const courses = await CourseService.getPopularCourses();
+      res.status(200).json(courses);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

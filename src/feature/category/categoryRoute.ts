@@ -13,29 +13,9 @@ const upload = multer({
 });
 
 categoryRoute.get("/", CategoryController.getAllCategories);
-categoryRoute.post(
-  "/create-category",
-  JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
-  CategoryController.createCategory
-);
-categoryRoute.get(
-  "/:id",
-  JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
-  CategoryController.getCategoryById
-);
-categoryRoute.delete(
-  "/delete-category/:id",
-  JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
-  CategoryController.deleteCategory
-);
-categoryRoute.put(
-  "/update-category/:id",
-  JWTMiddleware.verifyToken,
-  JWTMiddleware.adminOnly,
-  CategoryController.updateCategory
-);
+categoryRoute.post("/create-category", CategoryController.createCategory);
+categoryRoute.get("/:id", CategoryController.getCategoryById);
+categoryRoute.delete("/delete-category/:id", CategoryController.deleteCategory);
+categoryRoute.put("/update-category/:id", CategoryController.updateCategory);
 
 export default categoryRoute;

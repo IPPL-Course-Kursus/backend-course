@@ -233,11 +233,20 @@ export class CourseService {
 
     const typeCourse = await prisma.typeCourse.findUnique({
       where: { id: data.typeCourseId },
+      select: { typeName: true },
     });
 
     if (!typeCourse) {
       throw new ErrorResponse("Type course not found", 404);
     }
+
+    if (
+      typeCourse.typeName === "Free" &&
+      (data.coursePrice > 0 || data.courseDiscountPercent > 0)
+    ) {
+      throw new ErrorResponse("Free courses cannot have a price", 400);
+    }
+
     const category = await prisma.category.findUnique({
       where: { id: data.categoryId },
       select: { categoryCode: true },
@@ -301,12 +310,12 @@ export class CourseService {
         userId: uid,
         courseCode: uniqueCourseCode,
         courseName: data.courseName,
-        image: imageUrl,
+        image: imageUrl || data.image,
         aboutCourse: data.aboutCourse,
         intendedFor: data.intendedFor,
-        courseDiscountPercent: data.courseDiscountPercent,
+        courseDiscountPercent: data.courseDiscountPercent || 0,
         courseDiscountPrice: courseDiscountPrice,
-        coursePrice: data.coursePrice,
+        coursePrice: data.coursePrice || 0,
         promoStatus: promoStatus,
         publish: data.publish,
         certificateStatus: data.certificateStatus,
@@ -465,5 +474,69 @@ export class CourseService {
     }
 
     return courses;
+  }
+
+  static async countCoursesByType(): Promise<any> {
+    const typeCourses = await prisma.typeCourse.findMany({
+      select: {
+        id: true,
+        typeName: true,
+      },
+    });
+
+    if (typeCourses.length === 0) {
+      throw new ErrorResponse("No type courses found", 404);
+    }
+
+    const courseCounts: { [key: string]: number } = {};
+
+    for (const typeCourse of typeCourses) {
+      const count = await prisma.course.count({
+        where: {
+          typeCourseId: typeCourse.id,
+          publish: "Published",
+        },
+      });
+
+      courseCounts[typeCourse.typeName] = count;
+    }
+
+    return courseCounts;
+  }
+
+  static async getPopularCourses(): Promise<any> {
+    const popularCourses = await prisma.transaction.groupBy({
+      by: ["courseId"],
+      _count: {
+        courseId: true,
+      },
+      orderBy: {
+        _count: {
+          courseId: "desc",
+        },
+      },
+    });
+
+    const courseIds = popularCourses.map((course) => course.courseId);
+
+    const courses = await prisma.course.findMany({
+      where: {
+        id: {
+          in: courseIds,
+        },
+      },
+    });
+
+    const result = courses.map((course) => {
+      const count =
+        popularCourses.find((p) => p.courseId === course.id)?._count.courseId ||
+        0;
+      return {
+        ...course,
+        purchaseCount: count,
+      };
+    });
+
+    return result;
   }
 }

@@ -21,7 +21,15 @@ export class CategoryService {
   static async createCategory(
     request: createCategoryRequest,
     file: any
-  ): Promise<void> {
+  ): Promise<any> {
+    if (!request.categoryName || typeof request.categoryName !== "string") {
+      throw new ErrorResponse(
+        "Category name is required and must be a string",
+        400,
+        ["categoryName"]
+      );
+    }
+
     const checkCategory = await prisma.category.findFirst({
       where: {
         OR: [
@@ -58,7 +66,7 @@ export class CategoryService {
       data: {
         categoryName: request.categoryName,
         categoryCode: request.categoryCode,
-        image: imageUrl,
+        image: request.image || imageUrl,
       },
     });
   }
@@ -104,14 +112,6 @@ export class CategoryService {
   }
 
   static async deleteCategory(id: number): Promise<void> {
-    const category = await prisma.category.findUnique({
-      where: { id },
-    });
-
-    if (!category) {
-      throw new ErrorResponse("Category not found", 404, ["id"]);
-    }
-
     const relatedCourses = await prisma.course.findMany({
       where: { categoryId: id },
     });
