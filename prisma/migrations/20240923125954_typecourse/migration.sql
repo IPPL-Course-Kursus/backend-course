@@ -115,7 +115,7 @@ CREATE TABLE "contents" (
 );
 
 -- CreateTable
-CREATE TABLE "interpreters" (
+CREATE TABLE "interpreters" (w
     "id" SERIAL NOT NULL,
     "languageInterpreter" "LanguageInterpreter" NOT NULL,
     "sourceCode" TEXT NOT NULL,
