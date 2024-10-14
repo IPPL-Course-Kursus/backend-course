@@ -1,72 +1,94 @@
-import { Request, Response } from 'express';
-import { 
-  createInterpreterService, 
-  getInterpretersService, 
-  getInterpreterByIdService, 
-  updateInterpreterService, 
-  deleteInterpreterService 
-} from './interpreterService';
+import { Request, Response, NextFunction } from 'express';
+import { InterpreterService } from './interpreterService'; // Sesuaikan path sesuai kebutuhan
 import { LanguageInterpreter } from '@prisma/client';
 
-export const createInterpreterController = async (req: Request, res: Response) => {
-  try {
-    const { languageInterpreter, sourceCode } = req.body;
 
-    // Validasi languageInterpreter untuk memastikan sesuai dengan enum
-    if (!Object.values(LanguageInterpreter).includes(languageInterpreter)) {
-      return res.status(400).json({ error: 'Invalid languageInterpreter value' });
+export class InterpreterController {
+  
+  // Create a new interpreter
+  static async createInterpreter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { languageInterpreter, sourceCode } = req.body;
+
+      // Validasi languageInterpreter
+      if (!Object.values(LanguageInterpreter).includes(languageInterpreter)) {
+        return res.status(400).json({ error: 'Invalid languageInterpreter value' });
+      }
+
+      await InterpreterService.createInterpreter({ languageInterpreter, sourceCode });
+      return res.status(201).json({
+        success: true,
+        message: 'Interpreter created successfully!',
+      });
+    } catch (error) {
+      next(error); // Mengirimkan kesalahan ke middleware error handling
     }
-
-    const newInterpreter = await createInterpreterService(languageInterpreter, sourceCode);
-    res.status(201).json(newInterpreter);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create interpreter' });
   }
-};
 
-export const getInterpretersController = async (req: Request, res: Response) => {
-  try {
-    const interpreters = await getInterpretersService();
-    res.status(200).json(interpreters);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve interpreters' });
-  }
-};
-
-export const getInterpreterByIdController = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const interpreter = await getInterpreterByIdService(Number(id));
-    if (!interpreter) return res.status(404).json({ error: 'Interpreter not found' });
-    res.status(200).json(interpreter);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve interpreter' });
-  }
-};
-
-export const updateInterpreterController = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { languageInterpreter, sourceCode } = req.body;
-
-    // Validasi languageInterpreter sebelum update
-    if (!Object.values(LanguageInterpreter).includes(languageInterpreter)) {
-      return res.status(400).json({ error: 'Invalid languageInterpreter value' });
+  // Get all interpreters
+  static async getAllInterpreters(req: Request, res: Response, next: NextFunction) {
+    try {
+      const interpreters = await InterpreterService.getAllInterpreters();
+      return res.status(200).json({
+        success: true,
+        data: interpreters,
+      });
+    } catch (error) {
+      next(error);
     }
-
-    const updatedInterpreter = await updateInterpreterService(Number(id), languageInterpreter, sourceCode);
-    res.status(200).json(updatedInterpreter);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update interpreter' });
   }
-};
 
-export const deleteInterpreterController = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    await deleteInterpreterService(Number(id));
-    res.status(200).json({ message: 'Interpreter deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete interpreter' });
+  // Get an interpreter by ID
+  static async getInterpreterById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const interpreter = await InterpreterService.getInterpreterById(Number(id));
+
+      if (!interpreter) {
+        return res.status(404).json({ success: false, message: 'Interpreter not found' });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: interpreter,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-};
+
+  // Update an existing interpreter
+  static async updateInterpreter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { languageInterpreter, sourceCode } = req.body;
+
+      // Validasi languageInterpreter
+      if (!Object.values(LanguageInterpreter).includes(languageInterpreter)) {
+        return res.status(400).json({ error: 'Invalid languageInterpreter value' });
+      }
+
+      await InterpreterService.updateInterpreter({ id: Number(id), languageInterpreter, sourceCode });
+      return res.status(200).json({
+        success: true,
+        message: 'Interpreter updated successfully!',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Delete an interpreter by ID
+  static async deleteInterpreter(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      await InterpreterService.deleteInterpreter(Number(id));
+      return res.status(200).json({
+        success: true,
+        message: 'Interpreter deleted successfully!',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}

@@ -1,12 +1,36 @@
 import { Router } from 'express';
-import { createInterpreterController, getInterpretersController, getInterpreterByIdController, updateInterpreterController, deleteInterpreterController } from './interpreterController';
+import { InterpreterController } from './interpreterController'; // Sesuaikan path sesuai kebutuhan
 
-const router = Router();
+const interpreterRoute: Router = Router();
 
-router.post('/', createInterpreterController);         // Create
-router.get('/', getInterpretersController);            // Get all
-router.get('/:id', getInterpreterByIdController);     // Get by ID
-router.put('/:id', updateInterpreterController);      // Update
-router.delete('/:id', deleteInterpreterController);   // Delete
+// Create a new interpreter
+interpreterRoute.post(
+  '/',
+  InterpreterController.createInterpreter
+);
 
-export default router;
+// Get all interpreters
+interpreterRoute.get(
+  '/',
+  InterpreterController.getAllInterpreters
+);
+
+// Get a specific interpreter by ID
+interpreterRoute.get(
+  '/:id',
+  InterpreterController.getInterpreterById
+);
+
+// Update an interpreter by ID
+interpreterRoute.put(
+  '/:id',
+  InterpreterController.updateInterpreter
+);
+
+// Delete an interpreter by ID
+interpreterRoute.delete(
+  '/:id',
+  InterpreterController.deleteInterpreter
+);
+
+export default interpreterRoute;
