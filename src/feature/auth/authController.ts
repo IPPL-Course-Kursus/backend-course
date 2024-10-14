@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { ZodError } from "zod";
 import { AuthService } from "./authService";
 
 export class AuthController {
@@ -8,9 +9,22 @@ export class AuthController {
       await AuthService.register(data);
       return res.status(201).json({
         success: true,
-        message: "Verification email sent! User created successfully!",
+        message:
+          "Registarion User Successful.Verification email sent! User created successfully!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -25,9 +39,22 @@ export class AuthController {
       await AuthService.registerInstruktur(data);
       return res.status(201).json({
         success: true,
-        message: "Verification email sent! User created successfully!",
+        message:
+          "Registarion instruktur Successful. Verification email sent! User created successfully!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -45,6 +72,18 @@ export class AuthController {
         },
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
@@ -74,7 +113,168 @@ export class AuthController {
         message: "Reset password email sent!",
       });
     } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
       next(error);
     }
   }
+
+  static async getProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.user;
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const response = await AuthService.getProfile(user.uid);
+      return res.status(200).json({
+        success: true,
+        message: "Get profile successful",
+        data: {
+          ...response,
+          email: user.email,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.user;
+      const data = req.body;
+      const image = req.file;
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const response = await AuthService.updateProfile(user.uid, data, image);
+      return res.status(200).json({
+        success: true,
+        message: "Update profile successful",
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.user;
+      const data = req.body;
+      await AuthService.changePassword(user.uid, user.email, data);
+      res.status(200).json({ message: "Password changed successfully!" });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await AuthService.resetPassword(data);
+      return res.status(200).json({
+        success: true,
+        message: "Password has been reset successfully!",
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const formattedErrors = error.issues.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
+        return res.status(400).json({
+          success: false,
+          message: "Validation failed",
+          errors: formattedErrors,
+        });
+      }
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+      await AuthService.verifyEmail(data);
+      return res.status(200).json({
+        success: true,
+        message: "Email has been verified successfully!",
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async getCountUserByRole(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const response = await AuthService.getCountUserByRole();
+      return res.status(200).json({
+        success: true,
+        message: "Get all user by role successful",
+        data: response,
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  // static async uploadImage(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const image = req.file;
+  //     const response = await AuthService.uploadImage(image);
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: response,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     next(error);
+  //   }
+  // }
 }

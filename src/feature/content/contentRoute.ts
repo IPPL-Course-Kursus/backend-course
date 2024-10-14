@@ -1,20 +1,36 @@
-// src/feature/content/contentRoute.ts
-
 import { Router } from 'express';
-import {
-  createNewContent,
-  getAllContents,
-  getSingleContent,
-  modifyContent,
-  removeContent,
-} from './contentController';
+import { ContentController } from './contentController'; // Sesuaikan path sesuai kebutuhan
 
-const router = Router();
+const contentRoute: Router = Router();
 
-router.post('/', createNewContent);       // Create Content
-router.get('/', getAllContents);          // Get all Contents
-router.get('/:id', getSingleContent);    // Get Content by ID
-router.put('/:id', modifyContent);       // Update Content
-router.delete('/:id', removeContent);    // Delete Content
+// Create a new content
+contentRoute.post(
+  '/',
+  ContentController.createContent
+);
 
-export default router;
+// Get all contents
+contentRoute.get(
+  '/',
+  ContentController.getAllContents
+);
+
+// Get a specific content by ID
+contentRoute.get(
+  '/:id',
+  ContentController.getContentById
+);
+
+// Update a content by ID
+contentRoute.put(
+  '/:id',
+  ContentController.updateContent
+);
+
+// Delete a content by ID
+contentRoute.delete(
+  '/:id',
+  ContentController.deleteContent
+);
+
+export default contentRoute;

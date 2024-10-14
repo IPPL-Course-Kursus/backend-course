@@ -1,31 +1,33 @@
 import express, { Express } from "express";
-
+import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { ErrorMiddleware } from "./middleware/error_middleware";
 import authRoute from "./feature/auth/authRoute";
-import typeCourseRoute from "./feature/typeCourse/typeCourseRoute";
-import contentRoutes from './feature/content/contentRoute';
-
+import contentRoute from "./feature/content/contentRoute"; // Import route untuk content
+import morgan from "morgan";
 
 dotenv.config();
 const app: Express = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(morgan("dev"));
+
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+
+// Gunakan route untuk authentication
 app.use("/auth", authRoute);
 
-app.use('/api/type-courses', typeCourseRoute);
-app.use('/contents', contentRoutes);
+// Gunakan route untuk content
+app.use("/content", contentRoute); // Tambahkan route ini
 
-
-
-
-
+// Middleware untuk menangani error
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);
 

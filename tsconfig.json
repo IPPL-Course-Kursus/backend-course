@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types" // Tambahkan ini jika diperlukan
+    ],
     "resolveJsonModule": true,
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

@@ -39,7 +39,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  transaction Transaction?
+  transaction Transaction[]
   // auth Auth?
   course Course[]
   courseUser CourseUser[]
@@ -49,27 +49,30 @@ model User {
 
 model Course {
   id Int @id @default(autoincrement())
-  categoryId Int @unique
-  userId Int @unique
-  courseLevelId Int @unique
-  typeCourseId Int @unique
-  courseCode String
+  categoryId Int 
+  userId String 
+  courseLevelId Int 
+  typeCourseId Int 
+  courseCode String @unique
   courseName String
   image String
   aboutCourse String
   intendedFor String
-  courseDiscountPercent Int
+  courseDiscountPercent Int @default(0)
   coursePrice Float
-  rating Float
+  courseDiscountPrice Float @default(0)
+  promoStatus Boolean @default(false) 
   publish Publish
+  totalDuration Float @default(0)
+  certificateStatus Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   chapters Chapter[]
   courseUser CourseUser[]
-  transaction Transaction?
+  transaction Transaction[]
   category Category @relation(fields: [categoryId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [uid])
   courseLevel CourseLevel @relation(fields: [courseLevelId], references: [id])
   typeCourse TypeCourse @relation(fields: [typeCourseId], references: [id])
 
@@ -79,10 +82,11 @@ model Course {
 model Category {
   id Int @id @default(autoincrement())
   categoryName String
+  categoryCode String @unique
   image String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  course Course?
+  course Course[]
 
   @@map("categories")
 }
@@ -92,7 +96,7 @@ model CourseLevel {
   levelName String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  course Course?
+  course Course[]
 
   @@map("course_levels")
 }
@@ -102,14 +106,14 @@ model TypeCourse {
   typeName String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  course Course?
+  course Course[]
 
   @@map("type_courses")
 }
 
 model Chapter {
   id Int @id @default(autoincrement())
-  courseId Int @unique
+  courseId Int 
   chapterTitle String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -122,19 +126,20 @@ model Chapter {
 
 model Content {
   id Int @id @default(autoincrement())
-  chapterId Int @unique
-  interpreterId Int @unique
+  chapterId Int
+  interpreterId Int?
   contentTitle String
   contentUrl String
   duration String
   teks String
   interpreterStatus Boolean
-  contentStatus Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  userContentProgress UserContentProgress[]
   chapter Chapter @relation(fields: [chapterId], references: [id])
-  interpreter Interpreter @relation(fields: [interpreterId], references: [id])
+  interpreter Interpreter? @relation(fields: [interpreterId], references: [id])
+
 
   @@map("contents")
 }
@@ -145,25 +150,40 @@ model Interpreter {
   sourceCode String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  content Content?
+  content Content[]
 
   @@map("interpreters")
 }
 
 model CourseUser {
   id Int @id @default(autoincrement())
-  userId Int @unique
+  userId String
   courseId Int @unique
-  contentFinish Float
-  courseStatus CourseStatus 
+  contentFinish Float @default(0)
+  courseStatus CourseStatus @default(NotStarted)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  certificate Certificate?
+  userContentProgress UserContentProgress[]
+  certificate Certificate[]
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [uid])
   course Course @relation(fields: [courseId], references: [id])
 
   @@map("course_users")
+}
+
+model UserContentProgress {
+  id              Int      @id @default(autoincrement())
+  courseUserId   Int  
+  contentId      Int     
+  contentStatus   Boolean @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  courseUser     CourseUser @relation(fields: [courseUserId], references: [id])
+  content        Content     @relation(fields: [contentId], references: [id])
+
+  @@map("user_content_progress")
 }
 
 model Certificate {
@@ -181,20 +201,20 @@ model Certificate {
 
 model Transaction {
   id Int @id @default(autoincrement())
-  userId Int @unique
-  courseId Int @unique
+  userId String 
+  courseId Int 
   courseName String
-  orderId Int
+  orderId String @unique
   ppn Float
   price Float
   totalPrice Float
   paymentStatus PaymentStatus
-  paymentMethod PaymentMethod
+  paymentMethod String
   linkPayment String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [uid])
   course Course @relation(fields: [courseId], references: [id])
 
   @@map("transactions")
@@ -228,13 +248,17 @@ enum CourseStatus {
 }
 
 enum PaymentStatus {
-  Pending
-  Success
-  Failed
+  pending
+  success
+  failure
+  expire
+  cancel
+  deny
+  settlement
+  capture
 }
 
-enum PaymentMethod {
-  Debit
-  Credit
-  Qris
-}
+// enum PaymentMethod {
+//   snapMidtrans
+//   Free
+// }
