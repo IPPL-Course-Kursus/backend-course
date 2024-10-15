@@ -127,11 +127,12 @@ export class CourseController {
     try {
       const { id } = req.params;
       const courseId = parseInt(id, 10);
+      const user = res.locals.user;
 
       if (isNaN(courseId)) {
         return res.status(400).json({ message: "Invalid course ID" });
       }
-      await CourseService.deleteCourse(courseId);
+      await CourseService.deleteCourse(courseId, user.uid);
       res.status(200).json({ message: "Course deleted successfully" });
     } catch (error) {
       next(error);
@@ -223,6 +224,24 @@ export class CourseController {
   ) {
     try {
       const courses = await CourseService.getPopularCourses();
+      res.status(200).json(courses);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAllCoursesByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = res.locals.user;
+      if (!user || !user.uid) {
+        return res.status(400).json({ message: "User not found or invalid" });
+      }
+
+      const courses = await CourseService.getAllCoursesByUserId(user.uid);
       res.status(200).json(courses);
     } catch (error) {
       next(error);

@@ -26,6 +26,14 @@ export class TransactionService {
       throw new Error("User not found");
     }
 
+    const relatedCourseUser = await prisma.courseUser.findMany({
+      where: { userId, courseId },
+    });
+
+    if (relatedCourseUser.length > 0) {
+      throw new Error("CourseUser already exists");
+    }
+
     let priceCourse = course.promoStatus
       ? course.courseDiscountPrice
       : course.coursePrice;

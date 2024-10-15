@@ -5,7 +5,7 @@ import { JWTMiddleware } from "../../middleware/jwt_middleware";
 const typeCourseRoute: Router = Router();
 
 typeCourseRoute.post(
-  "/create-type-course/",
+  "/create-type-course",
   JWTMiddleware.verifyToken,
   JWTMiddleware.adminOnly,
   TypeCourseController.createTypeCourse

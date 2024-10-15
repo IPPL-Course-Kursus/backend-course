@@ -9,7 +9,7 @@ courseLevelRoute.get("/", CourseLevelController.getAllCourseLevels);
 courseLevelRoute.get("/:id", CourseLevelController.getCourseLevelById);
 
 courseLevelRoute.post(
-  "/create-course-level/",
+  "/create-course-level",
   JWTMiddleware.verifyToken,
   JWTMiddleware.adminOnly,
   CourseLevelController.createCourseLevel

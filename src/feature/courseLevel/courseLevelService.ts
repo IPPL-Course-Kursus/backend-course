@@ -52,7 +52,7 @@ export class CourseLevelService {
     }
 
     const relatedCourses = await prisma.course.findMany({
-      where: { id },
+      where: { courseLevelId: id },
     });
     if (relatedCourses.length > 0) {
       const courseNames = relatedCourses

@@ -9,7 +9,11 @@ import { imagekit } from "../../utils/image_kit";
 
 export class CategoryService {
   static async getAllCategories(): Promise<any> {
-    const categories = await prisma.category.findMany();
+    const categories = await prisma.category.findMany({
+      orderBy: {
+        id: "asc",
+      },
+    });
 
     if (categories.length === 0) {
       throw new ErrorResponse("No categories found", 404);

@@ -1,19 +1,29 @@
 import { Router } from "express";
 import { JWTMiddleware } from "../../middleware/jwt_middleware";
 import { CourseUserController } from "./courseUserController";
+import { J } from "@faker-js/faker/dist/airline-C5Qwd7_q";
 
 const courseUserRoute: Router = Router();
 
 courseUserRoute.get(
   "/",
   JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
   CourseUserController.getCourseUser
 );
 
 courseUserRoute.get(
   "/detail/:id",
   JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
   CourseUserController.getCourseUserDetail
+);
+
+courseUserRoute.put(
+  "/course/:courseId/progress/content/:contentId",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
+  CourseUserController.updateCourseProgress
 );
 
 export default courseUserRoute;

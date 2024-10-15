@@ -10,6 +10,9 @@ import typeCourseRoute from "./feature/typeCourse/typeCourseRoute";
 import categoryRoute from "./feature/category/categoryRoute";
 import courseLevelRoute from "./feature/courseLevel/courseLevelRoute";
 import transactionRoute from "./feature/transaction/transactionRoute";
+import courseCertificateRoute from "./feature/courseCertificate/courseCertificateRoute";
+import chapteryRoute from "./feature/chapter/chapterRoute";
+import contentRoute from "./feature/content/contentRoute";
 import morgan from "morgan";
 
 dotenv.config();
@@ -32,6 +35,9 @@ app.use("/type-course", typeCourseRoute);
 app.use("/category", categoryRoute);
 app.use("/course-level", courseLevelRoute);
 app.use("/transaction", transactionRoute);
+app.use("/certificate", courseCertificateRoute);
+app.use("/chapter", chapteryRoute);
+app.use("/content", contentRoute);
 
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);

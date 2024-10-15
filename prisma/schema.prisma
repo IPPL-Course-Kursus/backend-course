@@ -113,6 +113,7 @@ model TypeCourse {
 
 model Chapter {
   id Int @id @default(autoincrement())
+  sort Int 
   courseId Int 
   chapterTitle String
   createdAt DateTime @default(now())
@@ -126,13 +127,14 @@ model Chapter {
 
 model Content {
   id Int @id @default(autoincrement())
+  sort Int
   chapterId Int
-  interpreterId Int?
+  interpreterId Int? 
   contentTitle String
   contentUrl String
-  duration String
+  duration Int
   teks String
-  interpreterStatus Boolean
+  interpreterStatus Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -158,7 +160,7 @@ model Interpreter {
 model CourseUser {
   id Int @id @default(autoincrement())
   userId String
-  courseId Int @unique
+  courseId Int 
   contentFinish Float @default(0)
   courseStatus CourseStatus @default(NotStarted)
   createdAt DateTime @default(now())
@@ -189,6 +191,7 @@ model UserContentProgress {
 model Certificate {
   id Int @id @default(autoincrement())
   courseUserId Int @unique
+  fullName String
   certificateNumber String
   issueDate DateTime
   createdAt DateTime @default(now())

@@ -20,6 +20,9 @@ export class CourseService {
           },
         },
       },
+      orderBy: {
+        id: "asc",
+      },
     });
 
     if (courses.length === 0) {
@@ -414,13 +417,35 @@ export class CourseService {
     });
   }
 
-  static async deleteCourse(id: number): Promise<any> {
+  static async deleteCourse(id: number, uid: string): Promise<any> {
     const course = await prisma.course.findUnique({
       where: { id },
     });
 
     if (!course) {
       throw new ErrorResponse("Course not found", 404);
+    }
+
+    const relatedChapters = await prisma.chapter.findMany({
+      where: { courseId: id },
+    });
+
+    if (relatedChapters.length > 0) {
+      const chapterNames = relatedChapters
+        .slice(0, 5)
+        .map((chapter) => chapter.chapterTitle)
+        .join(", ");
+      throw new ErrorResponse(
+        `Cannot delete type course: it is referenced by existing courses: ${chapterNames}.`,
+        400
+      );
+    }
+
+    if (course.userId !== uid) {
+      throw new ErrorResponse(
+        "You are not authorized to delete this course",
+        403
+      );
     }
 
     await prisma.course.delete({
@@ -505,7 +530,7 @@ export class CourseService {
   }
 
   static async getPopularCourses(): Promise<any> {
-    const popularCourses = await prisma.transaction.groupBy({
+    const popularCourses = await prisma.courseUser.groupBy({
       by: ["courseId"],
       _count: {
         courseId: true,
@@ -518,14 +543,29 @@ export class CourseService {
     });
 
     const courseIds = popularCourses.map((course) => course.courseId);
-
     const courses = await prisma.course.findMany({
       where: {
         id: {
           in: courseIds,
         },
+        publish: "Published",
+      },
+      include: {
+        user: true,
+        courseLevel: true,
+        typeCourse: true,
+        category: true,
+        _count: {
+          select: {
+            chapters: true,
+          },
+        },
       },
     });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No popular courses found", 404);
+    }
 
     const result = courses.map((course) => {
       const count =
@@ -537,6 +577,66 @@ export class CourseService {
       };
     });
 
+    result.sort((a, b) => b.purchaseCount - a.purchaseCount);
+
     return result;
+  }
+
+  static async getAllCoursesByUserId(userId: string): Promise<any> {
+    const allCourses = await prisma.course.findMany({
+      where: {
+        publish: "Published",
+      },
+      include: {
+        user: true,
+        courseLevel: true,
+        typeCourse: true,
+        category: true,
+        _count: {
+          select: {
+            chapters: true,
+          },
+        },
+      },
+    });
+
+    const enrolledCourses = await prisma.courseUser.findMany({
+      where: { userId: userId },
+      select: {
+        userId: true,
+        courseId: true,
+        contentFinish: true,
+        courseStatus: true,
+      },
+    });
+
+    const enrolledCourseIdsSet = new Set(
+      enrolledCourses.map((enrolledCourse) => enrolledCourse.courseId)
+    );
+
+    const coursesWithEnrollmentStatus = allCourses.map((course) => {
+      const enrolledCourse = enrolledCourses.find(
+        (enrolled) => enrolled.courseId === course.id
+      );
+
+      return {
+        ...course,
+        isEnrolled: enrolledCourseIdsSet.has(course.id),
+        contentFinish:
+          enrolledCourse && enrolledCourseIdsSet.has(course.id)
+            ? enrolledCourse.contentFinish
+            : undefined,
+        courseStatus:
+          enrolledCourse && enrolledCourseIdsSet.has(course.id)
+            ? enrolledCourse.courseStatus
+            : undefined,
+      };
+    });
+
+    if (coursesWithEnrollmentStatus.length === 0) {
+      throw new ErrorResponse("No courses found", 404);
+    }
+
+    return coursesWithEnrollmentStatus;
   }
 }

@@ -51,17 +51,28 @@ export class CourseUserService {
                 contents: {
                   include: {
                     interpreter: true,
+                    userContentProgress: {
+                      where: { courseUserId: id },
+                    },
                   },
                 },
               },
             },
           },
         },
+        userContentProgress: true,
       },
     });
 
     if (!courseUser) {
       throw new ErrorResponse("CourseUser not found", 404);
+    }
+
+    if (courseUser.courseStatus === "NotStarted") {
+      await prisma.courseUser.update({
+        where: { id: courseUser.id },
+        data: { courseStatus: "InProgress", contentFinish: 0 },
+      });
     }
 
     return courseUser;
@@ -95,41 +106,18 @@ export class CourseUserService {
       throw new ErrorResponse("CourseUser not found", 404);
     }
 
-    if (courseUser.courseStatus === "NotStarted") {
-      await prisma.courseUser.update({
-        where: { id: courseUser.id },
-        data: { courseStatus: "InProgress", contentFinish: 0 },
-      });
-    }
-
     const totalContent = courseUser.course.chapters.reduce(
       (sum, chapter) => sum + chapter.contents.length,
       0
     );
 
-    const contentProgress = await prisma.userContentProgress.findFirst({
-      where: {
+    await prisma.userContentProgress.create({
+      data: {
         courseUserId: courseUser.id,
         contentId: contentId,
+        contentStatus: true,
       },
     });
-
-    if (contentProgress) {
-      if (!contentProgress.contentStatus) {
-        await prisma.userContentProgress.update({
-          where: { id: contentProgress.id },
-          data: { contentStatus: true },
-        });
-      }
-    } else {
-      await prisma.userContentProgress.create({
-        data: {
-          courseUserId: courseUser.id,
-          contentId: contentId,
-          contentStatus: true,
-        },
-      });
-    }
 
     const completedContent = await prisma.userContentProgress.count({
       where: {
@@ -144,6 +132,13 @@ export class CourseUserService {
       data: { contentFinish: progress },
     });
 
-    return { progress, completedContent, totalContent };
+    if (progress === 100) {
+      await prisma.courseUser.update({
+        where: { id: courseUser.id },
+        data: { courseStatus: "Completed" },
+      });
+    }
+
+    return { progress };
   }
 }
