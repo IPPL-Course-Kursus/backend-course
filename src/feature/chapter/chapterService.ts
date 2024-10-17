@@ -11,6 +11,14 @@ export class ChapterService {
       throw new ErrorResponse("Chapter title is required", 400);
     }
 
+    const existSort = await prisma.chapter.findFirst({
+      where: { courseId: courseId, sort: sort },
+    });
+
+    if (existSort) {
+      throw new ErrorResponse("Sort must be unique", 400);
+    }
+
     await prisma.chapter.create({
       data: {
         sort: sort,

@@ -21,6 +21,14 @@ export class ContentService {
       );
     }
 
+    const existSort = await prisma.content.findFirst({
+      where: { chapterId: chapterId, sort: data.sort },
+    });
+
+    if (existSort) {
+      throw new ErrorResponse("Sort must be unique", 400);
+    }
+
     await prisma.content.create({
       data: {
         sort: data.sort,

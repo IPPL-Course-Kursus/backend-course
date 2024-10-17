@@ -13,6 +13,7 @@ import transactionRoute from "./feature/transaction/transactionRoute";
 import courseCertificateRoute from "./feature/courseCertificate/courseCertificateRoute";
 import chapteryRoute from "./feature/chapter/chapterRoute";
 import contentRoute from "./feature/content/contentRoute";
+import interpreterRoute from "./feature/interpreter/interpreterRoute";
 import morgan from "morgan";
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use("/transaction", transactionRoute);
 app.use("/certificate", courseCertificateRoute);
 app.use("/chapter", chapteryRoute);
 app.use("/content", contentRoute);
+app.use("/interpreters", interpreterRoute);
 
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);

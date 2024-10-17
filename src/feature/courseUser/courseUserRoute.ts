@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { JWTMiddleware } from "../../middleware/jwt_middleware";
 import { CourseUserController } from "./courseUserController";
-import { J } from "@faker-js/faker/dist/airline-C5Qwd7_q";
 
 const courseUserRoute: Router = Router();
 

@@ -7,6 +7,7 @@ const transactionRoute: Router = Router();
 transactionRoute.post(
   "/create-transaction/:courseId",
   JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
   TransactionController.createTransaction
 );
 
@@ -18,6 +19,7 @@ transactionRoute.post(
 transactionRoute.get(
   "/user",
   JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
   TransactionController.getTransactionByUserId
 );
 

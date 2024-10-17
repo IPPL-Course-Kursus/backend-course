@@ -67,6 +67,12 @@ export class AuthService {
 
     const uid = userCredential.user.uid;
 
+    const findUser = await prisma.user.findFirst({ where: { fullName } });
+
+    if (findUser) {
+      throw new ErrorResponse("User already exists", 400, ["fullName"]);
+    }
+
     await prisma.user.create({
       data: {
         uid,
