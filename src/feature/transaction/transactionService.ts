@@ -1,6 +1,6 @@
 import midtransSnap from "../../utils/midtrans";
 import { prisma } from "../../application/database";
-import { Transaction } from "./transactionModel";
+import { ErrorResponse } from "../../models/error_response";
 
 export class TransactionService {
   static async createTransaction(
@@ -15,7 +15,7 @@ export class TransactionService {
     });
 
     if (!course) {
-      throw new Error("Course not found");
+      throw new ErrorResponse("Course not found", 400, ["course_id"]);
     }
 
     const user = await prisma.user.findUnique({
@@ -23,7 +23,12 @@ export class TransactionService {
     });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new ErrorResponse(
+        "User not found",
+        400,
+        ["user_id"],
+        "USER_NOT_FOUND"
+      );
     }
 
     const relatedCourseUser = await prisma.courseUser.findMany({
@@ -31,7 +36,10 @@ export class TransactionService {
     });
 
     if (relatedCourseUser.length > 0) {
-      throw new Error("CourseUser already exists");
+      throw new ErrorResponse("CourseUser already exists", 400, [
+        "user_id",
+        "course_id",
+      ]);
     }
 
     let priceCourse = course.promoStatus
@@ -132,7 +140,11 @@ export class TransactionService {
 
   static async handleSuccessPayment(order_id: string): Promise<any> {
     if (!order_id) {
-      throw new Error("Invalid request, missing required parameters");
+      throw new ErrorResponse(
+        "Invalid request, missing required parameters",
+        400,
+        ["order_id"]
+      );
     }
 
     const data = await midtransSnap.transaction.status(order_id);
@@ -150,7 +162,11 @@ export class TransactionService {
         where: { orderId: data.order_id },
       });
       if (!course) {
-        throw new Error("Transaction not found for the provided orderId");
+        throw new ErrorResponse(
+          "Transaction not found for the provided orderId",
+          400,
+          ["order_id"]
+        );
       }
       await prisma.courseUser.create({
         data: {
@@ -166,7 +182,7 @@ export class TransactionService {
   static async getAllTransactions(): Promise<any> {
     const transactions = await prisma.transaction.findMany();
     if (!transactions) {
-      throw new Error("No transactions found");
+      throw new ErrorResponse("No transactions found", 404, ["transactions"]);
     }
     return transactions;
   }
@@ -201,7 +217,7 @@ export class TransactionService {
     });
 
     if (!transactions) {
-      throw new Error("No transactions found");
+      throw new ErrorResponse("No transactions found", 404, ["transactions"]);
     }
 
     const transactionsWithTotalChapters = transactions.map((transaction) => ({

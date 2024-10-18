@@ -9,11 +9,14 @@ export class CourseCertificateService {
     });
 
     if (!courseUser || !courseUser.course) {
-      throw new Error("Course not found for the given courseUserId");
+      throw new ErrorResponse(
+        "Course not found for the given courseUserId",
+        404
+      );
     }
 
     if (courseUser.course.certificateStatus === false) {
-      throw new Error("Certificate disabled for this course");
+      throw new ErrorResponse("Certificate disabled for this course", 400);
     }
 
     const courseCode = courseUser.course.courseCode;

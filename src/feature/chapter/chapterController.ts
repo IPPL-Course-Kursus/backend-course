@@ -37,9 +37,8 @@ export class ChapterController {
   ) {
     try {
       const { courseId } = req.params;
-      const chapters = await ChapterService.getChapterByCourseId(
-        parseInt(courseId)
-      );
+      const courseIds = parseInt(courseId);
+      const chapters = await ChapterService.getChapterByCourseId(courseIds);
       res
         .status(200)
         .json({ message: "Chapter fetched successfully", data: chapters });
