@@ -144,6 +144,13 @@ export class AuthService {
       password
     );
 
+    if (!userCredential) {
+      throw new ErrorResponse("Invalid email or password", 400, [
+        "email",
+        "password",
+      ]);
+    }
+
     const user = userCredential.user;
 
     if (!user.emailVerified) {
