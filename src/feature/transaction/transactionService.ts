@@ -194,7 +194,11 @@ export class TransactionService {
           select: {
             image: true,
             courseName: true,
-            userId: true,
+            user: {
+              select: {
+                fullName: true,
+              },
+            },
             typeCourse: {
               select: {
                 typeName: true,
