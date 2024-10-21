@@ -6,10 +6,10 @@ import { ErrorMiddleware } from "./middleware/error_middleware";
 import authRoute from "./feature/auth/authRoute";
 import courseRoute from "./feature/course/courseRoute";
 import courseUserRoute from "./feature/courseUser/courseUserRoute";
-import typeCourseRoute from "./feature/typeCourse/typeCourseRoute";
 import categoryRoute from "./feature/category/categoryRoute";
 import courseLevelRoute from "./feature/courseLevel/courseLevelRoute";
 import transactionRoute from "./feature/transaction/transactionRoute";
+import chapterRoute from "./feature/chapter/chapterRoute";
 import morgan from "morgan";
 
 dotenv.config();
@@ -28,10 +28,10 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoute);
 app.use("/course", courseRoute);
 app.use("/course-user", courseUserRoute);
-app.use("/type-course", typeCourseRoute);
 app.use("/category", categoryRoute);
 app.use("/course-level", courseLevelRoute);
 app.use("/transaction", transactionRoute);
+app.use("/chapter", chapterRoute);
 
 app.use(ErrorMiddleware.notFound);
 app.use(ErrorMiddleware.returnError);
