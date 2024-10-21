@@ -228,6 +228,70 @@ export class TransactionService {
     return transactionsWithTotalChapters;
   }
 
+  static async getTransactionByInstructorId(userId: string): Promise<any> {
+    const courses = await prisma.course.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        courseName: true,
+        category: {
+          select: {
+            categoryName: true,
+          },
+        },
+        typeCourse: {
+          select: {
+            typeName: true,
+          },
+        },
+        courseLevel: {
+          select: {
+            levelName: true,
+          },
+        },
+        transaction: {
+          select: {
+            id: true,
+            orderId: true,
+            ppn: true,
+            price: true,
+            totalPrice: true,
+            paymentStatus: true,
+            paymentMethod: true,
+            linkPayment: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+      },
+    });
+
+    if (courses.length === 0) {
+      throw new ErrorResponse("No courses found for the instructor", 404, [
+        "instructor_id",
+      ]);
+    }
+
+    const transactions = courses.flatMap((course) =>
+      course.transaction.map((transaction) => ({
+        courseId: course.id,
+        courseName: course.courseName,
+        categoryName: course.category?.categoryName,
+        typeCourseName: course.typeCourse?.typeName,
+        courseLevelName: course.courseLevel?.levelName,
+        ...transaction,
+      }))
+    );
+
+    if (transactions.length === 0) {
+      throw new ErrorResponse("No transactions found for the instructor", 404, [
+        "transactions",
+      ]);
+    }
+
+    return transactions;
+  }
+
   //   static async handleMidtransNotification(notificationData: any): Promise<any> {
   //     const notification = await midtransCoreApi.transaction.notification(
   //       notificationData

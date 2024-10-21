@@ -25,6 +25,12 @@ transactionRoute.get(
 
 transactionRoute.get("/", TransactionController.getAllTransactions);
 
+transactionRoute.get(
+  "/instructor-transaction",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.instrukturOnly,
+  TransactionController.getTransactionByInstructorId
+);
 // transactionRoute.post(
 //   "/notifications",
 //   TransactionController.handleNotification

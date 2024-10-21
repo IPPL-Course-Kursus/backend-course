@@ -34,6 +34,14 @@ export class CategoryService {
       );
     }
 
+    if (!request.categoryCode || typeof request.categoryCode !== "string") {
+      throw new ErrorResponse(
+        "Category code is required and must be a string",
+        400,
+        ["categoryCode"]
+      );
+    }
+
     const checkCategory = await prisma.category.findFirst({
       where: {
         OR: [

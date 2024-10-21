@@ -85,6 +85,26 @@ export class TransactionController {
     }
   }
 
+  static async getTransactionByInstructorId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = res.locals.user;
+      const userId = user.uid;
+      const transactions =
+        await TransactionService.getTransactionByInstructorId(userId);
+      res.status(200).json({
+        success: true,
+        message: "Transactions retrieved successfully",
+        data: transactions,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   //   static async handleNotification(
   //     req: Request,
   //     res: Response,

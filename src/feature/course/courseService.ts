@@ -196,13 +196,40 @@ export class CourseService {
 
     const recommendedCourses = await prisma.course.findMany({
       where: {
-        AND: [
-          { id: { not: courseId } },
-          { publish: "Published" },
-          { categoryId: courseDetail.categoryId },
-        ],
+        id: { not: courseId },
+        publish: "Published",
+        categoryId: courseDetail.categoryId,
+      },
+      include: {
+        courseLevel: true,
+        typeCourse: true,
+        category: true,
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+          },
+        },
+        chapters: {
+          include: {
+            _count: {
+              select: { contents: true },
+            },
+          },
+        },
       },
       take: 10,
+    });
+
+    const recommendedCoursesWithTotal = recommendedCourses.map((course) => {
+      const totalContents = course.chapters.reduce((total, chapter) => {
+        return total + (chapter._count.contents || 0);
+      }, 0);
+
+      return {
+        ...course,
+        totalContents,
+      };
     });
 
     return {
@@ -210,7 +237,7 @@ export class CourseService {
         ...courseDetail,
         totalContents,
       },
-      recommendedCourses,
+      recommendedCourses: recommendedCoursesWithTotal,
     };
   }
 
