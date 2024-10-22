@@ -2,6 +2,7 @@ import { Router } from "express";
 import { AuthController } from "./authController";
 import { JWTMiddleware } from "../../middleware/jwt_middleware";
 import multer from "multer";
+import { auth } from "firebase-admin";
 
 const authRoute: Router = Router();
 
@@ -48,6 +49,13 @@ authRoute.get("/home", JWTMiddleware.verifyToken, (req, res) => {
 });
 
 authRoute.get("/count-by-role", AuthController.getCountUserByRole);
+
+authRoute.get(
+  "/all-instruktur",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  AuthController.getAllInstruktur
+);
 
 // authRoute.post(
 //   "/upload-image",

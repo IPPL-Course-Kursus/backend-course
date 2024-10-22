@@ -264,6 +264,24 @@ export class AuthController {
     }
   }
 
+  static async getAllInstruktur(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const response = await AuthService.getAllInstruktur();
+      return res.status(200).json({
+        success: true,
+        message: "Get all instruktur successful",
+        data: response,
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
   // static async uploadImage(req: Request, res: Response, next: NextFunction) {
   //   try {
   //     const image = req.file;

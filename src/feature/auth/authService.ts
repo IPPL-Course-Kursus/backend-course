@@ -337,6 +337,18 @@ export class AuthService {
     };
   }
 
+  static async getAllInstruktur(): Promise<any> {
+    const instruktur = await prisma.user.findMany({
+      where: {
+        role: "Instruktur",
+      },
+    });
+    if (!instruktur) {
+      throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
+    }
+    return instruktur;
+  }
+
   // static async uploadImage(image: any): Promise<any> {
   //   if (!image) {
   //     throw new ErrorResponse("Image is empty", 400, ["image"]);
