@@ -246,6 +246,9 @@ export class CourseService {
     file: any,
     uid: string
   ): Promise<any> {
+    if (!data) {
+      throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
+    }
     const existingCourse = await prisma.course.findFirst({
       where: { courseName: data.courseName },
     });
@@ -365,6 +368,10 @@ export class CourseService {
 
     if (!course) {
       throw new ErrorResponse("Course not found", 404);
+    }
+
+    if (!data) {
+      throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 
     let imageUrl = course.image;

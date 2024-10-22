@@ -7,6 +7,12 @@ export class TransactionService {
     userId: string,
     courseId: number
   ): Promise<any> {
+    if (!userId || !courseId) {
+      throw new ErrorResponse("User ID and Course ID are required", 400, [
+        "user_id",
+        "course_id",
+      ]);
+    }
     const course = await prisma.course.findUnique({
       where: { id: courseId },
       include: {
@@ -187,6 +193,13 @@ export class TransactionService {
     return transactions;
   }
   static async getTransactionByUserId(userId: string): Promise<any> {
+    if (!userId) {
+      throw new ErrorResponse(
+        "Invalid request, missing required parameters",
+        400,
+        ["user_id"]
+      );
+    }
     const transactions = await prisma.transaction.findMany({
       where: { userId },
       include: {
@@ -239,6 +252,13 @@ export class TransactionService {
   }
 
   static async getTransactionByInstructorId(userId: string): Promise<any> {
+    if (!userId) {
+      throw new ErrorResponse(
+        "Invalid request, missing required parameters",
+        400,
+        ["user_id"]
+      );
+    }
     const courses = await prisma.course.findMany({
       where: { userId },
       select: {

@@ -13,6 +13,9 @@ export class TypeCourseService {
   static async createTypeCourse(
     request: CreateTypeCourseRequest
   ): Promise<void> {
+    if (!request) {
+      throw new ErrorResponse("Request body is empty", 400);
+    }
     const validatedRequest = Validation.validate(
       TypeCourseValidation.CREATE,
       request
@@ -57,6 +60,9 @@ export class TypeCourseService {
     request: GetTypeCourseByIdRequest
   ): Promise<any> {
     try {
+      if (!request) {
+        throw new ErrorResponse("Request body is empty", 400);
+      }
       const type = await prisma.typeCourse.findUnique({
         where: { id: request.id },
       });
@@ -77,6 +83,9 @@ export class TypeCourseService {
     request: UpdateTypeCourseRequest
   ): Promise<any> {
     try {
+      if (!request) {
+        throw new ErrorResponse("Request body is empty", 400);
+      }
       const updatedTypeCourse = await prisma.typeCourse.update({
         where: {
           id: request.id,
@@ -97,6 +106,9 @@ export class TypeCourseService {
     request: DeleteTypeCourseRequest
   ): Promise<void> {
     try {
+      if (!request) {
+        throw new ErrorResponse("Request body is empty", 400);
+      }
       const relatedCourses = await prisma.course.findMany({
         where: { typeCourseId: request.id },
         select: { courseName: true, id: true },

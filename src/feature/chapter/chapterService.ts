@@ -7,8 +7,8 @@ export class ChapterService {
     chapterTitle: string,
     sort: number
   ): Promise<any> {
-    if (!chapterTitle) {
-      throw new ErrorResponse("Chapter title is required", 400);
+    if (!chapterTitle && !sort) {
+      throw new ErrorResponse("Chapter title & Sort is required", 400);
     }
 
     const existSort = await prisma.chapter.findFirst({
@@ -33,8 +33,8 @@ export class ChapterService {
     chapterTitle: string,
     sort: number
   ): Promise<any> {
-    if (!chapterTitle) {
-      throw new ErrorResponse("Chapter title is required", 400);
+    if (!chapterTitle && !sort) {
+      throw new ErrorResponse("Chapter title & Sort is required", 400);
     }
 
     await prisma.chapter.update({

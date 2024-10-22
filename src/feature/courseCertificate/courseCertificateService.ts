@@ -3,6 +3,9 @@ import { ErrorResponse } from "../../models/error_response";
 
 export class CourseCertificateService {
   static async createCertificate(courseUserId: number): Promise<void> {
+    if (!courseUserId) {
+      throw new ErrorResponse("courseUserId is required", 400);
+    }
     const courseUser = await prisma.courseUser.findUnique({
       where: { id: courseUserId },
       include: { course: true, user: true },
@@ -39,6 +42,9 @@ export class CourseCertificateService {
   static async getCertificateByCourseUserId(
     courseUserId: number
   ): Promise<any> {
+    if (!courseUserId) {
+      throw new ErrorResponse("courseUserId is required", 400);
+    }
     const certificate = await prisma.certificate.findUnique({
       where: { courseUserId },
     });

@@ -26,20 +26,8 @@ export class CategoryService {
     request: createCategoryRequest,
     file: any
   ): Promise<any> {
-    if (!request.categoryName || typeof request.categoryName !== "string") {
-      throw new ErrorResponse(
-        "Category name is required and must be a string",
-        400,
-        ["categoryName"]
-      );
-    }
-
-    if (!request.categoryCode || typeof request.categoryCode !== "string") {
-      throw new ErrorResponse(
-        "Category code is required and must be a string",
-        400,
-        ["categoryCode"]
-      );
+    if (!request || !file) {
+      throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 
     const checkCategory = await prisma.category.findFirst({
@@ -94,6 +82,10 @@ export class CategoryService {
 
     if (!category) {
       throw new ErrorResponse("Category not found", 404, ["id"]);
+    }
+
+    if (!request) {
+      throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 
     let imageUrl = category.image;

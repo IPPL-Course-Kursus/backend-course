@@ -4,6 +4,9 @@ import { CreateCourseUserRequest } from "./courseUserModel";
 
 export class CourseUserService {
   static async getCourseUser(uid: string): Promise<any> {
+    if (!uid) {
+      throw new ErrorResponse("userId is required", 400);
+    }
     const courseUser = await prisma.courseUser.findMany({
       where: { userId: uid },
       include: {
@@ -35,10 +38,61 @@ export class CourseUserService {
       },
     });
 
+    if (!courseUser) {
+      throw new ErrorResponse("CourseUser not found", 404);
+    }
+
     return courseUser;
   }
 
+  static async startedCourseUser(
+    courseUserId: number,
+    chapterSort: number,
+    contentSort: number
+  ): Promise<any> {
+    if (!courseUserId || !chapterSort || !contentSort) {
+      throw new ErrorResponse(
+        "courseUserId, chapterSort, and contentSort are required",
+        400
+      );
+    }
+
+    const startCourse = await prisma.courseUser.findFirst({
+      where: { id: courseUserId },
+      include: {
+        course: {
+          include: {
+            chapters: {
+              where: { sort: chapterSort },
+              include: {
+                contents: {
+                  where: { sort: contentSort },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!startCourse) {
+      throw new ErrorResponse("Course not found for the given criteria", 404);
+    }
+
+    if (startCourse.courseStatus === "NotStarted") {
+      await prisma.courseUser.update({
+        where: { id: startCourse.id },
+        data: { courseStatus: "InProgress" },
+      });
+    }
+
+    return startCourse;
+  }
+
   static async getCourseUserDetail(id: number): Promise<any> {
+    if (!id) {
+      throw new ErrorResponse("id is required", 400);
+    }
     const courseUser = await prisma.courseUser.findUnique({
       where: {
         id,
@@ -83,6 +137,10 @@ export class CourseUserService {
     courseId: number,
     contentId: number
   ): Promise<any> {
+    if (!uid || !courseId || !contentId) {
+      throw new ErrorResponse("userId, courseId, contentId is required", 400);
+    }
+
     const courseUser = await prisma.courseUser.findFirst({
       where: {
         userId: uid,

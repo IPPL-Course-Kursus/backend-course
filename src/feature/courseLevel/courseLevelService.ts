@@ -14,6 +14,9 @@ export class CourseLevelService {
   }
 
   static async getCourseLevelById(id: number): Promise<any> {
+    if (!id) {
+      throw new ErrorResponse("Course level ID is required", 400);
+    }
     const courseLevel = await prisma.courseLevel.findUnique({
       where: { id },
     });
@@ -28,6 +31,9 @@ export class CourseLevelService {
   static async createCourseLevel(
     requestCourseLevel: RequestCourseLevel
   ): Promise<any> {
+    if (!requestCourseLevel) {
+      throw new ErrorResponse("Course level name is required", 400);
+    }
     const existingCourseLevel = await prisma.courseLevel.findFirst({
       where: { levelName: requestCourseLevel.levelName },
     });
@@ -44,6 +50,9 @@ export class CourseLevelService {
   }
 
   static async deleteCourseLevel(id: number) {
+    if (!id) {
+      throw new ErrorResponse("Course level ID is required", 400);
+    }
     const courseLevel = await prisma.courseLevel.findUnique({
       where: { id },
     });
@@ -74,6 +83,9 @@ export class CourseLevelService {
     id: number,
     requestCourseLevel: RequestCourseLevel
   ) {
+    if (!id || !requestCourseLevel) {
+      throw new ErrorResponse("Course level ID is required", 400);
+    }
     const courseLevel = await prisma.courseLevel.findUnique({
       where: { id },
     });

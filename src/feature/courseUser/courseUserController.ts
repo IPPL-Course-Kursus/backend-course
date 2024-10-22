@@ -54,4 +54,48 @@ export class CourseUserController {
       next(error);
     }
   }
+
+  static async startedCourseUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { courseUserId, chapterSort, contentSort } = req.params;
+
+      if (!courseUserId || !chapterSort || !contentSort) {
+        return res.status(400).json({
+          message: "courseUserId, chapterSort, and contentSort are required",
+        });
+      }
+
+      const parsedCourseUserId = parseInt(courseUserId);
+      const parsedChapterSort = parseInt(chapterSort);
+      const parsedContentSort = parseInt(contentSort);
+
+      if (
+        isNaN(parsedCourseUserId) ||
+        isNaN(parsedChapterSort) ||
+        isNaN(parsedContentSort)
+      ) {
+        return res.status(400).json({
+          message:
+            "courseUserId, chapterSort, and contentSort must be valid numbers",
+        });
+      }
+
+      const courseUser = await CourseUserService.startedCourseUser(
+        parsedCourseUserId,
+        parsedChapterSort,
+        parsedContentSort
+      );
+
+      res.status(200).json({
+        message: "success started course user",
+        data: courseUser,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

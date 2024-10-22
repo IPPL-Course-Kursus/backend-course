@@ -95,6 +95,17 @@ export class AuthService {
   }
 
   static async registerInstruktur(user: RegisterRequest): Promise<void> {
+    if (!user) {
+      throw new ErrorResponse("Register Data is Empty", 400, [
+        "fullName",
+        "phoneNumber",
+        "tanggalLahir",
+        "city",
+        "country",
+        "email",
+        "password",
+      ]);
+    }
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const {
       email,
@@ -189,6 +200,9 @@ export class AuthService {
   }
 
   static async getProfile(uid: string): Promise<any> {
+    if (!uid) {
+      throw new ErrorResponse("uid is empty", 400, ["uid"]);
+    }
     const user = await prisma.user.findUnique({ where: { uid } });
     if (!user) {
       throw new ErrorResponse(
@@ -216,6 +230,9 @@ export class AuthService {
     data: UserProfile,
     file: any
   ): Promise<any> {
+    if (!uid || !data) {
+      throw new ErrorResponse("uid or data is empty", 400, ["uid", "data"]);
+    }
     const user = await prisma.user.findUnique({ where: { uid } });
 
     if (!user) {
@@ -267,10 +284,11 @@ export class AuthService {
     email: string,
     request: ChangePasswordRequest
   ): Promise<void> {
-    if (!request.currentPassword || !request.newPassword) {
-      throw new ErrorResponse("currentPassword or newPassword is empty", 400, [
-        "currentPassword",
-        "newPassword",
+    if (!uid || !email || !request) {
+      throw new ErrorResponse("uid or email or request is empty", 400, [
+        "uid",
+        "email",
+        "request",
       ]);
     }
     const requests = Validation.validate(
