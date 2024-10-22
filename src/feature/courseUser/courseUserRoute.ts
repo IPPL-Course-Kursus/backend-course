@@ -19,7 +19,7 @@ courseUserRoute.get(
 );
 
 courseUserRoute.get(
-  "/StartCourse/Course/:CourseUserId/:chapterSort/:contentSort",
+  "/StartCourse/Course/:courseUserId/:chapterSort/:contentSort",
   JWTMiddleware.verifyToken,
   JWTMiddleware.userOnly,
   CourseUserController.startedCourseUser
