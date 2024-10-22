@@ -199,6 +199,11 @@ export class TransactionService {
                 fullName: true,
               },
             },
+            category: {
+              select: {
+                categoryName: true,
+              },
+            },
             typeCourse: {
               select: {
                 typeName: true,
@@ -212,6 +217,7 @@ export class TransactionService {
             chapters: {
               select: {
                 id: true,
+                chapterTitle: true,
               },
             },
             totalDuration: true,
