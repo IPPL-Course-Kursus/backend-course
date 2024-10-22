@@ -424,7 +424,7 @@ export class AuthService {
     file: any
   ): Promise<any> {
     if (!id) {
-      throw new ErrorResponse("uid is empty", 400, ["uid"]);
+      throw new ErrorResponse("id is empty", 400, ["id"]);
     }
 
     const user = await prisma.user.findUnique({

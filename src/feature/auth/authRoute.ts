@@ -2,7 +2,6 @@ import { Router } from "express";
 import { AuthController } from "./authController";
 import { JWTMiddleware } from "../../middleware/jwt_middleware";
 import multer from "multer";
-import { auth } from "firebase-admin";
 
 const authRoute: Router = Router();
 
@@ -15,7 +14,12 @@ const upload = multer({
 
 authRoute.post("/login", AuthController.login);
 authRoute.post("/register", AuthController.register);
-authRoute.post("/register-instruktur", AuthController.registerInstruktur);
+authRoute.post(
+  "/register-instruktur",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  AuthController.registerInstruktur
+);
 authRoute.post("/forgot-password", AuthController.forgotPassword);
 authRoute.post(
   "/change-password",
