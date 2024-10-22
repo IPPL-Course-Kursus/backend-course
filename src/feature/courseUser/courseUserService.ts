@@ -67,6 +67,9 @@ export class CourseUserService {
               include: {
                 contents: {
                   where: { sort: contentSort },
+                  include: {
+                    interpreter: true,
+                  },
                 },
               },
             },
