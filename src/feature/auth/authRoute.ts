@@ -57,6 +57,28 @@ authRoute.get(
   AuthController.getAllInstruktur
 );
 
+authRoute.delete(
+  "/delete-instruktur/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  AuthController.deleteInstruktur
+);
+
+authRoute.get(
+  "/get-instruktur-by-id/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  AuthController.getInstrukturById
+);
+
+authRoute.put(
+  "/update-instruktur/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.adminOnly,
+  upload.single("image"),
+  AuthController.updateInstruktur
+);
+
 // authRoute.post(
 //   "/upload-image",
 //   upload.single("image"),

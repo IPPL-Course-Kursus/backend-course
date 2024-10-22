@@ -282,6 +282,68 @@ export class AuthController {
     }
   }
 
+  static async deleteInstruktur(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { id } = req.params;
+      const userId = parseInt(id, 10);
+      const response = await AuthService.deleteInstruktur(userId);
+      return res.status(200).json({
+        success: true,
+        message: "Delete instruktur successful",
+        data: response,
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async getInstrukturById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { id } = req.params;
+      const userId = parseInt(id, 10);
+      const response = await AuthService.getInstrukturById(userId);
+      return res.status(200).json({
+        success: true,
+        message: "Get instruktur by id successful",
+        data: response,
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
+  static async updateInstruktur(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { id } = req.params;
+      const userId = parseInt(id, 10);
+      const data = req.body;
+      const image = req.file;
+      const response = await AuthService.updateInstruktur(userId, data, image);
+      return res.status(200).json({
+        success: true,
+        message: "Update instruktur successful",
+        data: response,
+      });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
   // static async uploadImage(req: Request, res: Response, next: NextFunction) {
   //   try {
   //     const image = req.file;

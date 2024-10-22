@@ -171,6 +171,18 @@ export class AuthService {
         403
       );
     }
+
+    const checkStatusAcc = await prisma.user.findFirst({
+      where: { uid: user.uid },
+    });
+
+    if (checkStatusAcc?.isDeleted != null) {
+      throw new ErrorResponse(
+        "Your account has been deleted. Please contact the administrator.",
+        403
+      );
+    }
+
     return userCredential.user.getIdToken();
   }
 
@@ -359,12 +371,106 @@ export class AuthService {
     const instruktur = await prisma.user.findMany({
       where: {
         role: "Instruktur",
+        isDeleted: null,
       },
     });
     if (!instruktur) {
       throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
     }
     return instruktur;
+  }
+
+  static async deleteInstruktur(id: number): Promise<any> {
+    if (!id) {
+      throw new ErrorResponse("uid is empty", 400, ["uid"]);
+    }
+
+    const deleteInstruktur = prisma.user.update({
+      where: {
+        id,
+        role: "Instruktur",
+      },
+      data: {
+        isDeleted: new Date(),
+      },
+    });
+
+    if (!deleteInstruktur) {
+      throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
+    }
+  }
+
+  static async getInstrukturById(id: number): Promise<any> {
+    if (!id) {
+      throw new ErrorResponse("uid is empty", 400, ["uid"]);
+    }
+
+    const instruktur = await prisma.user.findUnique({
+      where: {
+        id,
+        role: "Instruktur",
+      },
+    });
+    if (!instruktur) {
+      throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
+    }
+
+    return instruktur;
+  }
+
+  static async updateInstruktur(
+    id: number,
+    data: UserProfile,
+    file: any
+  ): Promise<any> {
+    if (!id) {
+      throw new ErrorResponse("uid is empty", 400, ["uid"]);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+        role: "Instruktur",
+      },
+    });
+
+    if (!user) {
+      throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
+    }
+
+    let imageUrl = user.image;
+
+    const validFileTypes = ["image/jpeg", "image/png"];
+
+    if (file && validFileTypes.includes(file.mimetype)) {
+      try {
+        const result = await imagekit.upload({
+          file: file.buffer,
+          fileName: `${user.uid}-${Date.now()}-${file.originalname}`,
+          folder: "/photoProfile",
+        });
+
+        imageUrl = result.url;
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
+      }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        ...data,
+        image: imageUrl,
+        tanggalLahir: data.tanggalLahir
+          ? new Date(data.tanggalLahir)
+          : user.tanggalLahir,
+      },
+    });
+
+    return {
+      data: updatedUser,
+    };
   }
 
   // static async uploadImage(image: any): Promise<any> {
