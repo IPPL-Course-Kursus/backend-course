@@ -79,13 +79,6 @@ export class CourseUserService {
       throw new ErrorResponse("Course not found for the given criteria", 404);
     }
 
-    if (startCourse.courseStatus === "NotStarted") {
-      await prisma.courseUser.update({
-        where: { id: startCourse.id },
-        data: { courseStatus: "InProgress" },
-      });
-    }
-
     return startCourse;
   }
 
@@ -122,13 +115,6 @@ export class CourseUserService {
       throw new ErrorResponse("CourseUser not found", 404);
     }
 
-    if (courseUser.courseStatus === "NotStarted") {
-      await prisma.courseUser.update({
-        where: { id: courseUser.id },
-        data: { courseStatus: "InProgress", contentFinish: 0 },
-      });
-    }
-
     return courseUser;
   }
 
@@ -162,6 +148,13 @@ export class CourseUserService {
 
     if (!courseUser) {
       throw new ErrorResponse("CourseUser not found", 404);
+    }
+
+    if (courseUser.courseStatus === "NotStarted") {
+      await prisma.courseUser.update({
+        where: { id: courseUser.id },
+        data: { courseStatus: "InProgress" },
+      });
     }
 
     const totalContent = courseUser.course.chapters.reduce(
