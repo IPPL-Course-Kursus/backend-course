@@ -385,10 +385,9 @@ export class AuthService {
       throw new ErrorResponse("uid is empty", 400, ["uid"]);
     }
 
-    const deleteInstruktur = prisma.user.update({
+    const deleteInstruktur = await prisma.user.update({
       where: {
         id,
-        role: "Instruktur",
       },
       data: {
         isDeleted: new Date(),
