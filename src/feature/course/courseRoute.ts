@@ -13,6 +13,7 @@ const upload = multer({
 });
 
 courseRoute.get("/", CourseController.getAllCourses);
+courseRoute.get("/filter", CourseController.getCoursesByFilter);
 courseRoute.get(
   "/userId/",
   JWTMiddleware.verifyToken,
@@ -37,8 +38,6 @@ courseRoute.get(
   JWTMiddleware.instrukturOnly,
   CourseController.getCourseByUserId
 );
-
-courseRoute.get("/filter", CourseController.getCoursesByFilter);
 
 courseRoute.post(
   "/createCourse",

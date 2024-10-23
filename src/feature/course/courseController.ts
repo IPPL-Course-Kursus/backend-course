@@ -188,12 +188,26 @@ export class CourseController {
           : req.query.promoStatus === "false"
           ? false
           : undefined;
+      const isPopular =
+        req.query.isPopular === "true"
+          ? true
+          : req.query.promoStatus === "false"
+          ? false
+          : undefined;
+      const isNewest =
+        req.query.isNewest === "true"
+          ? true
+          : req.query.promoStatus === "false"
+          ? false
+          : undefined;
 
       const courses = await CourseService.getCoursesByFilter(
         typeId,
         categoryId,
         levelId,
-        promoStatus
+        promoStatus,
+        isPopular,
+        isNewest
       );
 
       res.status(200).json(courses);

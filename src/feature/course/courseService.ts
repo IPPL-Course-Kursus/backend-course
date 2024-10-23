@@ -491,11 +491,14 @@ export class CourseService {
     typeId?: number,
     categoryId?: number,
     levelId?: number,
-    promoStatus?: boolean
+    promoStatus?: boolean,
+    isPopular?: boolean,
+    isNewest?: boolean
   ): Promise<any> {
     let whereClause: any = {
       publish: "Published",
     };
+    let orderByClause: any = {};
 
     if (typeId) {
       whereClause.typeCourseId = typeId;
@@ -513,8 +516,35 @@ export class CourseService {
       whereClause.promoStatus = promoStatus;
     }
 
-    const courses = await prisma.course.findMany({
+    if (isNewest) {
+      orderByClause = {
+        updatedAt: "desc",
+      };
+    }
+
+    if (isPopular) {
+      const popularCourses = await prisma.courseUser.groupBy({
+        by: ["courseId"],
+        _count: {
+          courseId: true,
+        },
+        orderBy: {
+          _count: {
+            courseId: "desc",
+          },
+        },
+      });
+
+      const popularCourseIds = popularCourses.map((course) => course.courseId);
+
+      whereClause.id = {
+        in: popularCourseIds,
+      };
+    }
+
+    let coursesQuery = prisma.course.findMany({
       where: whereClause,
+      orderBy: orderByClause,
       include: {
         user: true,
         courseLevel: true,
@@ -527,6 +557,8 @@ export class CourseService {
         },
       },
     });
+
+    const courses = await coursesQuery;
 
     if (courses.length === 0) {
       throw new ErrorResponse("No courses found for this filter", 404);
