@@ -33,6 +33,11 @@ export class CourseUserService {
                 typeName: true,
               },
             },
+            _count: {
+              select: {
+                chapters: true,
+              },
+            },
           },
         },
       },
