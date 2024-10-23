@@ -69,6 +69,9 @@ export class CourseUserService {
                   where: { sort: contentSort },
                   include: {
                     interpreter: true,
+                    userContentProgress: {
+                      where: { courseUserId: courseUserId },
+                    },
                   },
                 },
               },
@@ -97,8 +100,10 @@ export class CourseUserService {
         course: {
           include: {
             chapters: {
+              orderBy: { sort: "asc" },
               include: {
                 contents: {
+                  orderBy: { sort: "asc" },
                   include: {
                     interpreter: true,
                     userContentProgress: {
@@ -110,7 +115,6 @@ export class CourseUserService {
             },
           },
         },
-        userContentProgress: true,
       },
     });
 
