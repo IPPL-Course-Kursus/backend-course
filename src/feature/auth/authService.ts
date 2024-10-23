@@ -145,7 +145,7 @@ export class AuthService {
     await sendEmailVerification(userCredential.user);
   }
 
-  static async login(data: LoginRequest): Promise<string> {
+  static async login(data: LoginRequest): Promise<any> {
     if (!data.email || !data.password) {
       throw new ErrorResponse("email or password is empty", 400, [
         "email",
@@ -178,18 +178,21 @@ export class AuthService {
       );
     }
 
-    const checkStatusAcc = await prisma.user.findFirst({
+    const userData = await prisma.user.findFirst({
       where: { uid: user.uid },
     });
 
-    if (checkStatusAcc?.isDeleted != null) {
+    if (!userData || userData.isDeleted) {
       throw new ErrorResponse(
         "Your account has been deleted. Please contact the administrator.",
         403
       );
     }
 
-    return userCredential.user.getIdToken();
+    const token = await user.getIdToken();
+    const role = userData.role;
+
+    return { token, role };
   }
 
   static async logoutUser(): Promise<string> {
