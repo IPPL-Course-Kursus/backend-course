@@ -67,9 +67,7 @@ export class AuthController {
       return res.status(200).json({
         success: true,
         message: "Login in successfully",
-        data: {
-          token: token,
-        },
+        data: token,
       });
     } catch (error) {
       if (error instanceof ZodError) {

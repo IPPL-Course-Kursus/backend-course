@@ -148,52 +148,69 @@ export class AuthService {
 
   static async login(data: LoginRequest): Promise<any> {
     if (!data.email || !data.password) {
-      throw new ErrorResponse("email or password is empty", 400, [
-        "email",
-        "password",
-      ]);
+      return Promise.reject(
+        new ErrorResponse("Email or password is empty", 400, [
+          "email",
+          "password",
+        ])
+      );
     }
     const requests = Validation.validate(AuthValidation.LOGIN, data);
     const { email, password } = requests;
-
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    if (!userCredential) {
-      throw new ErrorResponse("Invalid email or password", 400, [
-        "email",
-        "password",
-      ]);
-    }
-
-    const user = userCredential.user;
-
-    if (!user.emailVerified) {
-      await sendEmailVerification(user);
-      throw new ErrorResponse(
-        "Email not verified. Please check your email to verify your account before logging in.",
-        403
-      );
-    }
-
-    const userData = await prisma.user.findFirst({
-      where: { uid: user.uid },
-    });
-
-    if (!userData || userData.isDeleted) {
-      throw new ErrorResponse(
-        "Your account has been deleted. Please contact the administrator.",
-        403
-      );
-    }
-
-    const token = await user.getIdToken();
-    const role = userData.role;
-
-    return { token, role };
+    return signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        if (!user.emailVerified) {
+          return sendEmailVerification(user).then(() => {
+            return Promise.reject(
+              new ErrorResponse(
+                "Email not verified. Please check your email to verify your account before logging in.",
+                403,
+                ["user_id"]
+              )
+            );
+          });
+        }
+        return prisma.user
+          .findFirst({ where: { uid: user.uid } })
+          .then((userData) => {
+            if (!userData || userData.isDeleted) {
+              return Promise.reject(
+                new ErrorResponse(
+                  "Your account has been deleted. Please contact the administrator.",
+                  403,
+                  ["user_id"]
+                )
+              );
+            }
+            return user.getIdToken().then((token) => {
+              return {
+                token,
+                role: userData.role,
+              };
+            });
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        if (
+          error.code === "auth/invalid-email" ||
+          error.code === "auth/wrong-password" ||
+          error.code === "auth/invalid-credential"
+        ) {
+          return Promise.reject(
+            new ErrorResponse("Invalid email or password", 400, [
+              "email or password",
+            ])
+          );
+        }
+        if (error instanceof ErrorResponse) {
+          return Promise.reject(error);
+        }
+        return Promise.reject(
+          new ErrorResponse("An unexpected error occurred", 500)
+        );
+      });
   }
 
   static async logoutUser(): Promise<string> {
