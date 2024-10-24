@@ -8,6 +8,7 @@ import {
 } from "./typeCourseModel";
 import { TypeCourseValidation } from "./typeCourseValidation";
 import { Validation } from "../../validations/validation";
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class TypeCourseService {
   static async createTypeCourse(
@@ -28,6 +29,14 @@ export class TypeCourseService {
 
     if (existingTypeCourse) {
       throw new ErrorResponse("Type course already exists", 400);
+    }
+
+    if (checkProhibitedWords(typeName)) {
+      throw new ErrorResponse(
+        "Type course name must not contain prohibited words",
+        400,
+        ["typeName"]
+      );
     }
 
     try {
@@ -94,6 +103,14 @@ export class TypeCourseService {
           typeName: request.typeName,
         },
       });
+
+      if (checkProhibitedWords(request.typeName)) {
+        throw new ErrorResponse(
+          "Type course name must not contain prohibited words",
+          400,
+          ["typeName"]
+        );
+      }
 
       return updatedTypeCourse;
     } catch (error) {

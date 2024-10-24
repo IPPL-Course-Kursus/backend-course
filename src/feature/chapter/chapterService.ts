@@ -1,6 +1,6 @@
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
-
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 export class ChapterService {
   static async createChapter(
     courseId: number,
@@ -19,6 +19,14 @@ export class ChapterService {
       throw new ErrorResponse("Sort must be unique", 400);
     }
 
+    if (checkProhibitedWords(chapterTitle)) {
+      throw new ErrorResponse(
+        "Chapter title must not contain prohibited words",
+        400,
+        ["chapterTitle"]
+      );
+    }
+
     await prisma.chapter.create({
       data: {
         sort: sort,
@@ -35,6 +43,14 @@ export class ChapterService {
   ): Promise<any> {
     if (!chapterTitle && !sort) {
       throw new ErrorResponse("Chapter title & Sort is required", 400);
+    }
+
+    if (checkProhibitedWords(chapterTitle)) {
+      throw new ErrorResponse(
+        "Chapter title must not contain prohibited words",
+        400,
+        ["chapterTitle"]
+      );
     }
 
     await prisma.chapter.update({

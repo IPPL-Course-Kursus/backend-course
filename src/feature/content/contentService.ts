@@ -1,6 +1,7 @@
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
 import { ContentModel } from "./contentModel";
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class ContentService {
   static async createContent(
@@ -27,6 +28,17 @@ export class ContentService {
 
     if (existSort) {
       throw new ErrorResponse("Sort must be unique", 400);
+    }
+
+    if (
+      checkProhibitedWords(data.contentTitle) ||
+      checkProhibitedWords(data.teks)
+    ) {
+      throw new ErrorResponse(
+        "Content title or teks must not contain prohibited words",
+        400,
+        ["contentTitle", "teks"]
+      );
     }
 
     await prisma.content.create({
@@ -59,6 +71,18 @@ export class ContentService {
         400
       );
     }
+
+    if (
+      checkProhibitedWords(data.contentTitle) ||
+      checkProhibitedWords(data.teks)
+    ) {
+      throw new ErrorResponse(
+        "Content title or teks must not contain prohibited words",
+        400,
+        ["contentTitle", "teks"]
+      );
+    }
+
     await prisma.content.update({
       where: { id: contentId },
       data: {

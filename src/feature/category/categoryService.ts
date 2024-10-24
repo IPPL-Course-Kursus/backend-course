@@ -6,6 +6,7 @@ import {
   deleteCategoryRequest,
 } from "./categoryModel";
 import { imagekit } from "../../utils/image_kit";
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class CategoryService {
   static async getAllCategories(): Promise<any> {
@@ -42,6 +43,12 @@ export class CategoryService {
     if (checkCategory) {
       throw new ErrorResponse("Category already exists", 400, [
         "categoryCode",
+        "categoryName",
+      ]);
+    }
+
+    if (checkProhibitedWords(request.categoryName)) {
+      throw new ErrorResponse("Category name contains prohibited words", 400, [
         "categoryName",
       ]);
     }
@@ -86,6 +93,12 @@ export class CategoryService {
 
     if (!request) {
       throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
+    }
+
+    if (checkProhibitedWords(request.categoryName)) {
+      throw new ErrorResponse("Category name contains prohibited words", 400, [
+        "categoryName",
+      ]);
     }
 
     let imageUrl = category.image;

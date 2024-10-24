@@ -43,7 +43,6 @@ export class AuthService {
         "phoneNumber",
         "tanggalLahir",
         "city",
-        "country",
         "email",
         "password",
       ]);
@@ -55,9 +54,11 @@ export class AuthService {
       checkProhibitedWords(user.city) ||
       checkProhibitedWords(user.password)
     ) {
-      throw new ErrorResponse("fullName contains prohibited words", 400, [
-        "fullName",
-      ]);
+      throw new ErrorResponse(
+        "fullName or email or city or password contains prohibited words",
+        400,
+        ["fullName", "email", "city", "password"]
+      );
     }
 
     const requests = Validation.validate(AuthValidation.REGISTER, user);
@@ -111,10 +112,21 @@ export class AuthService {
         "phoneNumber",
         "tanggalLahir",
         "city",
-        "country",
         "email",
         "password",
       ]);
+    }
+    if (
+      checkProhibitedWords(user.fullName) ||
+      checkProhibitedWords(user.email) ||
+      checkProhibitedWords(user.city) ||
+      checkProhibitedWords(user.password)
+    ) {
+      throw new ErrorResponse(
+        "fullName or email or city or password contains prohibited words",
+        400,
+        ["fullName", "email", "city", "password"]
+      );
     }
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
@@ -154,6 +166,17 @@ export class AuthService {
           "email",
           "password",
         ])
+      );
+    }
+
+    if (
+      checkProhibitedWords(data.email) ||
+      checkProhibitedWords(data.password)
+    ) {
+      throw new ErrorResponse(
+        "email or password contains prohibited words",
+        400,
+        ["email", "password"]
       );
     }
     const requests = Validation.validate(AuthValidation.LOGIN, data);
@@ -283,6 +306,17 @@ export class AuthService {
       );
     }
 
+    if (
+      checkProhibitedWords(data.fullName) ||
+      checkProhibitedWords(data.city)
+    ) {
+      throw new ErrorResponse(
+        "fullName or city contains prohibited words",
+        400,
+        ["fullName", "city"]
+      );
+    }
+
     let imageUrl = user.image;
 
     const validFileTypes = ["image/jpeg", "image/png"];
@@ -329,6 +363,17 @@ export class AuthService {
         "email",
         "request",
       ]);
+    }
+
+    if (
+      checkProhibitedWords(request.currentPassword) ||
+      checkProhibitedWords(request.newPassword)
+    ) {
+      throw new ErrorResponse(
+        "currentPassword or newPassword contains prohibited words",
+        400,
+        ["password"]
+      );
     }
 
     const requests = Validation.validate(
@@ -402,6 +447,11 @@ export class AuthService {
     if (requests.newPassword !== requests.confirmPassword) {
       throw new ErrorResponse("Password does not match", 400, [
         "confirmPassword",
+      ]);
+    }
+    if (checkProhibitedWords(requests.newPassword)) {
+      throw new ErrorResponse("newPassword contains prohibited words", 400, [
+        "newPassword",
       ]);
     }
     await confirmPasswordReset(auth, requests.oobCode, requests.newPassword);
@@ -495,6 +545,17 @@ export class AuthService {
 
     if (!user) {
       throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
+    }
+
+    if (
+      checkProhibitedWords(data.fullName) ||
+      checkProhibitedWords(data.city)
+    ) {
+      throw new ErrorResponse(
+        "city or fullName contains prohibited words",
+        400,
+        ["city", "fullName"]
+      );
     }
 
     let imageUrl = user.image;

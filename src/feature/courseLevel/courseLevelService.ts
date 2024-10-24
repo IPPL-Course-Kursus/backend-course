@@ -1,6 +1,7 @@
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
 import { RequestCourseLevel, DeleteCourseLevel } from "./courseLevelModel";
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class CourseLevelService {
   static async getAllCourseLevels(): Promise<any> {
@@ -33,6 +34,14 @@ export class CourseLevelService {
   ): Promise<any> {
     if (!requestCourseLevel) {
       throw new ErrorResponse("Course level name is required", 400);
+    }
+
+    if (checkProhibitedWords(requestCourseLevel.levelName)) {
+      throw new ErrorResponse(
+        "Course level name must not contain prohibited words",
+        400,
+        ["levelName"]
+      );
     }
     const existingCourseLevel = await prisma.courseLevel.findFirst({
       where: { levelName: requestCourseLevel.levelName },
@@ -85,6 +94,13 @@ export class CourseLevelService {
   ) {
     if (!id || !requestCourseLevel) {
       throw new ErrorResponse("Course level ID is required", 400);
+    }
+    if (checkProhibitedWords(requestCourseLevel.levelName)) {
+      throw new ErrorResponse(
+        "Course level name must not contain prohibited words",
+        400,
+        ["levelName"]
+      );
     }
     const courseLevel = await prisma.courseLevel.findUnique({
       where: { id },
