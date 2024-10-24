@@ -129,7 +129,7 @@ export class TransactionService {
         ppn: ppn,
         price: priceCourse,
         totalPrice: grossAmount,
-        paymentStatus: "cancel",
+        paymentStatus: "pending",
         paymentMethod: "snapMidtrans",
         linkPayment: transaction.redirect_url,
       },
@@ -140,6 +140,7 @@ export class TransactionService {
       data: {
         token: transaction.token,
         paymentUrl: transaction.redirect_url,
+        orderId: orderId,
       },
     };
   }
