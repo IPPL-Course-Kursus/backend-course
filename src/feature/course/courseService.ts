@@ -254,6 +254,7 @@ export class CourseService {
       !data.courseName ||
       !data.aboutCourse ||
       !data.intendedFor ||
+      !data.courseDiscountPercent ||
       !data.coursePrice ||
       !data.publish ||
       !data.certificateStatus ||
