@@ -8,7 +8,6 @@ export class AuthValidation {
 
   static readonly REGISTER: ZodType = z.object({
     fullName: z.string().min(3).max(50),
-    country: z.string().min(3).max(100),
     city: z.string().min(3).max(100),
     phoneNumber: z.string().min(10).max(15),
     tanggalLahir: z.string().transform((str) => new Date(str)),
@@ -22,7 +21,6 @@ export class AuthValidation {
 
   static readonly UPDATE_PROFILE: ZodType = z.object({
     fullName: z.string().min(3).max(50),
-    country: z.string().min(3).max(100),
     city: z.string().min(3).max(100),
     phoneNumber: z.string().min(10).max(15),
     tanggalLahir: z.string().transform((str) => new Date(str)),
