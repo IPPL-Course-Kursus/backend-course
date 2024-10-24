@@ -35,7 +35,6 @@ export class AuthService {
       !user.phoneNumber ||
       !user.tanggalLahir ||
       !user.city ||
-      !user.country ||
       !user.email ||
       !user.password
     ) {
@@ -50,15 +49,8 @@ export class AuthService {
       ]);
     }
     const requests = Validation.validate(AuthValidation.REGISTER, user);
-    const {
-      email,
-      password,
-      fullName,
-      phoneNumber,
-      tanggalLahir,
-      city,
-      country,
-    } = requests;
+    const { email, password, fullName, phoneNumber, tanggalLahir, city } =
+      requests;
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -81,7 +73,6 @@ export class AuthService {
         role: "User",
         tanggalLahir: new Date(tanggalLahir),
         city,
-        country,
       },
     });
     await sendEmailVerification(userCredential.user);
@@ -95,7 +86,14 @@ export class AuthService {
   }
 
   static async registerInstruktur(user: RegisterRequest): Promise<void> {
-    if (!user) {
+    if (
+      !user.fullName ||
+      !user.phoneNumber ||
+      !user.tanggalLahir ||
+      !user.city ||
+      !user.email ||
+      !user.password
+    ) {
       throw new ErrorResponse("Register Data is Empty", 400, [
         "fullName",
         "phoneNumber",
@@ -107,15 +105,8 @@ export class AuthService {
       ]);
     }
     const requests = Validation.validate(AuthValidation.REGISTER, user);
-    const {
-      email,
-      password,
-      fullName,
-      phoneNumber,
-      tanggalLahir,
-      city,
-      country,
-    } = requests;
+    const { email, password, fullName, phoneNumber, tanggalLahir, city } =
+      requests;
 
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -139,7 +130,6 @@ export class AuthService {
         role: "Instruktur",
         tanggalLahir: new Date(tanggalLahir),
         city,
-        country,
       },
     });
     await sendEmailVerification(userCredential.user);
@@ -238,7 +228,6 @@ export class AuthService {
       fullName: user.fullName,
       phoneNumber: user.phoneNumber,
       city: user.city,
-      country: user.country,
       tanggalLahir: user.tanggalLahir,
       image: user.image,
     };

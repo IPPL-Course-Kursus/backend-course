@@ -6,7 +6,6 @@ export type LoginRequest = {
 export type RegisterRequest = {
   uid: string;
   fullName: string;
-  country: string;
   city: string;
   phoneNumber: string;
   tanggalLahir: Date;
@@ -24,7 +23,6 @@ export type UserProfile = {
   phoneNumber: string;
   tanggalLahir: Date;
   city: string;
-  country: string;
 };
 
 export type ChangePasswordRequest = {
