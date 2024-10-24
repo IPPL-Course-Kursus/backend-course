@@ -272,9 +272,9 @@ export class CourseService {
     //   ]);
     // }
 
-    if (checkProhibitedWords(data.courseName)) {
-      throw new ErrorResponse("The course name contains prohibited words", 400);
-    }
+    // if (checkProhibitedWords(data.courseName)) {
+    //   throw new ErrorResponse("The course name contains prohibited words", 400);
+    // }
 
     const existingCourse = await prisma.course.findFirst({
       where: { courseName: data.courseName },
