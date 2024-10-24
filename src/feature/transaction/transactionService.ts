@@ -129,7 +129,7 @@ export class TransactionService {
         ppn: ppn,
         price: priceCourse,
         totalPrice: grossAmount,
-        paymentStatus: "pending",
+        paymentStatus: "cancel",
         paymentMethod: "snapMidtrans",
         linkPayment: transaction.redirect_url,
       },
@@ -154,6 +154,10 @@ export class TransactionService {
     }
 
     const data = await midtransSnap.transaction.status(order_id);
+
+    if (data.transaction_status !== "settlement") {
+      data.transaction_status = "cancel";
+    }
 
     await prisma.transaction.update({
       where: { orderId: order_id },
