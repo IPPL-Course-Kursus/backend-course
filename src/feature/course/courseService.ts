@@ -247,32 +247,32 @@ export class CourseService {
     file: any,
     uid: string
   ): Promise<any> {
-    if (
-      !data.categoryId ||
-      !data.courseLevelId ||
-      !data.typeCourseId ||
-      !data.courseName ||
-      !data.aboutCourse ||
-      !data.intendedFor ||
-      !data.courseDiscountPercent ||
-      !data.coursePrice ||
-      !data.publish ||
-      !data.certificateStatus ||
-      !data.totalDuration
-    ) {
-      throw new ErrorResponse("The data cannot be empty", 400, [
-        "categoryId",
-        "courseLevelId",
-        "typeCourseId",
-        "courseName",
-        "aboutCourse",
-        "intendedFor",
-        "coursePrice",
-        "publish",
-        "certificateStatus",
-        "totalDuration",
-      ]);
-    }
+    // if (
+    //   !data.categoryId ||
+    //   !data.courseLevelId ||
+    //   !data.typeCourseId ||
+    //   !data.courseName ||
+    //   !data.aboutCourse ||
+    //   !data.intendedFor ||
+    //   !data.courseDiscountPercent ||
+    //   !data.coursePrice ||
+    //   !data.publish ||
+    //   !data.certificateStatus ||
+    //   !data.totalDuration
+    // ) {
+    //   throw new ErrorResponse("The data cannot be empty", 400, [
+    //     "categoryId",
+    //     "courseLevelId",
+    //     "typeCourseId",
+    //     "courseName",
+    //     "aboutCourse",
+    //     "intendedFor",
+    //     "coursePrice",
+    //     "publish",
+    //     "certificateStatus",
+    //     "totalDuration",
+    //   ]);
+    // }
 
     if (checkProhibitedWords(data.courseName)) {
       throw new ErrorResponse("The course name contains prohibited words", 400);
@@ -398,6 +398,7 @@ export class CourseService {
       !data.courseName ||
       !data.aboutCourse ||
       !data.intendedFor ||
+      !data.courseDiscountPercent ||
       !data.coursePrice ||
       !data.publish ||
       !data.certificateStatus ||
