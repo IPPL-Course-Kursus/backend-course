@@ -21,6 +21,7 @@ import {
   EmailAuthProvider,
   confirmPasswordReset,
   applyActionCode,
+  FirebaseError,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
@@ -329,10 +330,12 @@ export class AuthService {
         "request",
       ]);
     }
+
     const requests = Validation.validate(
       AuthValidation.CHANGE_PASSWORD,
       request
     );
+
     const user = await prisma.user.findUnique({ where: { uid } });
     if (!user) {
       throw new ErrorResponse(
@@ -342,18 +345,49 @@ export class AuthService {
         "USER_NOT_FOUND"
       );
     }
-    const credential = EmailAuthProvider.credential(
-      email,
-      requests.currentPassword
-    );
+
     const currentUser = auth.currentUser;
     if (!currentUser) {
       throw new ErrorResponse("User not authenticated", 401, [
         "authentication",
       ]);
     }
-    await reauthenticateWithCredential(currentUser, credential);
-    await updatePassword(currentUser, requests.newPassword);
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        email,
+        requests.currentPassword
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, requests.newPassword);
+    } catch (error: unknown) {
+      console.log("Failed to reauthenticate:", error);
+
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case "auth/wrong-password":
+          case "auth/invalid-credential":
+            throw new ErrorResponse("Incorrect current password", 400, [
+              "currentPassword",
+            ]);
+          case "auth/user-mismatch":
+            throw new ErrorResponse(
+              "User does not match the authenticated user",
+              400,
+              ["authentication"]
+            );
+          default:
+            throw new ErrorResponse(
+              "An unexpected error occurred while changing the password",
+              500,
+              ["changePassword"]
+            );
+        }
+      }
+      throw new ErrorResponse("An unexpected error occurred", 500, [
+        "changePassword",
+      ]);
+    }
   }
 
   static async resetPassword(data: ResetPasswordRequest): Promise<any> {

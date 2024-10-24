@@ -14,6 +14,7 @@ import {
   confirmPasswordReset,
   applyActionCode,
 } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
 import { initializeApp } from "firebase/app";
 import admin from "firebase-admin";
@@ -61,4 +62,5 @@ export {
   getDownloadURL,
   uploadBytesResumable,
   ref,
+  FirebaseError,
 };
