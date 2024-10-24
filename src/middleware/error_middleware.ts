@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ErrorResponse } from "../models/error_response";
 import multer from "multer";
-import { JsonWebTokenError } from "jsonwebtoken";
 
 export class ErrorMiddleware {
   static async notFound(_req: Request, _res: Response, next: NextFunction) {
@@ -15,14 +14,8 @@ export class ErrorMiddleware {
     res: Response,
     _next: NextFunction
   ) {
-    if (err instanceof JsonWebTokenError) {
-      return res.status(401).json({
-        success: false,
-        code: err.name === "TokenExpiredError" ? 401 : 403,
-        status: err.name,
-        message: err.message,
-      });
-    } else if (err instanceof multer.MulterError) {
+    console.error("Error caught in middleware:", err);
+    if (err instanceof multer.MulterError) {
       return res.status(400).json({
         success: false,
         code: 400,

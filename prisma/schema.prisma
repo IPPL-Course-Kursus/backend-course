@@ -59,7 +59,7 @@ model Course {
   aboutCourse String
   intendedFor String
   courseDiscountPercent Int @default(0)
-  coursePrice Float
+  coursePrice Float @default(0)
   courseDiscountPrice Float @default(0)
   promoStatus Boolean @default(false) 
   publish Publish
