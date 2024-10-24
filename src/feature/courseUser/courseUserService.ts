@@ -104,6 +104,14 @@ export class CourseUserService {
       include: {
         course: {
           include: {
+            category: true,
+            courseLevel: true,
+            typeCourse: true,
+            _count: {
+              select: {
+                chapters: true,
+              },
+            },
             chapters: {
               orderBy: { sort: "asc" },
               include: {

@@ -129,7 +129,7 @@ export class TransactionService {
         ppn: ppn,
         price: priceCourse,
         totalPrice: grossAmount,
-        paymentStatus: "pending",
+        paymentStatus: "cancel",
         paymentMethod: "snapMidtrans",
         linkPayment: transaction.redirect_url,
       },
