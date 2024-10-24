@@ -25,8 +25,6 @@ import {
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
 import { imagekit } from "../../utils/image_kit";
-// const dotenv = require("dotenv");
-// dotenv.config();
 
 export class AuthService {
   static async register(user: RegisterRequest): Promise<void> {

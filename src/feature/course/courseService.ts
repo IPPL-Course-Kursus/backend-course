@@ -2,6 +2,7 @@ import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
 import { UpdateCourseRequest, CreateCourseRequest } from "./courseModel";
 import { imagekit } from "../../utils/image_kit";
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class CourseService {
   static async getAllCourses(): Promise<any> {
@@ -246,9 +247,36 @@ export class CourseService {
     file: any,
     uid: string
   ): Promise<any> {
-    if (!data) {
-      throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
+    if (
+      !data.categoryId ||
+      !data.courseLevelId ||
+      !data.typeCourseId ||
+      !data.courseName ||
+      !data.aboutCourse ||
+      !data.intendedFor ||
+      !data.coursePrice ||
+      !data.publish ||
+      !data.certificateStatus ||
+      !data.totalDuration
+    ) {
+      throw new ErrorResponse("The data cannot be empty", 400, [
+        "categoryId",
+        "courseLevelId",
+        "typeCourseId",
+        "courseName",
+        "aboutCourse",
+        "intendedFor",
+        "coursePrice",
+        "publish",
+        "certificateStatus",
+        "totalDuration",
+      ]);
     }
+
+    if (checkProhibitedWords(data.courseName)) {
+      throw new ErrorResponse("The course name contains prohibited words", 400);
+    }
+
     const existingCourse = await prisma.course.findFirst({
       where: { courseName: data.courseName },
     });
@@ -343,7 +371,7 @@ export class CourseService {
         userId: uid,
         courseCode: uniqueCourseCode,
         courseName: data.courseName,
-        image: imageUrl || data.image,
+        image: imageUrl,
         aboutCourse: data.aboutCourse,
         intendedFor: data.intendedFor,
         courseDiscountPercent: data.courseDiscountPercent || 0,
@@ -362,6 +390,31 @@ export class CourseService {
     data: UpdateCourseRequest,
     file?: any
   ): Promise<any> {
+    if (
+      !data.categoryId ||
+      !data.courseLevelId ||
+      !data.typeCourseId ||
+      !data.courseName ||
+      !data.aboutCourse ||
+      !data.intendedFor ||
+      !data.coursePrice ||
+      !data.publish ||
+      !data.certificateStatus ||
+      !data.totalDuration
+    ) {
+      throw new ErrorResponse("The data cannot be empty", 400, [
+        "categoryId",
+        "courseLevelId",
+        "typeCourseId",
+        "courseName",
+        "aboutCourse",
+        "intendedFor",
+        "coursePrice",
+        "publish",
+        "certificateStatus",
+        "totalDuration",
+      ]);
+    }
     const course = await prisma.course.findUnique({
       where: { id },
     });
@@ -378,7 +431,6 @@ export class CourseService {
     const validFileTypes = ["image/jpeg", "image/png"];
     let courseDiscountPrice: number | undefined;
     let promoStatus: boolean = false;
-    let newCourseCode = course.courseCode;
 
     if (data.categoryId && data.categoryId !== course.categoryId) {
       const category = await prisma.category.findUnique({
@@ -390,65 +442,50 @@ export class CourseService {
         throw new ErrorResponse("New category not found", 404);
       }
 
-      let isUnique = false;
+      if (file && validFileTypes.includes(file.mimetype)) {
+        try {
+          const result = await imagekit.upload({
+            file: file.buffer,
+            fileName: `${course.courseCode}-${file.originalname}`,
+            folder: "/course",
+          });
 
-      while (!isUnique) {
-        const randomNumber = Math.floor(Math.random() * 10000);
-        newCourseCode = `${category.categoryCode}-${randomNumber}`;
-        const existingCourse = await prisma.course.findUnique({
-          where: { courseCode: newCourseCode },
-        });
-
-        if (!existingCourse) {
-          isUnique = true;
+          imageUrl = result.url;
+        } catch (error) {
+          throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
         }
       }
-    }
 
-    if (file && validFileTypes.includes(file.mimetype)) {
-      try {
-        const result = await imagekit.upload({
-          file: file.buffer,
-          fileName: `${newCourseCode}-${file.originalname}`,
-          folder: "/course",
-        });
-
-        imageUrl = result.url;
-      } catch (error) {
-        throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
+      if (data.courseDiscountPercent) {
+        courseDiscountPrice =
+          data.coursePrice -
+          (data.coursePrice * data.courseDiscountPercent) / 100;
+        promoStatus = true;
+      } else {
+        courseDiscountPrice = undefined;
+        promoStatus = false;
       }
-    }
 
-    if (data.courseDiscountPercent) {
-      courseDiscountPrice =
-        data.coursePrice -
-        (data.coursePrice * data.courseDiscountPercent) / 100;
-      promoStatus = true;
-    } else {
-      courseDiscountPrice = undefined;
-      promoStatus = false;
+      await prisma.course.update({
+        where: { id },
+        data: {
+          categoryId: data.categoryId,
+          courseLevelId: data.courseLevelId,
+          typeCourseId: data.typeCourseId,
+          courseName: data.courseName,
+          image: imageUrl,
+          aboutCourse: data.aboutCourse,
+          intendedFor: data.intendedFor,
+          courseDiscountPercent: data.courseDiscountPercent,
+          courseDiscountPrice: courseDiscountPrice,
+          coursePrice: data.coursePrice,
+          promoStatus: promoStatus,
+          publish: data.publish,
+          certificateStatus: data.certificateStatus,
+          totalDuration: data.totalDuration,
+        },
+      });
     }
-
-    await prisma.course.update({
-      where: { id },
-      data: {
-        categoryId: data.categoryId,
-        courseLevelId: data.courseLevelId,
-        typeCourseId: data.typeCourseId,
-        courseCode: newCourseCode,
-        courseName: data.courseName,
-        image: imageUrl,
-        aboutCourse: data.aboutCourse,
-        intendedFor: data.intendedFor,
-        courseDiscountPercent: data.courseDiscountPercent,
-        courseDiscountPrice: courseDiscountPrice,
-        coursePrice: data.coursePrice,
-        promoStatus: promoStatus,
-        publish: data.publish,
-        certificateStatus: data.certificateStatus,
-        totalDuration: data.totalDuration,
-      },
-    });
   }
 
   static async deleteCourse(id: number, uid: string): Promise<any> {

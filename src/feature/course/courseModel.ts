@@ -7,7 +7,6 @@ export type UpdateCourseRequest = {
   categoryId: number;
   courseLevelId: number;
   typeCourseId: number;
-  courseCode: string;
   courseName: string;
   aboutCourse: string;
   intendedFor: string;
@@ -28,7 +27,6 @@ export type CreateCourseRequest = {
   courseDiscountPercent: number;
   coursePrice: number;
   publish: Publish;
-  image: string;
   certificateStatus: boolean;
   totalDuration: number;
 };
