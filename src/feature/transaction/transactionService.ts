@@ -259,6 +259,7 @@ export class TransactionService {
         ["user_id"]
       );
     }
+
     const courses = await prisma.course.findMany({
       where: { userId },
       select: {
@@ -319,7 +320,19 @@ export class TransactionService {
       ]);
     }
 
-    return transactions;
+    const transactionCountByType = transactions.reduce((acc, transaction) => {
+      const typeName = transaction.typeCourseName || "Unknown";
+      acc[typeName] = (acc[typeName] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const totalTransactions = transactions.length;
+
+    return {
+      transactions,
+      transactionCountByType,
+      totalTransactions,
+    };
   }
 
   //   static async handleMidtransNotification(notificationData: any): Promise<any> {
