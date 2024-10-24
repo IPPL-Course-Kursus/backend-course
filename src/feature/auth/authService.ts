@@ -25,6 +25,7 @@ import {
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
 import { imagekit } from "../../utils/image_kit";
+import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class AuthService {
   static async register(user: RegisterRequest): Promise<void> {
@@ -46,6 +47,18 @@ export class AuthService {
         "password",
       ]);
     }
+
+    if (
+      checkProhibitedWords(user.fullName) ||
+      checkProhibitedWords(user.email) ||
+      checkProhibitedWords(user.city) ||
+      checkProhibitedWords(user.password)
+    ) {
+      throw new ErrorResponse("fullName contains prohibited words", 400, [
+        "fullName",
+      ]);
+    }
+
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
