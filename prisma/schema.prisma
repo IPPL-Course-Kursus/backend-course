@@ -237,11 +237,8 @@ enum Publish {
 enum LanguageInterpreter {
   Python
   Java
-  Kotlin
   JavaScript
   PHP
-  Swift
-  Dart
 }
 
 enum CourseStatus {
