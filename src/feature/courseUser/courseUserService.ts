@@ -140,17 +140,17 @@ export class CourseUserService {
 
   static async updateCourseProgress(
     uid: string,
-    courseId: number,
+    courseUserId: number,
     contentId: number
   ): Promise<any> {
-    if (!uid || !courseId || !contentId) {
+    if (!uid || !courseUserId || !contentId) {
       throw new ErrorResponse("userId, courseId, contentId is required", 400);
     }
 
     const courseUser = await prisma.courseUser.findFirst({
       where: {
+        id: courseUserId,
         userId: uid,
-        courseId: courseId,
       },
       include: {
         course: {
@@ -192,20 +192,20 @@ export class CourseUserService {
 
     const completedContent = await prisma.userContentProgress.count({
       where: {
-        courseUserId: courseUser.id,
+        courseUserId: courseUserId,
         contentStatus: true,
       },
     });
 
     const progress = (completedContent / totalContent) * 100;
     await prisma.courseUser.update({
-      where: { id: courseUser.id },
+      where: { id: courseUserId },
       data: { contentFinish: progress },
     });
 
     if (progress === 100) {
       await prisma.courseUser.update({
-        where: { id: courseUser.id },
+        where: { id: courseUserId },
         data: { courseStatus: "Completed" },
       });
     }

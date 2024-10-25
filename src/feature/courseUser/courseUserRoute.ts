@@ -26,7 +26,7 @@ courseUserRoute.get(
 );
 
 courseUserRoute.put(
-  "/course/:courseId/progress/content/:contentId",
+  "/:courseUserId/progress/content/:contentId",
   JWTMiddleware.verifyToken,
   JWTMiddleware.userOnly,
   CourseUserController.updateCourseProgress

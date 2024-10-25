@@ -43,10 +43,10 @@ export class CourseUserController {
   ) {
     try {
       const user = res.locals.user;
-      const { courseId, contentId } = req.params;
+      const { courseUserId, contentId } = req.params;
       const progress = await CourseUserService.updateCourseProgress(
         user.uid,
-        parseInt(courseId),
+        parseInt(courseUserId),
         parseInt(contentId)
       );
       res.status(200).json({ message: "progress updated", data: progress });
