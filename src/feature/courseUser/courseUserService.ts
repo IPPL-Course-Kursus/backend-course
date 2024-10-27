@@ -1,3 +1,4 @@
+import { match } from "assert";
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
 import { CreateCourseUserRequest } from "./courseUserModel";
@@ -198,6 +199,7 @@ export class CourseUserService {
     });
 
     const progress = (completedContent / totalContent) * 100;
+    Math.round(progress);
     await prisma.courseUser.update({
       where: { id: courseUserId },
       data: { contentFinish: progress },
