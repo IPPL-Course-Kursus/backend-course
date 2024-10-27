@@ -49,7 +49,7 @@ export class CourseUserController {
         parseInt(courseUserId),
         parseInt(contentId)
       );
-      res.status(200).json({ message: "progress updated", data: progress });
+      res.status(200).json({ data: progress });
     } catch (error) {
       next(error);
     }

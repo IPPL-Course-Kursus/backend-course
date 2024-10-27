@@ -148,6 +148,16 @@ export class CourseUserService {
     if (!uid || !courseUserId || !contentId) {
       throw new ErrorResponse("userId, courseId, contentId is required", 400);
     }
+    const userProgress = await prisma.userContentProgress.findFirst({
+      where: {
+        courseUserId: courseUserId,
+        contentId: contentId,
+      },
+    });
+
+    if (userProgress) {
+      return;
+    }
 
     const courseUser = await prisma.courseUser.findFirst({
       where: {
@@ -200,13 +210,14 @@ export class CourseUserService {
     });
 
     const progress = (completedContent / totalContent) * 100;
-    Math.round(progress);
+    const roundedProgress = Math.round(progress);
+
     await prisma.courseUser.update({
       where: { id: courseUserId },
-      data: { contentFinish: progress },
+      data: { contentFinish: roundedProgress },
     });
 
-    if (progress === 100) {
+    if (roundedProgress === 100) {
       await prisma.courseUser.update({
         where: { id: courseUserId },
         data: { courseStatus: "Completed" },
@@ -220,6 +231,6 @@ export class CourseUserService {
       }
     }
 
-    return { progress };
+    return roundedProgress;
   }
 }
