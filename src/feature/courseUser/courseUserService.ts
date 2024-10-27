@@ -2,6 +2,7 @@ import { match } from "assert";
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
 import { CreateCourseUserRequest } from "./courseUserModel";
+import { CourseCertificateService } from "../courseCertificate/courseCertificateService";
 
 export class CourseUserService {
   static async getCourseUser(uid: string): Promise<any> {
@@ -210,6 +211,13 @@ export class CourseUserService {
         where: { id: courseUserId },
         data: { courseStatus: "Completed" },
       });
+      if (courseUser.course.certificateStatus === true) {
+        try {
+          await CourseCertificateService.createCertificate(courseUserId);
+        } catch (error) {
+          console.error("Course don't have certificate", error);
+        }
+      }
     }
 
     return { progress };
