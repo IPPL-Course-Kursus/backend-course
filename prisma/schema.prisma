@@ -235,10 +235,10 @@ enum Publish {
 }
 
 enum LanguageInterpreter {
-  Python
-  Java
-  JavaScript
-  PHP
+  python
+  java
+  javaScript
+  php
 }
 
 enum CourseStatus {
