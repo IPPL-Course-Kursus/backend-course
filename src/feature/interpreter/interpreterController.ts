@@ -25,25 +25,25 @@ export class InterpreterController {
       let command: string | null = null;
 
       switch (languageInterpreter) {
-        case "Python":
+        case "python":
           command = `python -c "${sourceCode}"`;
           break;
-        case "Java":
+        case "java":
           command = `echo "${sourceCode}" > Main.java && javac Main.java && java Main`;
           break;
-        case "Kotlin":
+        case "kotlin":
           command = `echo "${sourceCode}" > Main.kt && kotlinc Main.kt -include-runtime -d Main.jar && java -jar Main.jar`;
           break;
-        case "JavaScript":
+        case "javaScript":
           command = `node -e "${sourceCode}"`;
           break;
-        case "PHP":
+        case "php":
           command = `php -r "${sourceCode}"`;
           break;
-        case "Swift":
+        case "swift":
           command = `swift -e "${sourceCode}"`;
           break;
-        case "Dart":
+        case "dart":
           command = `dart -e "${sourceCode}"`;
           break;
         default:
