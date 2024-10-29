@@ -1,15 +1,15 @@
-import { prisma } from "../../application/database"; // Sesuaikan path sesuai kebutuhan
-import { ErrorResponse } from "../../models/error_response"; // Sesuaikan path sesuai kebutuhan
+import { prisma } from "../../application/database";
+import { ErrorResponse } from "../../models/error_response";
 import {
   CreateInterpreterRequest,
   UpdateInterpreterRequest,
-} from "./interpreterModel"; // Sesuaikan path sesuai kebutuhan
-import { InterpreterValidation } from "./interpreterValidation"; // Asumsi ada validasi untuk interpreter
-import { Validation } from "../../validations/validation"; // Sesuaikan path sesuai kebutuhan
+} from "./interpreterModel";
+import { InterpreterValidation } from "./interpreterValidation";
+import { Validation } from "../../validations/validation";
 import { LanguageInterpreter } from "@prisma/client";
 
 export class InterpreterService {
-  // Create a new Interpreter
+  // Membuat Interpreter baru
   static async createInterpreter(
     request: CreateInterpreterRequest
   ): Promise<void> {
@@ -30,74 +30,71 @@ export class InterpreterService {
       console.error("Error during interpreter creation:", error);
       throw new ErrorResponse(
         "Interpreter creation failed: unable to save to database",
-        500,
-        ["database"]
+        500
       );
     }
   }
 
-  // Get all Interpreters
-  static async getAllInterpreters(): Promise<any> {
+  // Mendapatkan semua Interpreter
+  static async getAllInterpreters(): Promise<any[]> {
     try {
-      const interpreters = await prisma.interpreter.findMany();
-      return interpreters;
+      return await prisma.interpreter.findMany();
     } catch (error) {
-      console.error("Error during fetching interpreters:", error);
+      console.error("Error fetching interpreters:", error);
       throw new ErrorResponse(
         "Failed to retrieve interpreters from database",
-        500,
-        ["database"]
+        500
       );
     }
   }
 
-  // Get an Interpreter by ID
+  // Mendapatkan Interpreter berdasarkan ID
   static async getInterpreterById(id: number): Promise<any> {
     try {
       const interpreter = await prisma.interpreter.findUnique({
         where: { id },
       });
       if (!interpreter) {
-        throw new ErrorResponse("Interpreter not found", 404, ["id"]);
+        throw new ErrorResponse("Interpreter not found", 404);
       }
       return interpreter;
     } catch (error) {
-      console.error("Error during fetching interpreter by ID:", error);
+      console.error("Error fetching interpreter by ID:", error);
       throw new ErrorResponse(
         "Failed to retrieve interpreter from database",
-        500,
-        ["database", "id"]
+        500
       );
     }
   }
 
-  // Update an existing Interpreter
+  // Mengupdate Interpreter
   static async updateInterpreter(data: UpdateInterpreterRequest): Promise<any> {
-    const { id, languageInterpreter, sourceCode } = data;
+    const validatedRequest = Validation.validate(
+      InterpreterValidation.UPDATE,
+      data
+    );
+    const { id, languageInterpreter, sourceCode } = validatedRequest;
 
     try {
-      // Memastikan bahwa ID ada dan valid
-      const updatedInterpreter = await prisma.interpreter.update({
-        where: { id }, // ID harus dikirim dengan benar di where clause
+      return await prisma.interpreter.update({
+        where: { id },
         data: {
           languageInterpreter: languageInterpreter as LanguageInterpreter,
           sourceCode,
-        }, // Update field
+        },
       });
-
-      return updatedInterpreter;
     } catch (error) {
       console.error("Error updating interpreter:", error);
-      throw new Error("Error updating interpreter");
+      throw new ErrorResponse("Interpreter update failed", 500);
     }
   }
 
+  // Menghapus Interpreter berdasarkan ID
   static async deleteInterpreter(id: number): Promise<void> {
     try {
-      // Cek apakah ada referensi lain di tabel contents
       const relatedContents = await prisma.content.findMany({
-        where: { interpreterId: id }, // Mencari konten dengan interpreterId yang sama
-        select: { id: true, contentTitle: true }, // Ambil ID dan judul konten untuk informasi
+        where: { interpreterId: id },
+        select: { id: true, contentTitle: true },
       });
 
       if (relatedContents.length > 0) {
@@ -110,17 +107,12 @@ export class InterpreterService {
         );
       }
 
-      // Sekarang hapus Interpreter jika tidak ada yang terkait
       await prisma.interpreter.delete({
         where: { id },
       });
     } catch (error) {
-      console.error("Error during interpreter deletion:", error);
-      throw new ErrorResponse(
-        "Interpreter deletion failed: unable to delete from database",
-        500,
-        ["database", "id"]
-      );
+      console.error("Error deleting interpreter:", error);
+      throw new ErrorResponse("Interpreter deletion failed", 500);
     }
   }
 }

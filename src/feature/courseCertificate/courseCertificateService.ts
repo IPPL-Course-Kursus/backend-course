@@ -22,12 +22,26 @@ export class CourseCertificateService {
       throw new ErrorResponse("Certificate disabled for this course", 400);
     }
 
-    const courseCode = courseUser.course.courseCode;
-
     const fullName = courseUser.user.fullName;
 
-    const randomNumber = Math.floor(100000 + Math.random() * 900000);
-    const certificateNumber = `${courseCode}${randomNumber}`;
+    let certificateNumber;
+    let isUnique = false;
+    while (!isUnique) {
+      const randomAlphaNumeric =
+        CourseCertificateService.generateRandomAlphaNumeric(6);
+      certificateNumber = `${randomAlphaNumeric}`;
+
+      const existingCertificate = await prisma.certificate.findFirst({
+        where: { certificateNumber },
+      });
+
+      if (!existingCertificate) {
+        isUnique = true;
+      }
+    }
+    if (!certificateNumber) {
+      throw new ErrorResponse("Certificate number not generated", 500);
+    }
 
     await prisma.certificate.create({
       data: {
@@ -47,11 +61,33 @@ export class CourseCertificateService {
     }
     const certificate = await prisma.certificate.findUnique({
       where: { courseUserId },
+      include: {
+        courseUser: {
+          select: {
+            course: {
+              select: {
+                courseName: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!certificate) {
       throw new ErrorResponse("Certificate not found", 404);
     }
     return certificate;
+  }
+
+  private static generateRandomAlphaNumeric(length: number): string {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return result;
   }
 }
