@@ -1,6 +1,6 @@
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
-import { ContentModel } from "./contentModel";
+import { ContentModel, updateContentModel } from "./contentModel";
 import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class ContentService {
@@ -20,6 +20,21 @@ export class ContentService {
         "There is an empty column that must be filled in",
         400
       );
+    }
+    let interpreterId: number | null = null;
+    if (
+      data.interpreterStatus === true &&
+      data.sourceCode &&
+      data.languageInterpreter
+    ) {
+      const createInterpreter = await prisma.interpreter.create({
+        data: {
+          languageInterpreter: data.languageInterpreter,
+          sourceCode: data.sourceCode,
+        },
+      });
+
+      interpreterId = createInterpreter.id;
     }
 
     const existSort = await prisma.content.findFirst({
@@ -49,7 +64,7 @@ export class ContentService {
         contentUrl: data.contentUrl,
         duration: data.duration,
         teks: data.teks,
-        interpreterId: data.interpreterId || null,
+        interpreterId: interpreterId || null,
         interpreterStatus: data.interpreterStatus || false,
       },
     });
@@ -57,7 +72,7 @@ export class ContentService {
 
   static async updateContent(
     contentId: number,
-    data: ContentModel
+    data: updateContentModel
   ): Promise<void> {
     if (
       !data.contentTitle ||
