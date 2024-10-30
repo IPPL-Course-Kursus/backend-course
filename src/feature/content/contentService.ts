@@ -23,10 +23,15 @@ export class ContentService {
     }
     let interpreterId: number | null = null;
     if (
-      data.interpreterStatus === true &&
-      data.sourceCode &&
-      data.languageInterpreter
+      data.interpreterStatus === true ||
+      (data.sourceCode && data.languageInterpreter)
     ) {
+      if (!data.sourceCode || !data.languageInterpreter) {
+        throw new ErrorResponse(
+          "Both sourceCode and languageInterpreter must be filled in",
+          400
+        );
+      }
       const createInterpreter = await prisma.interpreter.create({
         data: {
           languageInterpreter: data.languageInterpreter,
