@@ -287,8 +287,8 @@ export class AuthController {
   ) {
     try {
       const { id } = req.params;
-      const userId = parseInt(id, 10);
-      const response = await AuthService.deleteInstruktur(userId);
+      const Id = parseInt(id, 10);
+      const response = await AuthService.deleteInstruktur(Id);
       return res.status(200).json({
         success: true,
         message: "Delete instruktur successful",

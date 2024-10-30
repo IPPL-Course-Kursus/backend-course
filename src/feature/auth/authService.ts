@@ -495,6 +495,33 @@ export class AuthService {
       throw new ErrorResponse("uid is empty", 400, ["uid"]);
     }
 
+    const instruktur = await prisma.user.findUnique({
+      where: {
+        id,
+        role: "Instruktur",
+      },
+    });
+    if (!instruktur) {
+      throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
+    }
+
+    const relatedCourse = await prisma.course.findMany({
+      where: {
+        userId: instruktur.uid,
+      },
+    });
+
+    if (relatedCourse.length > 0) {
+      const courseNames = relatedCourse
+        .slice(0, 5)
+        .map((course) => course.courseName)
+        .join(", ");
+      throw new ErrorResponse(
+        `Cannot delete user: it is referenced by existing courses: ${courseNames}.`,
+        400
+      );
+    }
+
     const deleteInstruktur = await prisma.user.update({
       where: {
         id,
