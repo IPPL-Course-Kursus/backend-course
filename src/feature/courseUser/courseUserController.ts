@@ -23,9 +23,11 @@ export class CourseUserController {
   ) {
     try {
       const { id } = req.params;
+      const user = res.locals.user;
       const courseUser = parseInt(id);
       const courseUserDetail = await CourseUserService.getCourseUserDetail(
-        courseUser
+        courseUser,
+        user.uid
       );
       res.status(200).json({
         message: "success get course user detail",

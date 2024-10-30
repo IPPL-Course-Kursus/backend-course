@@ -95,13 +95,14 @@ export class CourseUserService {
     return startCourse;
   }
 
-  static async getCourseUserDetail(id: number): Promise<any> {
+  static async getCourseUserDetail(id: number, uid: string): Promise<any> {
     if (!id) {
       throw new ErrorResponse("id is required", 400);
     }
     const courseUser = await prisma.courseUser.findUnique({
       where: {
         id,
+        userId: uid,
       },
       include: {
         course: {
