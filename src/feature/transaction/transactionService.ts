@@ -179,6 +179,16 @@ export class TransactionService {
           ["order_id"]
         );
       }
+      const courseExists = await prisma.courseUser.findMany({
+        where: { userId: course.userId, courseId: course.courseId },
+      });
+      if (courseExists.length > 0) {
+        throw new ErrorResponse(
+          "CourseUser already exists for the provided userId and courseId",
+          400,
+          ["user_id", "course_id"]
+        );
+      }
       await prisma.courseUser.create({
         data: {
           userId: course.userId,
