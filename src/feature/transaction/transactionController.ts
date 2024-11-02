@@ -104,6 +104,28 @@ export class TransactionController {
     }
   }
 
+  static async resumeTransaction(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { orderId } = req.params;
+      const user = res.locals.user;
+      const transaction = await TransactionService.resumeTransaction(
+        user.uid,
+        orderId
+      );
+      res.status(200).json({
+        success: true,
+        message: "Transaction resumed successfully",
+        data: transaction,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   //   static async handleNotification(
   //     req: Request,
   //     res: Response,

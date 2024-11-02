@@ -26,6 +26,13 @@ transactionRoute.get(
 transactionRoute.get("/", TransactionController.getAllTransactions);
 
 transactionRoute.get(
+  "/resume/:orderId",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.userOnly,
+  TransactionController.resumeTransaction
+);
+
+transactionRoute.get(
   "/instructor-transaction",
   JWTMiddleware.verifyToken,
   JWTMiddleware.instrukturOnly,

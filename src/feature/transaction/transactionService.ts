@@ -120,6 +120,25 @@ export class TransactionService {
 
     const transaction = await midtransSnap.createTransaction(parameter);
 
+    const transactionData = await prisma.transaction.findFirst({
+      where: { userId, courseId },
+    });
+
+    if (transactionData) {
+      await prisma.transaction.update({
+        where: { id: transactionData.id },
+        data: {
+          orderId: orderId,
+          ppn: ppn,
+          price: priceCourse,
+          totalPrice: grossAmount,
+          paymentStatus: "pending",
+          paymentMethod: "snapMidtrans",
+          linkPayment: transaction.redirect_url,
+        },
+      });
+    }
+
     await prisma.transaction.create({
       data: {
         userId,
@@ -129,7 +148,7 @@ export class TransactionService {
         ppn: ppn,
         price: priceCourse,
         totalPrice: grossAmount,
-        paymentStatus: "cancel",
+        paymentStatus: "pending",
         paymentMethod: "snapMidtrans",
         linkPayment: transaction.redirect_url,
       },
@@ -155,10 +174,6 @@ export class TransactionService {
     }
 
     const data = await midtransSnap.transaction.status(order_id);
-
-    if (data.transaction_status !== "settlement") {
-      data.transaction_status = "cancel";
-    }
 
     await prisma.transaction.update({
       where: { orderId: order_id },
@@ -198,6 +213,44 @@ export class TransactionService {
         },
       });
     }
+  }
+
+  static async resumeTransaction(
+    userId: string,
+    order_id: string
+  ): Promise<any> {
+    if (!order_id) {
+      throw new ErrorResponse(
+        "Invalid request, missing required parameters",
+        400,
+        ["order_id"]
+      );
+    }
+
+    if (!userId) {
+      throw new ErrorResponse(
+        "Invalid request, missing required parameters",
+        400,
+        ["user_id"]
+      );
+    }
+    const transaction = await prisma.transaction.findUnique({
+      where: { userId, orderId: order_id },
+    });
+    if (!transaction) {
+      throw new ErrorResponse(
+        "Transaction not found for the provided orderId",
+        400,
+        ["order_id"]
+      );
+    }
+
+    return {
+      success: true,
+      data: {
+        paymentUrl: transaction.linkPayment,
+      },
+    };
   }
 
   static async getAllTransactions(): Promise<any> {

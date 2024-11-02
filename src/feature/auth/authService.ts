@@ -22,7 +22,6 @@ import {
   confirmPasswordReset,
   applyActionCode,
   FirebaseError,
-  fetchSignInMethodsForEmail,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
@@ -84,6 +83,8 @@ export class AuthService {
             role: "User",
             tanggalLahir: new Date(tanggalLahir),
             city,
+            image:
+              "https://ik.imagekit.io/vyck38py3/photoProfile/user_profile.jpg?updatedAt=1730528814856",
           },
         });
 
@@ -157,6 +158,8 @@ export class AuthService {
             role: "Instruktur",
             tanggalLahir: new Date(tanggalLahir),
             city,
+            image:
+              "https://ik.imagekit.io/vyck38py3/photoProfile/user_profile.jpg?updatedAt=1730528814856",
           },
         });
 

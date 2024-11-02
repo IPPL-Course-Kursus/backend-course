@@ -24,22 +24,22 @@ export class ContentService {
     let interpreterId: number | null = null;
     if (
       data.interpreterStatus === true ||
-      (data.sourceCode && data.languageInterpreter)
+      (data.sourceCode && data.languageInterpreterId)
     ) {
-      if (!data.sourceCode || !data.languageInterpreter) {
+      if (!data.sourceCode || !data.languageInterpreterId) {
         throw new ErrorResponse(
           "Both sourceCode and languageInterpreter must be filled in",
           400
         );
       }
-      // const createInterpreter = await prisma.interpreter.create({
-      //   data: {
-      //     languageInterpreter: data.languageInterpreter,
-      //     sourceCode: data.sourceCode,
-      //   },
-      // });
+      const createInterpreter = await prisma.interpreter.create({
+        data: {
+          languageInterpreterId: data.languageInterpreterId,
+          sourceCode: data.sourceCode,
+        },
+      });
 
-      // interpreterId = createInterpreter.id;
+      interpreterId = createInterpreter.id;
     }
 
     const existSort = await prisma.content.findFirst({
@@ -73,6 +73,25 @@ export class ContentService {
         interpreterStatus: data.interpreterStatus || false,
       },
     });
+
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: { courseId: true },
+    });
+
+    if (chapter) {
+      const courseId = chapter.courseId;
+
+      const totalDuration = await prisma.content.aggregate({
+        where: { chapter: { courseId: courseId } },
+        _sum: { duration: true },
+      });
+
+      await prisma.course.update({
+        where: { id: courseId },
+        data: { totalDuration: totalDuration._sum.duration || 0 },
+      });
+    }
   }
 
   static async updateContent(
@@ -103,6 +122,61 @@ export class ContentService {
       );
     }
 
+    const existingContent = await prisma.content.findUnique({
+      where: { id: contentId },
+      include: {
+        interpreter: true,
+      },
+    });
+
+    if (!existingContent) {
+      throw new ErrorResponse("Content not found", 404);
+    }
+
+    if (data.interpreterStatus) {
+      if (!data.sourceCode || !data.languageInterpreterId) {
+        throw new ErrorResponse(
+          "Both sourceCode and languageInterpreter must be filled in",
+          400
+        );
+      }
+
+      if (existingContent.interpreterId) {
+        await prisma.interpreter.update({
+          where: { id: existingContent.interpreterId },
+          data: {
+            languageInterpreterId: data.languageInterpreterId,
+            sourceCode: data.sourceCode,
+          },
+        });
+      } else {
+        const newInterpreter = await prisma.interpreter.create({
+          data: {
+            languageInterpreterId: data.languageInterpreterId,
+            sourceCode: data.sourceCode,
+          },
+        });
+        await prisma.content.update({
+          where: { id: contentId },
+          data: {
+            interpreterId: newInterpreter.id,
+            interpreterStatus: true,
+          },
+        });
+      }
+    } else if (existingContent.interpreterId) {
+      await prisma.interpreter.delete({
+        where: { id: existingContent.interpreterId },
+      });
+      await prisma.content.update({
+        where: { id: contentId },
+        data: {
+          interpreterId: null,
+          interpreterStatus: false,
+        },
+      });
+    }
+
     await prisma.content.update({
       where: { id: contentId },
       data: {
@@ -111,8 +185,8 @@ export class ContentService {
         contentUrl: data.contentUrl,
         duration: data.duration,
         teks: data.teks,
-        interpreterId: data.interpreterId || null,
-        interpreterStatus: data.interpreterStatus || false,
+        interpreterStatus:
+          data.interpreterStatus || existingContent.interpreterStatus,
       },
     });
   }
@@ -127,6 +201,9 @@ export class ContentService {
   static async getContentById(contentId: string): Promise<any> {
     const content = await prisma.content.findUnique({
       where: { id: contentId },
+      include: {
+        interpreter: true,
+      },
     });
     if (!content) {
       throw new ErrorResponse("Content not found", 404);

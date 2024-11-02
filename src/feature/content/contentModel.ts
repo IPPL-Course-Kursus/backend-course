@@ -1,10 +1,3 @@
-export enum LanguageInterpreter {
-  python = "python",
-  java = "java",
-  javaScript = "javaScript",
-  php = "php",
-}
-
 export type ContentModel = {
   sort: number;
   contentTitle: string;
@@ -13,7 +6,7 @@ export type ContentModel = {
   teks: string;
   sourceCode?: string;
   interpreterStatus?: boolean;
-  languageInterpreter?: LanguageInterpreter;
+  languageInterpreterId?: number;
 };
 
 export type updateContentModel = {
@@ -22,6 +15,7 @@ export type updateContentModel = {
   contentUrl: string;
   duration: number;
   teks: string;
-  interpreterId?: number;
+  sourceCode?: string;
   interpreterStatus?: boolean;
+  languageInterpreterId?: number;
 };
