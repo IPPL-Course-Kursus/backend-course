@@ -13,6 +13,7 @@ import {
   EmailAuthProvider,
   confirmPasswordReset,
   applyActionCode,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 
@@ -45,6 +46,7 @@ const auth = getAuth(firebaseApp);
 const storage = getStorage(firebaseApp);
 
 export {
+  fetchSignInMethodsForEmail,
   getAuth,
   auth,
   storage,

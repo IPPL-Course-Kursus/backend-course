@@ -22,6 +22,7 @@ import {
   confirmPasswordReset,
   applyActionCode,
   FirebaseError,
+  fetchSignInMethodsForEmail,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
@@ -64,6 +65,12 @@ export class AuthService {
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
+
+    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+    if (signInMethods.length > 0) {
+      throw new ErrorResponse("Email already exists", 400, ["email"]);
+    }
+
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -131,6 +138,11 @@ export class AuthService {
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
+
+    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+    if (signInMethods.length > 0) {
+      throw new ErrorResponse("Email already exists", 400, ["email"]);
+    }
 
     const userCredential = await createUserWithEmailAndPassword(
       auth,

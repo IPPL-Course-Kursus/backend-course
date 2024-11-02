@@ -13,19 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model Auth {
-//   id Int @id @default(autoincrement())
-//   userId Int @unique
-//   email String @unique
-//   password String
-//   verified Boolean
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   user User @relation(fields: [userId], references: [id])
-
-//   @@map("auths")
-// }
-
 model User {
   id Int @id @default(autoincrement())
   uid String @unique
@@ -40,7 +27,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   transaction Transaction[]
-  // auth Auth?
   course Course[]
   courseUser CourseUser[]
 
@@ -48,7 +34,7 @@ model User {
 }
 
 model Course {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   categoryId Int 
   userId String 
   courseLevelId Int 
@@ -82,7 +68,6 @@ model Course {
 model Category {
   id Int @id @default(autoincrement())
   categoryName String
-  categoryCode String 
   image String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -112,9 +97,9 @@ model TypeCourse {
 }
 
 model Chapter {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   sort Int 
-  courseId Int 
+  courseId String 
   chapterTitle String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -126,9 +111,9 @@ model Chapter {
 }
 
 model Content {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   sort Int
-  chapterId Int
+  chapterId String
   interpreterId Int? 
   contentTitle String
   contentUrl String
@@ -148,19 +133,21 @@ model Content {
 
 model Interpreter {
   id Int @id @default(autoincrement())
-  languageInterpreter LanguageInterpreter
+  languageInterpreterId Int
   sourceCode String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   content Content[]
 
+  interpreterLanguage InterpreterLanguage @relation(fields: [languageInterpreterId], references: [id])
+
   @@map("interpreters")
 }
 
 model CourseUser {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   userId String
-  courseId Int 
+  courseId String 
   contentFinish Float @default(0)
   courseStatus CourseStatus @default(NotStarted)
   createdAt DateTime @default(now())
@@ -176,8 +163,8 @@ model CourseUser {
 
 model UserContentProgress {
   id              Int      @id @default(autoincrement())
-  courseUserId   Int  
-  contentId      Int     
+  courseUserId   String  
+  contentId      String     
   contentStatus   Boolean @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -190,7 +177,7 @@ model UserContentProgress {
 
 model Certificate {
   id Int @id @default(autoincrement())
-  courseUserId Int @unique
+  courseUserId String @unique
   fullName String
   certificateNumber String
   issueDate DateTime
@@ -205,7 +192,7 @@ model Certificate {
 model Transaction {
   id Int @id @default(autoincrement())
   userId String 
-  courseId Int 
+  courseId String 
   courseName String
   orderId String @unique
   ppn Float
@@ -223,6 +210,18 @@ model Transaction {
   @@map("transactions")
 }
 
+model InterpreterLanguage {
+  id Int @id @default(autoincrement())
+  languageInterpreter String
+  version String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  interpreter Interpreter[]
+
+  @@map("interpreter_languages")
+}
+
 enum RoleType {
   User
   Instruktur
@@ -232,13 +231,6 @@ enum RoleType {
 enum Publish {
   Published
   Archived
-}
-
-enum LanguageInterpreter {
-  python
-  java
-  javaScript
-  php
 }
 
 enum CourseStatus {
@@ -257,8 +249,3 @@ enum PaymentStatus {
   settlement
   capture
 }
-
-// enum PaymentMethod {
-//   snapMidtrans
-//   Free
-// }
