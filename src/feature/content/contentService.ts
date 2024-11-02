@@ -189,6 +189,25 @@ export class ContentService {
           data.interpreterStatus || existingContent.interpreterStatus,
       },
     });
+
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: existingContent.chapterId },
+      select: { courseId: true },
+    });
+
+    if (chapter) {
+      const courseId = chapter.courseId;
+
+      const totalDuration = await prisma.content.aggregate({
+        where: { chapter: { courseId: courseId } },
+        _sum: { duration: true },
+      });
+
+      await prisma.course.update({
+        where: { id: courseId },
+        data: { totalDuration: totalDuration._sum.duration || 0 },
+      });
+    }
   }
 
   static async deleteContent(contentId: string): Promise<void> {

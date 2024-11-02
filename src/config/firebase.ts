@@ -15,7 +15,7 @@ import {
   applyActionCode,
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
-
+import { getAuth as getAdminAuth } from "firebase-admin/auth";
 import { initializeApp } from "firebase/app";
 import admin from "firebase-admin";
 import {
@@ -42,9 +42,11 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 
 const auth = getAuth(firebaseApp);
+const adminAuth = getAdminAuth();
 const storage = getStorage(firebaseApp);
 
 export {
+  adminAuth,
   getAuth,
   auth,
   storage,

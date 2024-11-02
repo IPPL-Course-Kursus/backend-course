@@ -22,6 +22,7 @@ import {
   confirmPasswordReset,
   applyActionCode,
   FirebaseError,
+  adminAuth,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
@@ -268,11 +269,31 @@ export class AuthService {
     if (!user.email) {
       throw new ErrorResponse("email is empty", 400, ["email"]);
     }
+
     const requests = Validation.validate(AuthValidation.FORGOT_PASSWORD, user);
     const { email } = requests;
 
-    const userForgotPassword = await sendPasswordResetEmail(auth, email);
-    return userForgotPassword;
+    return adminAuth
+      .getUserByEmail(email)
+      .then((userRecord) => {
+        if (!userRecord) {
+          return Promise.reject(
+            new ErrorResponse("User not found", 404, ["user_id"])
+          );
+        }
+        return sendPasswordResetEmail(auth, email);
+      })
+      .catch((error) => {
+        if (error.code === "auth/user-not-found") {
+          return Promise.reject(
+            new ErrorResponse("User not found", 404, ["user_id"])
+          );
+        }
+
+        return Promise.reject(
+          new ErrorResponse("An unexpected error occurred", 500)
+        );
+      });
   }
 
   static async getProfile(uid: string): Promise<any> {
