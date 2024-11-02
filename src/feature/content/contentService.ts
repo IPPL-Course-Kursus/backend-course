@@ -5,7 +5,7 @@ import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
 export class ContentService {
   static async createContent(
-    chapterId: number,
+    chapterId: string,
     data: ContentModel
   ): Promise<void> {
     if (
@@ -32,14 +32,14 @@ export class ContentService {
           400
         );
       }
-      const createInterpreter = await prisma.interpreter.create({
-        data: {
-          languageInterpreter: data.languageInterpreter,
-          sourceCode: data.sourceCode,
-        },
-      });
+      // const createInterpreter = await prisma.interpreter.create({
+      //   data: {
+      //     languageInterpreter: data.languageInterpreter,
+      //     sourceCode: data.sourceCode,
+      //   },
+      // });
 
-      interpreterId = createInterpreter.id;
+      // interpreterId = createInterpreter.id;
     }
 
     const existSort = await prisma.content.findFirst({
@@ -76,7 +76,7 @@ export class ContentService {
   }
 
   static async updateContent(
-    contentId: number,
+    contentId: string,
     data: updateContentModel
   ): Promise<void> {
     if (
@@ -117,14 +117,14 @@ export class ContentService {
     });
   }
 
-  static async deleteContent(contentId: number): Promise<void> {
+  static async deleteContent(contentId: string): Promise<void> {
     if (!contentId) {
       throw new ErrorResponse("Content not found", 404);
     }
     await prisma.content.delete({ where: { id: contentId } });
   }
 
-  static async getContentById(contentId: number): Promise<any> {
+  static async getContentById(contentId: string): Promise<any> {
     const content = await prisma.content.findUnique({
       where: { id: contentId },
     });
@@ -134,7 +134,7 @@ export class ContentService {
     return content;
   }
 
-  static async getContentByChapterId(chapterId: number): Promise<any> {
+  static async getContentByChapterId(chapterId: string): Promise<any> {
     if (!chapterId) {
       throw new ErrorResponse("Chapter not found", 404);
     }
@@ -148,7 +148,7 @@ export class ContentService {
     return content;
   }
 
-  static async getDetailContent(contentId: number): Promise<any> {
+  static async getDetailContent(contentId: string): Promise<any> {
     if (!contentId) {
       throw new ErrorResponse("Content not found", 404);
     }

@@ -15,7 +15,6 @@ export class CourseUserService {
         course: {
           select: {
             courseName: true,
-            courseCode: true,
             image: true,
             aboutCourse: true,
             totalDuration: true,
@@ -53,7 +52,7 @@ export class CourseUserService {
   }
 
   static async startedCourseUser(
-    courseUserId: number,
+    courseUserId: string,
     chapterSort: number,
     contentSort: number
   ): Promise<any> {
@@ -95,7 +94,7 @@ export class CourseUserService {
     return startCourse;
   }
 
-  static async getCourseUserDetail(id: number, uid: string): Promise<any> {
+  static async getCourseUserDetail(id: string, uid: string): Promise<any> {
     if (!id) {
       throw new ErrorResponse("id is required", 400);
     }
@@ -143,8 +142,8 @@ export class CourseUserService {
 
   static async updateCourseProgress(
     uid: string,
-    courseUserId: number,
-    contentId: number
+    courseUserId: string,
+    contentId: string
   ): Promise<any> {
     if (!uid || !courseUserId || !contentId) {
       throw new ErrorResponse("userId, courseId, contentId is required", 400);

@@ -28,7 +28,7 @@ export class CourseController {
   static async getCourseById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const idCourse = parseInt(id, 10);
+      const idCourse = id;
       const course = await CourseService.getCourseById(idCourse);
       res.status(200).json(course);
     } catch (error) {
@@ -112,10 +112,7 @@ export class CourseController {
   ) {
     try {
       const { id } = req.params;
-      const courseId = parseInt(id, 10);
-      if (isNaN(courseId)) {
-        return res.status(400).json({ message: "Invalid course ID" });
-      }
+      const courseId = id;
       const course = await CourseService.getDetailCourse(courseId);
       res.status(200).json(course);
     } catch (error) {
@@ -126,12 +123,9 @@ export class CourseController {
   static async deleteCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const courseId = parseInt(id, 10);
+      const courseId = id;
       const user = res.locals.user;
 
-      if (isNaN(courseId)) {
-        return res.status(400).json({ message: "Invalid course ID" });
-      }
       await CourseService.deleteCourse(courseId, user.uid);
       res.status(200).json({ message: "Course deleted successfully" });
     } catch (error) {
@@ -154,12 +148,9 @@ export class CourseController {
   static async updateCourse(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const courseId = parseInt(id, 10);
+      const courseId = id;
       const data = req.body;
       const image = req.file ? req.file : undefined;
-      if (isNaN(courseId)) {
-        return res.status(400).json({ message: "Invalid course ID" });
-      }
       const course = await CourseService.updateCourse(courseId, data, image);
       res.status(200).json({ message: "Course updated successfully", course });
     } catch (error) {

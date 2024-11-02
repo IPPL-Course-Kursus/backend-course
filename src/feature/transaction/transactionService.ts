@@ -5,7 +5,7 @@ import { ErrorResponse } from "../../models/error_response";
 export class TransactionService {
   static async createTransaction(
     userId: string,
-    courseId: number
+    courseId: string
   ): Promise<any> {
     if (!userId || !courseId) {
       throw new ErrorResponse("User ID and Course ID are required", 400, [
@@ -109,7 +109,7 @@ export class TransactionService {
           id: courseId,
           price: Math.round(grossAmount),
           quantity: 1,
-          name: course.courseCode,
+          name: course.courseName,
         },
       ],
       customer_details: {

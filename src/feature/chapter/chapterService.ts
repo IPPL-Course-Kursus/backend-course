@@ -3,7 +3,7 @@ import { ErrorResponse } from "../../models/error_response";
 import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 export class ChapterService {
   static async createChapter(
-    courseId: number,
+    courseId: string,
     chapterTitle: string,
     sort: number
   ): Promise<any> {
@@ -37,7 +37,7 @@ export class ChapterService {
   }
 
   static async updateChapter(
-    chapterId: number,
+    chapterId: string,
     chapterTitle: string,
     sort: number
   ): Promise<any> {
@@ -62,7 +62,7 @@ export class ChapterService {
     });
   }
 
-  static async deleteChapter(chapterId: number): Promise<any> {
+  static async deleteChapter(chapterId: string): Promise<any> {
     const relatedContents = await prisma.content.findMany({
       where: { chapterId: chapterId },
     });
@@ -83,7 +83,7 @@ export class ChapterService {
     });
   }
 
-  static async getDetailChapter(chapterId: number): Promise<any> {
+  static async getDetailChapter(chapterId: string): Promise<any> {
     const chapterDetail = await prisma.chapter.findUnique({
       where: { id: chapterId },
       include: { contents: true },
@@ -95,7 +95,7 @@ export class ChapterService {
     return chapterDetail;
   }
 
-  static async getChapterByCourseId(courseId: number): Promise<any> {
+  static async getChapterByCourseId(courseId: string): Promise<any> {
     const chapters = await prisma.chapter.findMany({
       where: { courseId: courseId },
       orderBy: { sort: "asc" },
@@ -107,7 +107,7 @@ export class ChapterService {
     return chapters;
   }
 
-  static async getChapterById(chapterId: number): Promise<any> {
+  static async getChapterById(chapterId: string): Promise<any> {
     const chapter = await prisma.chapter.findUnique({
       where: { id: chapterId },
     });

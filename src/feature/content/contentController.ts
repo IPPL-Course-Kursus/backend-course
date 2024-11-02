@@ -10,7 +10,7 @@ export class ContentController {
     try {
       const { chapterId } = req.params;
       const data = req.body;
-      await ContentService.createContent(parseInt(chapterId), data);
+      await ContentService.createContent(chapterId, data);
       res.status(201).json({ message: "Content created successfully" });
     } catch (error) {
       next(error);
@@ -24,9 +24,7 @@ export class ContentController {
   ): Promise<void> {
     try {
       const { chapterId } = req.params;
-      const contents = await ContentService.getContentByChapterId(
-        parseInt(chapterId)
-      );
+      const contents = await ContentService.getContentByChapterId(chapterId);
       res
         .status(200)
         .json({ message: "Content fetched successfully", data: contents });
@@ -42,7 +40,7 @@ export class ContentController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      const content = await ContentService.getContentById(parseInt(id));
+      const content = await ContentService.getContentById(id);
       res
         .status(200)
         .json({ message: "Content fetched successfully", data: content });
@@ -58,7 +56,7 @@ export class ContentController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      const content = await ContentService.getDetailContent(parseInt(id));
+      const content = await ContentService.getDetailContent(id);
       res
         .status(200)
         .json({ message: "Content fetched successfully", data: content });
@@ -75,7 +73,7 @@ export class ContentController {
     try {
       const { id } = req.params;
       const data = req.body;
-      await ContentService.updateContent(parseInt(id), data);
+      await ContentService.updateContent(id, data);
       res.status(200).json({ message: "Content updated successfully" });
     } catch (error) {
       next(error);
@@ -85,7 +83,7 @@ export class ContentController {
   static async deleteContent(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      await ContentService.deleteContent(parseInt(id));
+      await ContentService.deleteContent(id);
       res.status(200).json({ message: "Content deleted successfully" });
     } catch (error) {
       next(error);

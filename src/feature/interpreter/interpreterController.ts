@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { InterpreterService } from "./interpreterService";
-import { LanguageInterpreter } from "@prisma/client";
 
 export class InterpreterController {
   static async createInterpreter(
@@ -9,10 +8,10 @@ export class InterpreterController {
     next: NextFunction
   ) {
     try {
-      const { languageInterpreter, sourceCode } = req.body;
+      const { languageInterpreterId, sourceCode } = req.body;
 
       await InterpreterService.createInterpreter({
-        languageInterpreter,
+        languageInterpreterId,
         sourceCode,
       });
 
@@ -68,11 +67,11 @@ export class InterpreterController {
   ) {
     try {
       const { id } = req.params;
-      const { languageInterpreter, sourceCode } = req.body;
+      const { languageInterpreterId, sourceCode } = req.body;
 
       await InterpreterService.updateInterpreter({
         id: Number(id),
-        languageInterpreter,
+        languageInterpreterId,
         sourceCode,
       });
 
@@ -97,18 +96,6 @@ export class InterpreterController {
       res.status(200).json({
         success: true,
         message: "Interpreter deleted successfully!",
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async getLanguages(req: Request, res: Response, next: NextFunction) {
-    try {
-      const languages = Object.values(LanguageInterpreter);
-      res.status(200).json({
-        success: true,
-        data: languages,
       });
     } catch (error) {
       next(error);

@@ -6,7 +6,6 @@ import {
 } from "./interpreterModel";
 import { InterpreterValidation } from "./interpreterValidation";
 import { Validation } from "../../validations/validation";
-import { LanguageInterpreter } from "@prisma/client";
 
 export class InterpreterService {
   // Membuat Interpreter baru
@@ -17,12 +16,12 @@ export class InterpreterService {
       InterpreterValidation.CREATE,
       request
     );
-    const { languageInterpreter, sourceCode } = validatedRequest;
+    const { languageInterpreterId, sourceCode } = validatedRequest;
 
     try {
       await prisma.interpreter.create({
         data: {
-          languageInterpreter: languageInterpreter as LanguageInterpreter,
+          languageInterpreterId,
           sourceCode,
         },
       });
@@ -73,13 +72,13 @@ export class InterpreterService {
       InterpreterValidation.UPDATE,
       data
     );
-    const { id, languageInterpreter, sourceCode } = validatedRequest;
+    const { id, languageInterpreterId, sourceCode } = validatedRequest;
 
     try {
       return await prisma.interpreter.update({
         where: { id },
         data: {
-          languageInterpreter: languageInterpreter as LanguageInterpreter,
+          languageInterpreterId,
           sourceCode,
         },
       });

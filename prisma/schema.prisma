@@ -39,7 +39,6 @@ model Course {
   userId String 
   courseLevelId Int 
   typeCourseId Int 
-  courseCode String @unique
   courseName String
   image String
   aboutCourse String

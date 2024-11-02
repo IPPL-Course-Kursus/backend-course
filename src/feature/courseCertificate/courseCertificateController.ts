@@ -10,7 +10,7 @@ export class CourseCertificateController {
     try {
       const { courseUserId } = req.params;
       const certificate = await CourseCertificateService.createCertificate(
-        parseInt(courseUserId)
+        courseUserId
       );
       res
         .status(201)
@@ -29,7 +29,7 @@ export class CourseCertificateController {
       const { courseUserId } = req.params;
       const certificate =
         await CourseCertificateService.getCertificateByCourseUserId(
-          parseInt(courseUserId)
+          courseUserId
         );
       res.status(200).json(certificate);
     } catch (error) {

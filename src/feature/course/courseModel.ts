@@ -14,7 +14,6 @@ export type UpdateCourseRequest = {
   coursePrice: number;
   publish: Publish;
   certificateStatus: boolean;
-  totalDuration: number;
 };
 
 export type CreateCourseRequest = {
@@ -28,5 +27,4 @@ export type CreateCourseRequest = {
   coursePrice: number;
   publish: Publish;
   certificateStatus: boolean;
-  totalDuration: number;
 };

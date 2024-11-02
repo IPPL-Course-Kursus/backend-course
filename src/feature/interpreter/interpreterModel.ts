@@ -1,11 +1,11 @@
 export type CreateInterpreterRequest = {
-  languageInterpreter: string; // Atau gunakan tipe enum jika ada
+  languageInterpreterId: number;
   sourceCode: string;
 };
 
 export type UpdateInterpreterRequest = {
   id: number;
-  languageInterpreter: string; // Atau gunakan tipe enum jika ada
+  languageInterpreterId: number;
   sourceCode: string;
 };
 

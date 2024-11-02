@@ -1,10 +1,6 @@
 import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
-import {
-  createCategoryRequest,
-  updateCategoryRequest,
-  deleteCategoryRequest,
-} from "./categoryModel";
+import { createCategoryRequest, updateCategoryRequest } from "./categoryModel";
 import { imagekit } from "../../utils/image_kit";
 import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
 
@@ -33,10 +29,7 @@ export class CategoryService {
 
     const checkCategory = await prisma.category.findFirst({
       where: {
-        OR: [
-          { categoryCode: request.categoryCode },
-          { categoryName: request.categoryName },
-        ],
+        OR: [{ categoryName: request.categoryName }],
       },
     });
 
@@ -59,7 +52,7 @@ export class CategoryService {
       try {
         const result = await imagekit.upload({
           file: file.buffer,
-          fileName: `${request.categoryCode}-${file.originalname}`,
+          fileName: `${file.originalname}`,
           folder: "/Category",
         });
 
@@ -72,7 +65,6 @@ export class CategoryService {
     await prisma.category.create({
       data: {
         categoryName: request.categoryName,
-        categoryCode: request.categoryCode,
         image: request.image || imageUrl,
       },
     });
@@ -108,7 +100,7 @@ export class CategoryService {
       try {
         const result = await imagekit.upload({
           file: file.buffer,
-          fileName: `${request.categoryCode}-${file.originalname}`,
+          fileName: `${file.originalname}`,
           folder: "/Category",
         });
 
@@ -122,7 +114,6 @@ export class CategoryService {
       where: { id },
       data: {
         categoryName: request.categoryName,
-        categoryCode: request.categoryCode,
         image: imageUrl,
       },
     });

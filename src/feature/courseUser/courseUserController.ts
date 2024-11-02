@@ -24,7 +24,7 @@ export class CourseUserController {
     try {
       const { id } = req.params;
       const user = res.locals.user;
-      const courseUser = parseInt(id);
+      const courseUser = id;
       const courseUserDetail = await CourseUserService.getCourseUserDetail(
         courseUser,
         user.uid
@@ -48,8 +48,8 @@ export class CourseUserController {
       const { courseUserId, contentId } = req.params;
       const progress = await CourseUserService.updateCourseProgress(
         user.uid,
-        parseInt(courseUserId),
-        parseInt(contentId)
+        courseUserId,
+        contentId
       );
       res.status(200).json({ data: progress });
     } catch (error) {
@@ -71,15 +71,11 @@ export class CourseUserController {
         });
       }
 
-      const parsedCourseUserId = parseInt(courseUserId);
+      const parsedCourseUserId = courseUserId;
       const parsedChapterSort = parseInt(chapterSort);
       const parsedContentSort = parseInt(contentSort);
 
-      if (
-        isNaN(parsedCourseUserId) ||
-        isNaN(parsedChapterSort) ||
-        isNaN(parsedContentSort)
-      ) {
+      if (isNaN(parsedChapterSort) || isNaN(parsedContentSort)) {
         return res.status(400).json({
           message:
             "courseUserId, chapterSort, and contentSort must be valid numbers",

@@ -8,10 +8,9 @@ export class TransactionController {
     next: NextFunction
   ) {
     try {
-      const courseId = parseInt(req.params.courseId, 10);
+      const courseId = req.params.courseId;
       const user = res.locals.user;
       const userId = user.uid;
-      const email = user.email;
       const transaction = await TransactionService.createTransaction(
         userId,
         courseId

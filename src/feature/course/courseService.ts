@@ -51,7 +51,7 @@ export class CourseService {
     return courses;
   }
 
-  static async getCourseById(id: number): Promise<any> {
+  static async getCourseById(id: string): Promise<any> {
     const course = await prisma.course.findUnique({
       where: { id },
       include: {
@@ -173,7 +173,7 @@ export class CourseService {
     return courses;
   }
 
-  static async getDetailCourse(courseId: number): Promise<any> {
+  static async getDetailCourse(courseId: string): Promise<any> {
     const courseDetail = await prisma.course.findUnique({
       where: { id: courseId },
       include: {
@@ -255,8 +255,7 @@ export class CourseService {
       !data.aboutCourse ||
       !data.intendedFor ||
       !data.publish ||
-      !data.certificateStatus ||
-      !data.totalDuration
+      !data.certificateStatus
     ) {
       throw new ErrorResponse("The data cannot be empty", 400, [
         "categoryId",
@@ -268,7 +267,6 @@ export class CourseService {
         "coursePrice",
         "publish",
         "certificateStatus",
-        "totalDuration",
       ]);
     }
 
@@ -317,28 +315,10 @@ export class CourseService {
 
     const category = await prisma.category.findUnique({
       where: { id: data.categoryId },
-      select: { categoryCode: true },
     });
 
     if (!category) {
       throw new ErrorResponse("Category not found", 404);
-    }
-
-    let uniqueCourseCode: string;
-    let isUnique = false;
-
-    while (true) {
-      const randomNumber = Math.floor(Math.random() * 10000);
-      uniqueCourseCode = `${category.categoryCode}-${randomNumber}`;
-
-      const existingCourse = await prisma.course.findUnique({
-        where: { courseCode: uniqueCourseCode },
-      });
-
-      if (!existingCourse) {
-        isUnique = true;
-        break;
-      }
     }
 
     let imageUrl: string = "";
@@ -350,7 +330,7 @@ export class CourseService {
       try {
         const result = await imagekit.upload({
           file: file.buffer,
-          fileName: `${uniqueCourseCode}-${file.originalname}`,
+          fileName: `${file.originalname}`,
           folder: "/Course",
         });
 
@@ -376,7 +356,6 @@ export class CourseService {
         courseLevelId: data.courseLevelId,
         typeCourseId: data.typeCourseId,
         userId: uid,
-        courseCode: uniqueCourseCode,
         courseName: data.courseName,
         image: imageUrl,
         aboutCourse: data.aboutCourse,
@@ -387,13 +366,12 @@ export class CourseService {
         promoStatus: promoStatus,
         publish: data.publish,
         certificateStatus: data.certificateStatus,
-        totalDuration: data.totalDuration,
       },
     });
   }
 
   static async updateCourse(
-    id: number,
+    id: string,
     data: UpdateCourseRequest,
     file?: any
   ): Promise<any> {
@@ -405,8 +383,7 @@ export class CourseService {
       !data.aboutCourse ||
       !data.intendedFor ||
       !data.publish ||
-      !data.certificateStatus ||
-      !data.totalDuration
+      !data.certificateStatus
     ) {
       throw new ErrorResponse("The data cannot be empty", 400, [
         "categoryId",
@@ -418,7 +395,6 @@ export class CourseService {
         "coursePrice",
         "publish",
         "certificateStatus",
-        "totalDuration",
       ]);
     }
     const course = await prisma.course.findUnique({
@@ -453,7 +429,6 @@ export class CourseService {
     if (data.categoryId && data.categoryId !== course.categoryId) {
       const category = await prisma.category.findUnique({
         where: { id: data.categoryId },
-        select: { categoryCode: true },
       });
 
       if (!category) {
@@ -464,7 +439,7 @@ export class CourseService {
         try {
           const result = await imagekit.upload({
             file: file.buffer,
-            fileName: `${course.courseCode}-${file.originalname}`,
+            fileName: `${file.originalname}`,
             folder: "/course",
           });
 
@@ -500,13 +475,12 @@ export class CourseService {
           promoStatus: promoStatus,
           publish: data.publish,
           certificateStatus: data.certificateStatus,
-          totalDuration: data.totalDuration,
         },
       });
     }
   }
 
-  static async deleteCourse(id: number, uid: string): Promise<any> {
+  static async deleteCourse(id: string, uid: string): Promise<any> {
     const course = await prisma.course.findUnique({
       where: { id },
     });

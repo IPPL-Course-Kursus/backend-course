@@ -6,11 +6,7 @@ export class ChapterController {
     try {
       const { courseId } = req.params;
       const { chapterTitle, sort } = req.body;
-      await ChapterService.createChapter(
-        parseInt(courseId),
-        chapterTitle,
-        sort
-      );
+      await ChapterService.createChapter(courseId, chapterTitle, sort);
       res.status(201).json({ message: "Chapter created successfully" });
     } catch (error) {
       next(error);
@@ -20,7 +16,7 @@ export class ChapterController {
   static async getChapterById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const chapterId = parseInt(id);
+      const chapterId = id;
       const chapter = await ChapterService.getChapterById(chapterId);
       res
         .status(200)
@@ -37,7 +33,7 @@ export class ChapterController {
   ) {
     try {
       const { courseId } = req.params;
-      const courseIds = parseInt(courseId);
+      const courseIds = courseId;
       const chapters = await ChapterService.getChapterByCourseId(courseIds);
       res
         .status(200)
@@ -54,7 +50,7 @@ export class ChapterController {
   ) {
     try {
       const { id } = req.params;
-      const chapter = await ChapterService.getDetailChapter(parseInt(id));
+      const chapter = await ChapterService.getDetailChapter(id);
       res
         .status(200)
         .json({ message: "Chapter fetched successfully", data: chapter });
@@ -68,7 +64,7 @@ export class ChapterController {
       const { id } = req.params;
       const { chapterTitle, sort } = req.body;
       const chapter = await ChapterService.updateChapter(
-        parseInt(id),
+        id,
         chapterTitle,
         sort
       );
@@ -83,7 +79,7 @@ export class ChapterController {
   static async deleteChapter(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const chapter = await ChapterService.deleteChapter(parseInt(id));
+      const chapter = await ChapterService.deleteChapter(id);
       res
         .status(200)
         .json({ message: "Chapter deleted successfully", data: chapter });

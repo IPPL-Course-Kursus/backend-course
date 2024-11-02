@@ -2,7 +2,7 @@ import { prisma } from "../../application/database";
 import { ErrorResponse } from "../../models/error_response";
 
 export class CourseCertificateService {
-  static async createCertificate(courseUserId: number): Promise<void> {
+  static async createCertificate(courseUserId: string): Promise<void> {
     if (!courseUserId) {
       throw new ErrorResponse("courseUserId is required", 400);
     }
@@ -54,7 +54,7 @@ export class CourseCertificateService {
   }
 
   static async getCertificateByCourseUserId(
-    courseUserId: number
+    courseUserId: string
   ): Promise<any> {
     if (!courseUserId) {
       throw new ErrorResponse("courseUserId is required", 400);
