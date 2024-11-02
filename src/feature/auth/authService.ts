@@ -65,37 +65,36 @@ export class AuthService {
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
+    return createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        const uid = userCredential.user.uid;
 
-    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-    if (signInMethods.length > 0) {
-      throw new ErrorResponse("Email already exists", 400, ["email"]);
-    }
+        const findUser = await prisma.user.findFirst({ where: { fullName } });
+        if (findUser) {
+          throw new ErrorResponse("User with this name already exists", 400, [
+            "fullName",
+          ]);
+        }
 
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+        await prisma.user.create({
+          data: {
+            uid,
+            fullName,
+            phoneNumber,
+            role: "User",
+            tanggalLahir: new Date(tanggalLahir),
+            city,
+          },
+        });
 
-    const uid = userCredential.user.uid;
-
-    const findUser = await prisma.user.findFirst({ where: { fullName } });
-
-    if (findUser) {
-      throw new ErrorResponse("User already exists", 400, ["fullName"]);
-    }
-
-    await prisma.user.create({
-      data: {
-        uid,
-        fullName,
-        phoneNumber,
-        role: "User",
-        tanggalLahir: new Date(tanggalLahir),
-        city,
-      },
-    });
-    await sendEmailVerification(userCredential.user);
+        await sendEmailVerification(userCredential.user);
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          throw new ErrorResponse("Email already in use", 400, ["email"]);
+        }
+        throw new ErrorResponse("Error registering user", 500);
+      });
   }
 
   static async verifyEmail(data: VerifyEmailRequest): Promise<any> {
@@ -139,36 +138,36 @@ export class AuthService {
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
 
-    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-    if (signInMethods.length > 0) {
-      throw new ErrorResponse("Email already exists", 400, ["email"]);
-    }
+    return createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        const uid = userCredential.user.uid;
 
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+        const findUser = await prisma.user.findFirst({ where: { fullName } });
+        if (findUser) {
+          throw new ErrorResponse("User with this name already exists", 400, [
+            "fullName",
+          ]);
+        }
 
-    const uid = userCredential.user.uid;
+        await prisma.user.create({
+          data: {
+            uid,
+            fullName,
+            phoneNumber,
+            role: "Instruktur",
+            tanggalLahir: new Date(tanggalLahir),
+            city,
+          },
+        });
 
-    const findUser = await prisma.user.findFirst({ where: { fullName } });
-
-    if (findUser) {
-      throw new ErrorResponse("User already exists", 400, ["fullName"]);
-    }
-
-    await prisma.user.create({
-      data: {
-        uid,
-        fullName,
-        phoneNumber,
-        role: "Instruktur",
-        tanggalLahir: new Date(tanggalLahir),
-        city,
-      },
-    });
-    await sendEmailVerification(userCredential.user);
+        await sendEmailVerification(userCredential.user);
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          throw new ErrorResponse("Email already in use", 400, ["email"]);
+        }
+        throw new ErrorResponse("Error registering user", 500);
+      });
   }
 
   static async login(data: LoginRequest): Promise<any> {
@@ -228,7 +227,6 @@ export class AuthService {
           });
       })
       .catch((error) => {
-        console.log(error);
         if (
           error.code === "auth/invalid-email" ||
           error.code === "auth/wrong-password" ||
