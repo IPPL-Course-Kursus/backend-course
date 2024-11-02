@@ -326,7 +326,13 @@ export class AuthService {
     data: UserProfile,
     file: any
   ): Promise<any> {
-    if (!uid || !data) {
+    if (
+      !uid ||
+      !data.city ||
+      !data.fullName ||
+      !data.tanggalLahir ||
+      !data.phoneNumber
+    ) {
       throw new ErrorResponse("uid or data is empty", 400, ["uid", "data"]);
     }
     const user = await prisma.user.findUnique({ where: { uid } });
