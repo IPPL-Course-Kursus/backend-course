@@ -83,7 +83,7 @@ export class CategoryService {
       throw new ErrorResponse("Category not found", 404, ["id"]);
     }
 
-    if (!request) {
+    if (!request.categoryName || !file) {
       throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 

@@ -4,10 +4,9 @@ import { CompilerService } from "./compilerService";
 export class CompilerController {
   static async compile(req: Request, res: Response, next: NextFunction) {
     try {
-      const { language, version, sourceCode } = req.body;
+      const { languageInterpreterId, sourceCode } = req.body;
       const result = await CompilerService.compile(
-        language,
-        version,
+        languageInterpreterId,
         sourceCode
       );
       res.status(200).json(result);
