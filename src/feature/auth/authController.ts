@@ -151,7 +151,7 @@ export class AuthController {
     try {
       const user = res.locals.user;
       const data = req.body;
-      const image = req.file;
+      const image = req.file ? req.file : undefined;
       if (!user) {
         return res.status(401).json({ error: "Unauthorized" });
       }

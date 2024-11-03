@@ -324,7 +324,7 @@ export class AuthService {
   static async updateProfile(
     uid: string,
     data: UserProfile,
-    file: any
+    file?: any
   ): Promise<any> {
     if (
       !uid ||
