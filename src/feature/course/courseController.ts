@@ -20,7 +20,13 @@ export class CourseController {
       const { userId } = res.locals.user.uid;
       const course = await CourseService.getCourseByUserId(userId);
       res.status(200).json(course);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -31,7 +37,13 @@ export class CourseController {
       const idCourse = id;
       const course = await CourseService.getCourseById(idCourse);
       res.status(200).json(course);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -128,7 +140,13 @@ export class CourseController {
 
       await CourseService.deleteCourse(courseId, user.uid);
       res.status(200).json({ message: "Course deleted successfully" });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -140,7 +158,13 @@ export class CourseController {
       const user = res.locals.user;
       const course = await CourseService.createCourse(data, image, user.uid);
       res.status(201).json({ message: "Course created successfully", course });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -153,7 +177,13 @@ export class CourseController {
       const image = req.file ? req.file : undefined;
       const course = await CourseService.updateCourse(courseId, data, image);
       res.status(200).json({ message: "Course updated successfully", course });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -248,7 +278,13 @@ export class CourseController {
 
       const courses = await CourseService.getAllCoursesByUserId(user.uid);
       res.status(200).json(courses);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }

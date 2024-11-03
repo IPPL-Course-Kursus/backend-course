@@ -11,7 +11,13 @@ export class CourseUserController {
       res
         .status(200)
         .json({ message: "success get course user", data: courseUser });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -33,7 +39,13 @@ export class CourseUserController {
         message: "success get course user detail",
         data: courseUserDetail,
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -52,7 +64,13 @@ export class CourseUserController {
         contentId
       );
       res.status(200).json({ data: progress });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -92,7 +110,13 @@ export class CourseUserController {
         message: "success started course user",
         data: courseUser,
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }

@@ -15,7 +15,13 @@ export class CourseCertificateController {
       res
         .status(201)
         .json({ message: "Certificate created successfully", certificate });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -32,7 +38,13 @@ export class CourseCertificateController {
           courseUserId
         );
       res.status(200).json(certificate);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }

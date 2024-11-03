@@ -8,7 +8,13 @@ export class ChapterController {
       const { chapterTitle, sort } = req.body;
       await ChapterService.createChapter(courseId, chapterTitle, sort);
       res.status(201).json({ message: "Chapter created successfully" });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -21,7 +27,13 @@ export class ChapterController {
       res
         .status(200)
         .json({ message: "Chapter fetched successfully", data: chapter });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -38,7 +50,13 @@ export class ChapterController {
       res
         .status(200)
         .json({ message: "Chapter fetched successfully", data: chapters });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -54,7 +72,13 @@ export class ChapterController {
       res
         .status(200)
         .json({ message: "Chapter fetched successfully", data: chapter });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -71,7 +95,13 @@ export class ChapterController {
       res
         .status(200)
         .json({ message: "Chapter updated successfully", data: chapter });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -83,7 +113,13 @@ export class ChapterController {
       res
         .status(200)
         .json({ message: "Chapter deleted successfully", data: chapter });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }

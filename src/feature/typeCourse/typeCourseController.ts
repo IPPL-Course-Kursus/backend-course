@@ -14,7 +14,13 @@ export class TypeCourseController {
         success: true,
         message: "Type course created successfully!",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -49,7 +55,13 @@ export class TypeCourseController {
         success: true,
         data: type,
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -67,7 +79,13 @@ export class TypeCourseController {
         success: true,
         message: "Type course updated successfully!",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -84,7 +102,13 @@ export class TypeCourseController {
         success: true,
         message: "Type course deleted successfully!",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }

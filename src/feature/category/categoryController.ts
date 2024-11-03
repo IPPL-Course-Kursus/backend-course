@@ -21,7 +21,13 @@ export class CategoryController {
       const image = req.file;
       await CategoryService.createCategory(data, image);
       res.status(201).json({ message: "Category created successfully" });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -47,7 +53,13 @@ export class CategoryController {
       const categoryId = parseInt(id, 10);
       await CategoryService.deleteCategory(categoryId);
       res.status(200).json({ message: "Category deleted successfully" });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
@@ -60,7 +72,13 @@ export class CategoryController {
       const image = req.file ? req.file : undefined;
       await CategoryService.updateCategory(categoryId, data, image);
       res.status(200).json({ message: "Category updated successfully" });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      } else if (error.code === "auth/argument-error") {
+        res.status(400).json({ message: "Invalid token or arguments" });
+        return;
+      }
       next(error);
     }
   }
