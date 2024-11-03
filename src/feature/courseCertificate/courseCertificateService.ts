@@ -28,7 +28,7 @@ export class CourseCertificateService {
     let isUnique = false;
     while (!isUnique) {
       const randomAlphaNumeric =
-        CourseCertificateService.generateRandomAlphaNumeric(6);
+        CourseCertificateService.generateRandomAlphaNumeric(12);
       certificateNumber = `${randomAlphaNumeric}`;
 
       const existingCertificate = await prisma.certificate.findFirst({
