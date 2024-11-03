@@ -73,7 +73,7 @@ export class CategoryService {
   static async updateCategory(
     id: number,
     request: updateCategoryRequest,
-    file: any
+    file?: any
   ): Promise<void> {
     const category = await prisma.category.findUnique({
       where: { id },
@@ -83,7 +83,7 @@ export class CategoryService {
       throw new ErrorResponse("Category not found", 404, ["id"]);
     }
 
-    if (!request.categoryName || !file) {
+    if (!request.categoryName) {
       throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 
