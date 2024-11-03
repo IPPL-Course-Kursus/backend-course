@@ -12,7 +12,10 @@ export class ContentController {
       const data = req.body;
       await ContentService.createContent(chapterId, data);
       res.status(201).json({ message: "Content created successfully" });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        res.status(401).json({ message: "Token expired" });
+      }
       next(error);
     }
   }

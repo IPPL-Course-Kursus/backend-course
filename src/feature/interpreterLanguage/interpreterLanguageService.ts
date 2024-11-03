@@ -4,7 +4,9 @@ import { InterpreterLanguageRequest } from "./interpreterLanguageModel";
 
 export class InterpreterLanguageService {
   static async getAllLanguages(): Promise<any> {
-    const languages = await prisma.interpreterLanguage.findMany();
+    const languages = await prisma.interpreterLanguage.findMany({
+      orderBy: { id: "asc" },
+    });
     if (!languages) {
       throw new ErrorResponse("No languages found", 404, ["languages"]);
     }

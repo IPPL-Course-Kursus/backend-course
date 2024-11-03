@@ -23,6 +23,17 @@ export class ContentService {
     }
     let interpreterId: number | null = null;
     if (
+      (data.interpreterStatus === false && !data.sourceCode) ||
+      !data.languageInterpreterId
+    ) {
+      throw new ErrorResponse(
+        "interpreterStatus must be true and both sourceCode and languageInterpreter must be filled in",
+        400,
+        ["sourceCode", "languageInterpreterId", "interpreterStatus"]
+      );
+    }
+
+    if (
       data.interpreterStatus === true ||
       (data.sourceCode && data.languageInterpreterId)
     ) {
