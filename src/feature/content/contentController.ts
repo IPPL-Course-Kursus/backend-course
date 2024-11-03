@@ -12,13 +12,7 @@ export class ContentController {
       const data = req.body;
       await ContentService.createContent(chapterId, data);
       res.status(201).json({ message: "Content created successfully" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -34,13 +28,7 @@ export class ContentController {
       res
         .status(200)
         .json({ message: "Content fetched successfully", data: contents });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -56,13 +44,7 @@ export class ContentController {
       res
         .status(200)
         .json({ message: "Content fetched successfully", data: content });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -78,13 +60,7 @@ export class ContentController {
       res
         .status(200)
         .json({ message: "Content fetched successfully", data: content });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -99,13 +75,7 @@ export class ContentController {
       const data = req.body;
       await ContentService.updateContent(id, data);
       res.status(200).json({ message: "Content updated successfully" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -115,13 +85,7 @@ export class ContentController {
       const { id } = req.params;
       await ContentService.deleteContent(id);
       res.status(200).json({ message: "Content deleted successfully" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }

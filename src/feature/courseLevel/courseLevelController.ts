@@ -41,13 +41,7 @@ export class CourseLevelController {
       const data = req.body;
       await CourseLevelService.createCourseLevel(data);
       res.status(201).json({ message: "Course level created successfully" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -63,13 +57,7 @@ export class CourseLevelController {
       const data = req.body;
       await CourseLevelService.updateCourseLevel(idCourseLevel, data);
       res.status(200).json({ message: "Course level updated successfully" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -84,13 +72,7 @@ export class CourseLevelController {
       const idCourseLevel = parseInt(id, 10);
       await CourseLevelService.deleteCourseLevel(idCourseLevel);
       res.status(200).json({ message: "Course level deleted successfully" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }

@@ -19,13 +19,7 @@ export class TransactionController {
         message: "Transaction created successfully",
         data: transaction,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -85,13 +79,7 @@ export class TransactionController {
         message: "Transactions retrieved successfully",
         data: transactions,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -111,13 +99,7 @@ export class TransactionController {
         message: "Transactions retrieved successfully",
         data: transactions,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -139,13 +121,7 @@ export class TransactionController {
         message: "Transaction resumed successfully",
         data: transaction,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }

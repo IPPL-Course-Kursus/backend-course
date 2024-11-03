@@ -142,13 +142,7 @@ export class AuthController {
           email: user.email,
         },
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -167,13 +161,8 @@ export class AuthController {
         message: "Update profile successful",
         data: response,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      } else if (error instanceof ZodError) {
+    } catch (error) {
+      if (error instanceof ZodError) {
         const formattedErrors = error.issues.map((err) => ({
           field: err.path.join("."),
           message: err.message,
@@ -195,13 +184,8 @@ export class AuthController {
       const data = req.body;
       await AuthService.changePassword(user.uid, user.email, data);
       res.status(200).json({ message: "Password changed successfully!" });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      } else if (error instanceof ZodError) {
+    } catch (error) {
+      if (error instanceof ZodError) {
         const formattedErrors = error.issues.map((err) => ({
           field: err.path.join("."),
           message: err.message,
@@ -287,13 +271,7 @@ export class AuthController {
         message: "Get all instruktur successful",
         data: response,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -312,13 +290,7 @@ export class AuthController {
         message: "Delete instruktur successful",
         data: response,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -337,13 +309,7 @@ export class AuthController {
         message: "Get instruktur by id successful",
         data: response,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }
@@ -364,13 +330,7 @@ export class AuthController {
         message: "Update instruktur successful",
         data: response,
       });
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
-        res.status(401).json({ message: "Token expired" });
-      } else if (error.code === "auth/argument-error") {
-        res.status(400).json({ message: "Invalid token or arguments" });
-        return;
-      }
+    } catch (error) {
       next(error);
     }
   }

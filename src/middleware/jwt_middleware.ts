@@ -36,10 +36,17 @@ export class JWTMiddleware {
 
       // console.log("User:", res.locals.user);
       next();
-    } catch (error: any) {
-      if (error.code === "auth/id-token-expired") {
+    } catch (error) {
+      const firebaseError = error as { code?: string; message?: string };
+
+      if (firebaseError.code === "auth/id-token-expired") {
         next(
-          new ErrorResponse("Token expired", 401, ["token"], "TOKEN_EXPIRED")
+          new ErrorResponse(
+            "Token has expired. Please log in again.",
+            401,
+            ["token"],
+            "TOKEN_EXPIRED"
+          )
         );
       } else {
         // console.error("Token verification error:", error);
