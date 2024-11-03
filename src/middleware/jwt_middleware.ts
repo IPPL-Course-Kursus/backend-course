@@ -34,10 +34,17 @@ export class JWTMiddleware {
         token: idToken,
       };
 
-      console.log("User:", res.locals.user);
+      // console.log("User:", res.locals.user);
       next();
-    } catch (error) {
-      console.error("Token verification error:", error);
+    } catch (error: any) {
+      if (error.code === "auth/id-token-expired") {
+        next(
+          new ErrorResponse("Token expired", 401, ["token"], "TOKEN_EXPIRED")
+        );
+      } else {
+        // console.error("Token verification error:", error);
+        next(error);
+      }
       next(error);
     }
   }
