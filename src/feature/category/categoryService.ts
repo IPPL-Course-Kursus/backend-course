@@ -73,7 +73,7 @@ export class CategoryService {
   static async updateCategory(
     id: number,
     request: updateCategoryRequest,
-    file?: any
+    file: any
   ): Promise<void> {
     const category = await prisma.category.findUnique({
       where: { id },
