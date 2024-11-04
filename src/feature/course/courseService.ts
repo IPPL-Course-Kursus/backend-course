@@ -179,6 +179,11 @@ export class CourseService {
       include: {
         chapters: {
           include: {
+            contents: {
+              select: {
+                contentTitle: true,
+              },
+            },
             _count: {
               select: { contents: true },
             },
