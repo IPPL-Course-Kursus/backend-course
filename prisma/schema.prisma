@@ -47,7 +47,7 @@ model Course {
   coursePrice Float @default(0)
   courseDiscountPrice Float @default(0)
   promoStatus Boolean @default(false) 
-  publish Publish
+  publish Boolean @default(true)
   totalDuration Float @default(0)
   certificateStatus Boolean @default(false)
   createdAt DateTime @default(now())
@@ -157,6 +157,7 @@ model CourseUser {
   user User @relation(fields: [userId], references: [uid])
   course Course @relation(fields: [courseId], references: [id])
 
+  @@unique([userId, courseId])
   @@map("course_users")
 }
 

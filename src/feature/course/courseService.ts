@@ -8,7 +8,7 @@ export class CourseService {
   static async getAllCourses(): Promise<any> {
     const courses = await prisma.course.findMany({
       where: {
-        publish: "Published",
+        publish: true,
       },
       include: {
         user: true,
@@ -151,7 +151,7 @@ export class CourseService {
           contains: courseName,
           mode: "insensitive",
         },
-        publish: "Published",
+        publish: true,
       },
       include: {
         user: true,
@@ -203,7 +203,7 @@ export class CourseService {
     const recommendedCourses = await prisma.course.findMany({
       where: {
         id: { not: courseId },
-        publish: "Published",
+        publish: true,
         categoryId: courseDetail.categoryId,
       },
       include: {
@@ -619,7 +619,7 @@ export class CourseService {
       const count = await prisma.course.count({
         where: {
           typeCourseId: typeCourse.id,
-          publish: "Published",
+          publish: true,
         },
       });
 
@@ -648,7 +648,7 @@ export class CourseService {
         id: {
           in: courseIds,
         },
-        publish: "Published",
+        publish: true,
       },
       include: {
         user: true,
@@ -685,7 +685,7 @@ export class CourseService {
   static async getAllCoursesByUserId(userId: string): Promise<any> {
     const allCourses = await prisma.course.findMany({
       where: {
-        publish: "Published",
+        publish: true,
       },
       include: {
         user: true,

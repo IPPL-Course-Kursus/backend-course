@@ -1,8 +1,3 @@
-export enum Publish {
-  Published = "Published",
-  Archived = "Archived",
-}
-
 export type UpdateCourseRequest = {
   categoryId: number;
   courseLevelId: number;
@@ -12,7 +7,7 @@ export type UpdateCourseRequest = {
   intendedFor: string;
   courseDiscountPercent: number;
   coursePrice: number;
-  publish: Publish;
+  publish: boolean;
   certificateStatus: boolean;
 };
 
@@ -25,6 +20,6 @@ export type CreateCourseRequest = {
   intendedFor: string;
   courseDiscountPercent: number;
   coursePrice: number;
-  publish: Publish;
+  publish: boolean;
   certificateStatus: boolean;
 };
