@@ -183,7 +183,7 @@ export class ContentService {
         where: { id: contentId },
         data: {
           interpreterId: null,
-          interpreterStatus: false,
+          interpreterStatus: data.interpreterStatus,
         },
       });
     }
