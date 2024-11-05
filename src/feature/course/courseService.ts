@@ -275,16 +275,26 @@ export class CourseService {
       ]);
     }
 
-    if (
-      checkProhibitedWords(data.courseName) ||
-      checkProhibitedWords(data.aboutCourse) ||
-      checkProhibitedWords(data.intendedFor)
-    ) {
+    if (checkProhibitedWords(data.courseName)) {
       throw new ErrorResponse(
-        "Course name or about course or intended for contains prohibited words",
+        "Course name for contains prohibited words",
         400,
-        ["courseName", "aboutCourse", "intendedFor"]
+        ["courseName"]
       );
+    }
+
+    if (checkProhibitedWords(data.aboutCourse)) {
+      throw new ErrorResponse(
+        "About course for contains prohibited words",
+        400,
+        ["aboutCourse"]
+      );
+    }
+
+    if (checkProhibitedWords(data.intendedFor)) {
+      throw new ErrorResponse("Intended for contains prohibited words", 400, [
+        "intendedFor",
+      ]);
     }
 
     const existingCourse = await prisma.course.findFirst({
@@ -423,17 +433,27 @@ export class CourseService {
       throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 
-    // if (
-    //   checkProhibitedWords(data.courseName) ||
-    //   checkProhibitedWords(data.aboutCourse) ||
-    //   checkProhibitedWords(data.intendedFor)
-    // ) {
-    //   throw new ErrorResponse(
-    //     "Course name or about course or intended for contains prohibited words",
-    //     400,
-    //     ["courseName", "aboutCourse", "intendedFor"]
-    //   );
-    // }
+    if (checkProhibitedWords(data.courseName)) {
+      throw new ErrorResponse(
+        "Course name for contains prohibited words",
+        400,
+        ["courseName"]
+      );
+    }
+
+    if (checkProhibitedWords(data.aboutCourse)) {
+      throw new ErrorResponse(
+        "About course for contains prohibited words",
+        400,
+        ["aboutCourse"]
+      );
+    }
+
+    if (checkProhibitedWords(data.intendedFor)) {
+      throw new ErrorResponse("Intended for contains prohibited words", 400, [
+        "intendedFor",
+      ]);
+    }
 
     let imageUrl = course.image;
     const validFileTypes = ["image/jpeg", "image/png"];
