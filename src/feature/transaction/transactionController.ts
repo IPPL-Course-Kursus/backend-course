@@ -15,7 +15,10 @@ export class TransactionController {
         userId,
         courseId
       );
-      res.status(200).json(transaction);
+      res.status(200).json({
+        message: "Transaction created successfully",
+        data: transaction,
+      });
     } catch (error) {
       next(error);
     }
