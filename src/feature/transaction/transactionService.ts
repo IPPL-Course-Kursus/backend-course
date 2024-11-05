@@ -87,9 +87,28 @@ export class TransactionService {
       };
     }
 
+    const existingTransaction = await prisma.transaction.findFirst({
+      where: {
+        userId,
+        courseId,
+        paymentStatus: "pending",
+      },
+    });
+
+    if (existingTransaction) {
+      return {
+        success: true,
+        data: {
+          token: existingTransaction.orderId,
+          paymentUrl: existingTransaction.linkPayment,
+          orderId: existingTransaction.orderId,
+        },
+      };
+    }
+
     let isUnique = false;
     while (!isUnique) {
-      const randomNumber = Math.floor(100 + Math.random() * 90000);
+      const randomNumber = Math.floor(100000 + Math.random() * 90000);
       orderId = `ORDER-${Date.now()}${randomNumber}`;
       const existingTransaction = await prisma.transaction.findUnique({
         where: { orderId },
