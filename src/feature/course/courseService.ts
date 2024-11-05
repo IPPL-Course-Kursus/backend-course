@@ -41,11 +41,6 @@ export class CourseService {
         courseLevel: true,
         typeCourse: true,
         category: true,
-        _count: {
-          select: {
-            chapters: true,
-          },
-        },
       },
     });
 

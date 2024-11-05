@@ -12,31 +12,42 @@ const upload = multer({
   },
 });
 
-courseRoute.get("/", CourseController.getAllCourses);
-courseRoute.get("/filter", CourseController.getCoursesByFilter);
-courseRoute.get(
-  "/userId/",
-  JWTMiddleware.verifyToken,
-  CourseController.getAllCoursesByUserId
-);
-courseRoute.get("/count", CourseController.countCoursesByType);
-courseRoute.get("/search/:search", CourseController.getCourseBySearch);
-courseRoute.get("/type/:typeId", CourseController.getCourseByType);
-courseRoute.get("/detail-course/:id", CourseController.getDetailCourse);
-courseRoute.get("/level/:levelId", CourseController.getCourseByLevel);
-courseRoute.get("/category/:categoryId", CourseController.getCourseByCategory);
-courseRoute.get("/popular", CourseController.getPopularCourses);
-courseRoute.get(
-  "/:id",
-  JWTMiddleware.verifyToken,
-  JWTMiddleware.instrukturOnly,
-  CourseController.getCourseById
-);
 courseRoute.get(
   "/user",
   JWTMiddleware.verifyToken,
   JWTMiddleware.instrukturOnly,
   CourseController.getCourseByUserId
+);
+
+courseRoute.get("/", CourseController.getAllCourses);
+
+courseRoute.get("/filter", CourseController.getCoursesByFilter);
+
+courseRoute.get("/count", CourseController.countCoursesByType);
+
+courseRoute.get("/search/:search", CourseController.getCourseBySearch);
+
+courseRoute.get("/type/:typeId", CourseController.getCourseByType);
+
+courseRoute.get("/detail-course/:id", CourseController.getDetailCourse);
+
+courseRoute.get("/level/:levelId", CourseController.getCourseByLevel);
+
+courseRoute.get("/category/:categoryId", CourseController.getCourseByCategory);
+
+courseRoute.get("/popular", CourseController.getPopularCourses);
+
+courseRoute.get(
+  "/userId/",
+  JWTMiddleware.verifyToken,
+  CourseController.getAllCoursesByUserId
+);
+
+courseRoute.get(
+  "/:id",
+  JWTMiddleware.verifyToken,
+  JWTMiddleware.instrukturOnly,
+  CourseController.getCourseById
 );
 
 courseRoute.post(
