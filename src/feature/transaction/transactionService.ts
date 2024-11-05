@@ -99,7 +99,6 @@ export class TransactionService {
       return {
         success: true,
         data: {
-          token: existingTransaction.orderId,
           paymentUrl: existingTransaction.linkPayment,
           orderId: existingTransaction.orderId,
         },
@@ -176,7 +175,6 @@ export class TransactionService {
     return {
       success: true,
       data: {
-        token: transaction.token,
         paymentUrl: transaction.redirect_url,
         orderId: orderId,
       },
