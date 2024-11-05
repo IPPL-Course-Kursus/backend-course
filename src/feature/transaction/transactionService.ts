@@ -99,6 +99,7 @@ export class TransactionService {
       return {
         success: true,
         data: {
+          token: existingTransaction.paymentToken,
           paymentUrl: existingTransaction.linkPayment,
           orderId: existingTransaction.orderId,
         },
@@ -153,6 +154,7 @@ export class TransactionService {
           paymentStatus: "pending",
           paymentMethod: "snapMidtrans",
           linkPayment: transaction.redirect_url,
+          paymentToken: transaction.token,
         },
       });
     }
@@ -169,12 +171,14 @@ export class TransactionService {
         paymentStatus: "pending",
         paymentMethod: "snapMidtrans",
         linkPayment: transaction.redirect_url,
+        paymentToken: transaction.token,
       },
     });
 
     return {
       success: true,
       data: {
+        token: transaction.token,
         paymentUrl: transaction.redirect_url,
         orderId: orderId,
       },

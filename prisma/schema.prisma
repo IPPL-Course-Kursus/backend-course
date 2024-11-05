@@ -201,6 +201,7 @@ model Transaction {
   paymentStatus PaymentStatus
   paymentMethod String
   linkPayment String
+  paymentToken String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
