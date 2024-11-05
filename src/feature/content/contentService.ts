@@ -182,8 +182,8 @@ export class ContentService {
       await prisma.content.update({
         where: { id: contentId },
         data: {
-          interpreterId: null,
           interpreterStatus: data.interpreterStatus,
+          interpreterId: null,
         },
       });
     }
