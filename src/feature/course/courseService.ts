@@ -47,9 +47,6 @@ export class CourseService {
           },
         },
       },
-      orderBy: {
-        id: "asc",
-      },
     });
 
     if (courses.length === 0) {

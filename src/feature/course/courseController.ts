@@ -17,8 +17,8 @@ export class CourseController {
     next: NextFunction
   ) {
     try {
-      const { userId } = res.locals.user.uid;
-      const course = await CourseService.getCourseByUserId(userId);
+      const user = res.locals.user;
+      const course = await CourseService.getCourseByUserId(user.uid);
       res.status(200).json(course);
     } catch (error) {
       next(error);
