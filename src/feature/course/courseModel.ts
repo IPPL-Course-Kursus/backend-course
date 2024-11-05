@@ -7,8 +7,8 @@ export type UpdateCourseRequest = {
   intendedFor: string;
   courseDiscountPercent: string;
   coursePrice: string;
-  publish: boolean;
-  certificateStatus: boolean;
+  publish: string;
+  certificateStatus: string;
 };
 
 export type CreateCourseRequest = {
@@ -20,6 +20,6 @@ export type CreateCourseRequest = {
   intendedFor: string;
   courseDiscountPercent: string;
   coursePrice: string;
-  publish: boolean;
-  certificateStatus: boolean;
+  publish: string;
+  certificateStatus: string;
 };

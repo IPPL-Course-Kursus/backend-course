@@ -379,8 +379,8 @@ export class CourseService {
         courseDiscountPrice: courseDiscountPrice,
         coursePrice: coursePrice || 0,
         promoStatus: promoStatus,
-        publish: data.publish,
-        certificateStatus: data.certificateStatus,
+        publish: data.publish === "true" ? true : false,
+        certificateStatus: data.certificateStatus === "true" ? true : false,
       },
     });
   }
@@ -493,8 +493,8 @@ export class CourseService {
           courseDiscountPrice: courseDiscountPrice,
           coursePrice: coursePrice,
           promoStatus: promoStatus,
-          publish: data.publish,
-          certificateStatus: data.certificateStatus,
+          publish: data.publish === "true" ? true : false,
+          certificateStatus: data.certificateStatus === "true" ? true : false,
         },
       });
     }
