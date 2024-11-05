@@ -47,7 +47,7 @@ model Course {
   coursePrice Float @default(0)
   courseDiscountPrice Float @default(0)
   promoStatus Boolean @default(false) 
-  publish Boolean
+  publish Boolean @default(false)
   totalDuration Float @default(0)
   certificateStatus Boolean @default(false)
   createdAt DateTime @default(now())

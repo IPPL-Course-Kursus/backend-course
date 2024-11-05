@@ -3,7 +3,6 @@ import { ErrorResponse } from "../../models/error_response";
 import { UpdateCourseRequest, CreateCourseRequest } from "./courseModel";
 import { imagekit } from "../../utils/image_kit";
 import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
-import { parse } from "path";
 
 export class CourseService {
   static async getAllCourses(): Promise<any> {
@@ -42,6 +41,14 @@ export class CourseService {
         courseLevel: true,
         typeCourse: true,
         category: true,
+        _count: {
+          select: {
+            chapters: true,
+          },
+        },
+      },
+      orderBy: {
+        id: "asc",
       },
     });
 
