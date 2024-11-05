@@ -182,7 +182,6 @@ export class ContentService {
       await prisma.content.update({
         where: { id: contentId },
         data: {
-          interpreterStatus: data.interpreterStatus,
           interpreterId: null,
         },
       });
@@ -196,8 +195,7 @@ export class ContentService {
         contentUrl: data.contentUrl,
         duration: data.duration,
         teks: data.teks,
-        interpreterStatus:
-          data.interpreterStatus || existingContent.interpreterStatus,
+        interpreterStatus: data.interpreterStatus,
       },
     });
 
