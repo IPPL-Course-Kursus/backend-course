@@ -3,6 +3,7 @@ import { ErrorResponse } from "../../models/error_response";
 import { UpdateCourseRequest, CreateCourseRequest } from "./courseModel";
 import { imagekit } from "../../utils/image_kit";
 import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
+import { parse } from "path";
 
 export class CourseService {
   static async getAllCourses(): Promise<any> {
@@ -294,32 +295,42 @@ export class CourseService {
     if (existingCourse) {
       throw new ErrorResponse("Course already exists", 400);
     }
-    const courseLevel = await prisma.courseLevel.findUnique({
-      where: { id: data.courseLevelId },
+
+    const courseLevel = parseInt(data.courseLevelId);
+
+    const courseLevelFind = await prisma.courseLevel.findUnique({
+      where: { id: courseLevel },
     });
 
-    if (!courseLevel) {
+    if (!courseLevelFind) {
       throw new ErrorResponse("Course level not found", 404);
     }
 
-    const typeCourse = await prisma.typeCourse.findUnique({
-      where: { id: data.typeCourseId },
+    const typeCourse = parseInt(data.typeCourseId);
+
+    const typeCourseFind = await prisma.typeCourse.findUnique({
+      where: { id: typeCourse },
       select: { typeName: true },
     });
 
-    if (!typeCourse) {
+    if (!typeCourseFind) {
       throw new ErrorResponse("Type course not found", 404);
     }
 
+    let coursePrice = parseInt(data.coursePrice);
+    const courseDiscountPercent = parseInt(data.courseDiscountPercent);
+
     if (
-      typeCourse.typeName === "Free" &&
-      (data.coursePrice > 0 || data.courseDiscountPercent > 0)
+      typeCourseFind.typeName === "Free" &&
+      (coursePrice > 0 || courseDiscountPercent > 0)
     ) {
       throw new ErrorResponse("Free courses cannot have a price", 400);
     }
 
+    const categoryId = parseInt(data.categoryId);
+
     const category = await prisma.category.findUnique({
-      where: { id: data.categoryId },
+      where: { id: categoryId },
     });
 
     if (!category) {
@@ -347,8 +358,7 @@ export class CourseService {
 
     if (data.courseDiscountPercent) {
       courseDiscountPrice =
-        data.coursePrice -
-        (data.coursePrice * data.courseDiscountPercent) / 100;
+        coursePrice - (coursePrice * courseDiscountPercent) / 100;
       promoStatus = true;
     } else {
       courseDiscountPrice = 0;
@@ -357,17 +367,17 @@ export class CourseService {
 
     await prisma.course.create({
       data: {
-        categoryId: data.categoryId,
-        courseLevelId: data.courseLevelId,
-        typeCourseId: data.typeCourseId,
+        categoryId: categoryId,
+        courseLevelId: courseLevel,
+        typeCourseId: typeCourse,
         userId: uid,
         courseName: data.courseName,
         image: imageUrl,
         aboutCourse: data.aboutCourse,
         intendedFor: data.intendedFor,
-        courseDiscountPercent: data.courseDiscountPercent || 0,
+        courseDiscountPercent: courseDiscountPercent || 0,
         courseDiscountPrice: courseDiscountPrice,
-        coursePrice: data.coursePrice || 0,
+        coursePrice: coursePrice || 0,
         promoStatus: promoStatus,
         publish: data.publish,
         certificateStatus: data.certificateStatus,
@@ -430,10 +440,13 @@ export class CourseService {
     const validFileTypes = ["image/jpeg", "image/png"];
     let courseDiscountPrice: number | undefined;
     let promoStatus: boolean = false;
+    const categoryId = parseInt(data.categoryId);
+    const typeCourseId = parseInt(data.typeCourseId);
+    const courseLevelId = parseInt(data.courseLevelId);
 
-    if (data.categoryId && data.categoryId !== course.categoryId) {
+    if (categoryId && categoryId !== course.categoryId) {
       const category = await prisma.category.findUnique({
-        where: { id: data.categoryId },
+        where: { id: categoryId },
       });
 
       if (!category) {
@@ -454,10 +467,12 @@ export class CourseService {
         }
       }
 
-      if (data.courseDiscountPercent) {
+      let coursePrice = parseInt(data.coursePrice);
+      const courseDiscountPercent = parseInt(data.courseDiscountPercent);
+
+      if (courseDiscountPercent > 0) {
         courseDiscountPrice =
-          data.coursePrice -
-          (data.coursePrice * data.courseDiscountPercent) / 100;
+          coursePrice - (coursePrice * courseDiscountPercent) / 100;
         promoStatus = true;
       } else {
         courseDiscountPrice = undefined;
@@ -467,16 +482,16 @@ export class CourseService {
       await prisma.course.update({
         where: { id },
         data: {
-          categoryId: data.categoryId,
-          courseLevelId: data.courseLevelId,
-          typeCourseId: data.typeCourseId,
+          categoryId: categoryId,
+          courseLevelId: courseLevelId,
+          typeCourseId: typeCourseId,
           courseName: data.courseName,
           image: imageUrl,
           aboutCourse: data.aboutCourse,
           intendedFor: data.intendedFor,
-          courseDiscountPercent: data.courseDiscountPercent,
+          courseDiscountPercent: courseDiscountPercent,
           courseDiscountPrice: courseDiscountPrice,
-          coursePrice: data.coursePrice,
+          coursePrice: coursePrice,
           promoStatus: promoStatus,
           publish: data.publish,
           certificateStatus: data.certificateStatus,

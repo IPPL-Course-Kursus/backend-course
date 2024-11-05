@@ -1,25 +1,25 @@
 export type UpdateCourseRequest = {
-  categoryId: number;
-  courseLevelId: number;
-  typeCourseId: number;
+  categoryId: string;
+  courseLevelId: string;
+  typeCourseId: string;
   courseName: string;
   aboutCourse: string;
   intendedFor: string;
-  courseDiscountPercent: number;
-  coursePrice: number;
+  courseDiscountPercent: string;
+  coursePrice: string;
   publish: boolean;
   certificateStatus: boolean;
 };
 
 export type CreateCourseRequest = {
-  categoryId: number;
-  courseLevelId: number;
-  typeCourseId: number;
+  categoryId: string;
+  courseLevelId: string;
+  typeCourseId: string;
   courseName: string;
   aboutCourse: string;
   intendedFor: string;
-  courseDiscountPercent: number;
-  coursePrice: number;
+  courseDiscountPercent: string;
+  coursePrice: string;
   publish: boolean;
   certificateStatus: boolean;
 };
