@@ -423,17 +423,17 @@ export class CourseService {
       throw new ErrorResponse("The data cannot be empty", 400, ["data"]);
     }
 
-    if (
-      checkProhibitedWords(data.courseName) ||
-      checkProhibitedWords(data.aboutCourse) ||
-      checkProhibitedWords(data.intendedFor)
-    ) {
-      throw new ErrorResponse(
-        "Course name or about course or intended for contains prohibited words",
-        400,
-        ["courseName", "aboutCourse", "intendedFor"]
-      );
-    }
+    // if (
+    //   checkProhibitedWords(data.courseName) ||
+    //   checkProhibitedWords(data.aboutCourse) ||
+    //   checkProhibitedWords(data.intendedFor)
+    // ) {
+    //   throw new ErrorResponse(
+    //     "Course name or about course or intended for contains prohibited words",
+    //     400,
+    //     ["courseName", "aboutCourse", "intendedFor"]
+    //   );
+    // }
 
     let imageUrl = course.image;
     const validFileTypes = ["image/jpeg", "image/png"];
