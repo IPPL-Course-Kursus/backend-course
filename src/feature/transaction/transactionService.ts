@@ -89,8 +89,8 @@ export class TransactionService {
 
     let isUnique = false;
     while (!isUnique) {
-      const randomNumber = Math.floor(10000 + Math.random() * 90000);
-      orderId = `ORDER-${randomNumber}`;
+      const randomNumber = Math.floor(100 + Math.random() * 90000);
+      orderId = `ORDER-${Date.now()}${randomNumber}`;
       const existingTransaction = await prisma.transaction.findUnique({
         where: { orderId },
       });
