@@ -144,7 +144,7 @@ export class ContentService {
       throw new ErrorResponse("Content not found", 404);
     }
 
-    if (data.interpreterStatus) {
+    if (data.interpreterStatus === true) {
       if (!data.sourceCode || !data.languageInterpreterId) {
         throw new ErrorResponse(
           "Both sourceCode and languageInterpreter must be filled in",
