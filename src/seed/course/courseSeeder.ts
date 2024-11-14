@@ -20,7 +20,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 150,
       },
       {
@@ -40,7 +40,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 135000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 180,
       },
       {
@@ -60,7 +60,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 170000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 200,
       },
 
@@ -82,7 +82,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 80,
       },
       {
@@ -102,7 +102,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 135000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 120,
       },
       {
@@ -122,7 +122,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 170000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 180,
       },
       {
@@ -142,7 +142,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 100,
       },
       {
@@ -162,7 +162,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 180000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 150,
       },
       {
@@ -182,7 +182,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 255000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 200,
       },
 
@@ -204,7 +204,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 90,
       },
       {
@@ -224,7 +224,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 225000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 120,
       },
       {
@@ -244,7 +244,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 320000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 250,
       },
       {
@@ -264,7 +264,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 100,
       },
       {
@@ -284,7 +284,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 270000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 150,
       },
       {
@@ -304,7 +304,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 340000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 200,
       },
 
@@ -326,7 +326,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 120,
       },
       {
@@ -346,7 +346,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 315000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 180,
       },
       {
@@ -366,7 +366,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 425000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 240,
       },
       {
@@ -386,7 +386,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 0,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 120,
       },
       {
@@ -406,7 +406,7 @@ export const seedCourse = async () => {
         courseDiscountPrice: 315000,
         promoStatus: true,
         certificateStatus: true,
-        publish: "Published",
+        publish: true,
         totalDuration: 180,
       },
     ],

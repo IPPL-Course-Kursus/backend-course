@@ -7,6 +7,7 @@ import { seedChapter } from "./chapter/chapterSeeder";
 import { contentSeeder } from "./content/contentSeeder";
 import { updateContentSeeder } from "./content/updateContentSeeder";
 import { seedInterpreterLanguage } from "./interpreterLanguage/interpreterLanguageSeeder";
+import { seedAuth } from "./auth/authSeeder";
 
 const seed = async () => {
   try {
@@ -15,9 +16,10 @@ const seed = async () => {
     // await seedCategories();
     // await seedCourse();
     // await seedInterpreterLanguage();
-    // await seedChapter();
-    await contentSeeder();
+    await seedChapter();
+    // await contentSeeder();
     // await updateContentSeeder();
+    // await seedAuth();
     console.log("Seeding completed successfully.");
   } catch (error) {
     console.error("Error during seeding:", error);
