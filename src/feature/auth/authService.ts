@@ -79,7 +79,7 @@ export class AuthService {
       .then(async (userCredential) => {
         const uid = userCredential.user.uid;
 
-        await adminAuth.updateUser(uid, { emailVerified: true });
+        // await adminAuth.updateUser(uid, { emailVerified: true });
 
         await prisma.user.create({
           data: {
