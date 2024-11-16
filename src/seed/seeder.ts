@@ -16,8 +16,8 @@ const seed = async () => {
     // await seedCategories();
     // await seedCourse();
     // await seedInterpreterLanguage();
-    await seedChapter();
-    // await contentSeeder();
+    // await seedChapter();
+    await contentSeeder();
     // await updateContentSeeder();
     // await seedAuth();
     console.log("Seeding completed successfully.");

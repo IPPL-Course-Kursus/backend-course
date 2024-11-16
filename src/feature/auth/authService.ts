@@ -79,12 +79,7 @@ export class AuthService {
       .then(async (userCredential) => {
         const uid = userCredential.user.uid;
 
-        const findUser = await prisma.user.findFirst({ where: { fullName } });
-        if (findUser) {
-          throw new ErrorResponse("User with this name already exists", 400, [
-            "fullName",
-          ]);
-        }
+        await adminAuth.updateUser(uid, { emailVerified: true });
 
         await prisma.user.create({
           data: {
