@@ -19,6 +19,15 @@ import { getAuth as getAdminAuth } from "firebase-admin/auth";
 import { initializeApp } from "firebase/app";
 import admin from "firebase-admin";
 import {
+  getFirestore,
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import {
   getStorage,
   getDownloadURL,
   uploadBytesResumable,
@@ -56,8 +65,16 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const adminAuth = getAdminAuth();
 const storage = getStorage(firebaseApp);
+const fs = getFirestore();
 
 export {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+  fs,
   adminAuth,
   getAuth,
   auth,

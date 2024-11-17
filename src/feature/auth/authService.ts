@@ -23,11 +23,19 @@ import {
   applyActionCode,
   FirebaseError,
   adminAuth,
+  fs,
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
 } from "../../config/firebase";
 import { AuthValidation } from "./authValidation";
 import { Validation } from "../../validations/validation";
 import { imagekit } from "../../utils/image_kit";
 import { checkProhibitedWords } from "../../utils/checkProhibiteWords";
+import { hashPassword, verifyPassword } from "../../utils/format";
 
 export class AuthService {
   static async register(user: RegisterRequest): Promise<void> {
@@ -78,8 +86,7 @@ export class AuthService {
     return createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const uid = userCredential.user.uid;
-
-        // await adminAuth.updateUser(uid, { emailVerified: true });
+        const hashedPassword = hashPassword(password);
 
         await prisma.user.create({
           data: {
@@ -92,6 +99,11 @@ export class AuthService {
             image:
               "https://ik.imagekit.io/vyck38py3/photoProfile/user_profile.jpg?updatedAt=1730528814856",
           },
+        });
+
+        await setDoc(doc(fs, "users", uid), {
+          email,
+          hashedPassword,
         });
 
         await sendEmailVerification(userCredential.user);
@@ -145,15 +157,6 @@ export class AuthService {
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
 
-    const validateUsername = await prisma.user.findFirst({
-      where: { fullName },
-    });
-    if (validateUsername) {
-      throw new ErrorResponse("User with this name already exists", 400, [
-        "fullName",
-      ]);
-    }
-
     return createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const uid = userCredential.user.uid;
@@ -188,14 +191,68 @@ export class AuthService {
       });
   }
 
+  private static async handleUserNotFound(data: LoginRequest): Promise<any> {
+    const userQuery = query(
+      collection(fs, "users"),
+      where("email", "==", data.email)
+    );
+    const userSnapshot = await getDocs(userQuery);
+
+    if (userSnapshot.empty) {
+      throw new ErrorResponse("Email not found", 400, ["email"]);
+    }
+
+    const userDoc = userSnapshot.docs[0].data();
+    console.log("Fetched user document:", userDoc);
+
+    const storedPassword = userDoc.hashedPassword;
+    if (!storedPassword) {
+      console.error("Stored password is undefined or missing!");
+      throw new ErrorResponse("Invalid email or password", 400, [
+        "email or password",
+      ]);
+    }
+
+    if (!verifyPassword(data.password, storedPassword)) {
+      throw new ErrorResponse("Invalid email or password", 400, [
+        "email or password",
+      ]);
+    }
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password
+    );
+    const uid = userCredential.user.uid;
+    await adminAuth.updateUser(uid, { emailVerified: true });
+
+    await prisma.user.create({
+      data: {
+        uid,
+        fullName: "Full Name",
+        phoneNumber: "082111111111",
+        role: "User",
+        tanggalLahir: new Date(),
+        city: "City",
+        image:
+          "https://ik.imagekit.io/vyck38py3/photoProfile/user_profile.jpg?updatedAt=1730528814856",
+      },
+    });
+    const token = await userCredential.user.getIdToken();
+
+    return {
+      token,
+      role: "User",
+    };
+  }
+
   static async login(data: LoginRequest): Promise<any> {
     if (!data.email || !data.password) {
-      return Promise.reject(
-        new ErrorResponse("Email or password is empty", 400, [
-          "email",
-          "password",
-        ])
-      );
+      throw new ErrorResponse("Email or password is empty", 400, [
+        "email",
+        "password",
+      ]);
     }
 
     if (
@@ -203,66 +260,75 @@ export class AuthService {
       checkProhibitedWords(data.password)
     ) {
       throw new ErrorResponse(
-        "email or password contains prohibited words",
+        "Email or password contains prohibited words",
         400,
         ["email", "password"]
       );
     }
-    const requests = Validation.validate(AuthValidation.LOGIN, data);
-    const { email, password } = requests;
-    return signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        if (!user.emailVerified) {
-          return sendEmailVerification(user).then(() => {
-            return Promise.reject(
-              new ErrorResponse(
-                "Email not verified. Please check your email to verify your account before logging in.",
-                403,
-                ["user_id"]
-              )
-            );
-          });
-        }
-        return prisma.user
-          .findFirst({ where: { uid: user.uid } })
-          .then((userData) => {
-            if (!userData || userData.isDeleted) {
-              return Promise.reject(
-                new ErrorResponse(
-                  "Your account has been deleted. Please contact the administrator.",
-                  403,
-                  ["user_id"]
-                )
-              );
-            }
-            return user.getIdToken().then((token) => {
-              return {
-                token,
-                role: userData.role,
-              };
-            });
-          });
-      })
-      .catch((error) => {
-        if (
-          error.code === "auth/invalid-email" ||
-          error.code === "auth/wrong-password" ||
-          error.code === "auth/invalid-credential"
-        ) {
-          return Promise.reject(
-            new ErrorResponse("Invalid email or password", 400, [
-              "email or password",
-            ])
-          );
-        }
-        if (error instanceof ErrorResponse) {
-          return Promise.reject(error);
-        }
-        return Promise.reject(
-          new ErrorResponse("An unexpected error occurred", 500)
+
+    try {
+      await adminAuth.getUserByEmail(data.email);
+
+      const { email, password } = Validation.validate(
+        AuthValidation.LOGIN,
+        data
+      );
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        await sendEmailVerification(user);
+        throw new ErrorResponse(
+          "Email not verified. Please check your email to verify your account before logging in.",
+          403,
+          ["user_id"]
         );
+      }
+
+      const userData = await prisma.user.findFirst({
+        where: { uid: user.uid },
       });
+
+      if (!userData || userData.isDeleted) {
+        throw new ErrorResponse(
+          "Your account has been deleted. Please contact the administrator.",
+          403,
+          ["user_id"]
+        );
+      }
+
+      const token = await user.getIdToken();
+
+      return {
+        token,
+        role: userData.role,
+      };
+    } catch (error: any) {
+      if (error.code === "auth/user-not-found") {
+        return this.handleUserNotFound(data);
+      }
+
+      if (
+        error.code === "auth/invalid-email" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/invalid-credential"
+      ) {
+        throw new ErrorResponse("Invalid email or password", 400, [
+          "email or password",
+        ]);
+      }
+
+      if (error instanceof ErrorResponse) {
+        throw error;
+      }
+
+      throw new ErrorResponse("An unexpected error occurred", 500);
+    }
   }
 
   static async logoutUser(): Promise<string> {
