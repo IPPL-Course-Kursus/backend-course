@@ -8,7 +8,7 @@ const scryptConfig = {
 };
 
 export const hashPassword = (password: string): string => {
-  const salt = randomBytes(16).toString("base64");
+  const salt = randomBytes(16).toString("base64").replace(/=+$/, "");
 
   const derivedKey = scryptSync(password, salt, scryptConfig.keyLength, {
     N: scryptConfig.cost,
@@ -18,17 +18,17 @@ export const hashPassword = (password: string): string => {
 
   return `$scrypt$n=${scryptConfig.cost},r=${scryptConfig.blockSize},p=${
     scryptConfig.parallelization
-  }$${salt}$${derivedKey.toString("base64")}`;
+  }$${salt}$${derivedKey.toString("base64").replace(/=+$/, "")}`;
 };
 
 export const verifyPassword = (
   inputPassword: string,
   storedHash: string
 ): boolean => {
-  console.log(storedHash, inputPassword);
   if (!inputPassword || !storedHash) {
     throw new Error("Invalid input: Password or stored hash is missing");
   }
+
   const [algorithm, params, salt, storedDerivedKey] = storedHash
     .split("$")
     .slice(1);
@@ -37,9 +37,14 @@ export const verifyPassword = (
     throw new Error("Unsupported hashing algorithm");
   }
 
-  const { n, r, p } = Object.fromEntries(
-    params.split(",").map((param) => param.split("=").map(Number))
+  const paramObj = Object.fromEntries(
+    params.split(",").map((param) => {
+      const [key, value] = param.split("=");
+      return [key, Number(value)];
+    })
   );
+
+  const { n, r, p } = paramObj;
 
   const derivedKey = scryptSync(inputPassword, salt, scryptConfig.keyLength, {
     N: n,
@@ -47,5 +52,5 @@ export const verifyPassword = (
     p: p,
   });
 
-  return derivedKey.toString("base64") === storedDerivedKey;
+  return derivedKey.toString("base64").replace(/=+$/, "") === storedDerivedKey;
 };

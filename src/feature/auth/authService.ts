@@ -57,17 +57,23 @@ export class AuthService {
       ]);
     }
 
-    if (
-      checkProhibitedWords(user.fullName) ||
-      checkProhibitedWords(user.email) ||
-      checkProhibitedWords(user.city) ||
-      checkProhibitedWords(user.password)
-    ) {
-      throw new ErrorResponse(
-        "fullName or email or city or password contains prohibited words",
-        400,
-        ["fullName", "email", "city", "password"]
-      );
+    if (checkProhibitedWords(user.fullName)) {
+      throw new ErrorResponse("fullName contains prohibited words", 400, [
+        "fullName",
+      ]);
+    }
+    if (checkProhibitedWords(user.email)) {
+      throw new ErrorResponse("email contains prohibited words", 400, [
+        "email",
+      ]);
+    }
+    if (checkProhibitedWords(user.city)) {
+      throw new ErrorResponse("city contains prohibited words", 400, ["city"]);
+    }
+    if (checkProhibitedWords(user.password)) {
+      throw new ErrorResponse("password contains prohibited words", 400, [
+        "password",
+      ]);
     }
 
     const requests = Validation.validate(AuthValidation.REGISTER, user);
@@ -141,17 +147,23 @@ export class AuthService {
         "password",
       ]);
     }
-    if (
-      checkProhibitedWords(user.fullName) ||
-      checkProhibitedWords(user.email) ||
-      checkProhibitedWords(user.city) ||
-      checkProhibitedWords(user.password)
-    ) {
-      throw new ErrorResponse(
-        "fullName or email or city or password contains prohibited words",
-        400,
-        ["fullName", "email", "city", "password"]
-      );
+    if (checkProhibitedWords(user.fullName)) {
+      throw new ErrorResponse("fullName contains prohibited words", 400, [
+        "fullName",
+      ]);
+    }
+    if (checkProhibitedWords(user.email)) {
+      throw new ErrorResponse("email contains prohibited words", 400, [
+        "email",
+      ]);
+    }
+    if (checkProhibitedWords(user.city)) {
+      throw new ErrorResponse("city contains prohibited words", 400, ["city"]);
+    }
+    if (checkProhibitedWords(user.password)) {
+      throw new ErrorResponse("password contains prohibited words", 400, [
+        "password",
+      ]);
     }
     const requests = Validation.validate(AuthValidation.REGISTER, user);
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
@@ -203,11 +215,9 @@ export class AuthService {
     }
 
     const userDoc = userSnapshot.docs[0].data();
-    console.log("Fetched user document:", userDoc);
 
     const storedPassword = userDoc.hashedPassword;
     if (!storedPassword) {
-      console.error("Stored password is undefined or missing!");
       throw new ErrorResponse("Invalid email or password", 400, [
         "email or password",
       ]);
@@ -255,15 +265,15 @@ export class AuthService {
       ]);
     }
 
-    if (
-      checkProhibitedWords(data.email) ||
-      checkProhibitedWords(data.password)
-    ) {
-      throw new ErrorResponse(
-        "Email or password contains prohibited words",
-        400,
-        ["email", "password"]
-      );
+    if (checkProhibitedWords(data.email)) {
+      throw new ErrorResponse("Email contains prohibited words", 400, [
+        "email",
+      ]);
+    }
+    if (checkProhibitedWords(data.password)) {
+      throw new ErrorResponse("Password contains prohibited words", 400, [
+        "password",
+      ]);
     }
 
     try {
@@ -426,15 +436,13 @@ export class AuthService {
       );
     }
 
-    if (
-      checkProhibitedWords(data.fullName) ||
-      checkProhibitedWords(data.city)
-    ) {
-      throw new ErrorResponse(
-        "fullName or city contains prohibited words",
-        400,
-        ["fullName", "city"]
-      );
+    if (checkProhibitedWords(user.fullName)) {
+      throw new ErrorResponse("fullName contains prohibited words", 400, [
+        "fullName",
+      ]);
+    }
+    if (checkProhibitedWords(user.city)) {
+      throw new ErrorResponse("city contains prohibited words", 400, ["city"]);
     }
 
     let imageUrl = user.image;
@@ -451,7 +459,6 @@ export class AuthService {
 
         imageUrl = result.url;
       } catch (error) {
-        console.error("Failed to upload image:", error);
         throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
       }
     }
@@ -485,15 +492,17 @@ export class AuthService {
       ]);
     }
 
-    if (
-      checkProhibitedWords(request.currentPassword) ||
-      checkProhibitedWords(request.newPassword)
-    ) {
+    if (checkProhibitedWords(request.currentPassword)) {
       throw new ErrorResponse(
-        "currentPassword or newPassword contains prohibited words",
+        "currentPassword contains prohibited words",
         400,
-        ["password"]
+        ["currentPassword"]
       );
+    }
+    if (checkProhibitedWords(request.newPassword)) {
+      throw new ErrorResponse("newPassword contains prohibited words", 400, [
+        "newPassword",
+      ]);
     }
 
     const requests = Validation.validate(
@@ -526,8 +535,6 @@ export class AuthService {
       await reauthenticateWithCredential(currentUser, credential);
       await updatePassword(currentUser, requests.newPassword);
     } catch (error: unknown) {
-      console.log("Failed to reauthenticate:", error);
-
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case "auth/wrong-password":
@@ -694,15 +701,13 @@ export class AuthService {
       throw new ErrorResponse("Instruktur not found", 404, ["user_id"]);
     }
 
-    if (
-      checkProhibitedWords(data.fullName) ||
-      checkProhibitedWords(data.city)
-    ) {
-      throw new ErrorResponse(
-        "city or fullName contains prohibited words",
-        400,
-        ["city", "fullName"]
-      );
+    if (checkProhibitedWords(user.fullName)) {
+      throw new ErrorResponse("fullName contains prohibited words", 400, [
+        "fullName",
+      ]);
+    }
+    if (checkProhibitedWords(user.city)) {
+      throw new ErrorResponse("city contains prohibited words", 400, ["city"]);
     }
 
     let imageUrl = user.image;
@@ -719,7 +724,6 @@ export class AuthService {
 
         imageUrl = result.url;
       } catch (error) {
-        console.error("Failed to upload image:", error);
         throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
       }
     }
