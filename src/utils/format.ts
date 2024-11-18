@@ -5,6 +5,7 @@ const scryptConfig = {
   blockSize: 8,
   parallelization: 1,
   keyLength: 64,
+  maxMemory: 33554432,
 };
 
 export const hashPassword = (password: string): string => {
@@ -14,6 +15,7 @@ export const hashPassword = (password: string): string => {
     N: scryptConfig.cost,
     r: scryptConfig.blockSize,
     p: scryptConfig.parallelization,
+    maxmem: scryptConfig.maxMemory,
   });
 
   return `$scrypt$n=${scryptConfig.cost},r=${scryptConfig.blockSize},p=${
@@ -50,6 +52,7 @@ export const verifyPassword = (
     N: n,
     r: r,
     p: p,
+    maxmem: scryptConfig.maxMemory,
   });
 
   return derivedKey.toString("base64").replace(/=+$/, "") === storedDerivedKey;
