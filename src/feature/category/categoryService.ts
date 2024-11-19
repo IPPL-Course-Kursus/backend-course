@@ -28,9 +28,7 @@ export class CategoryService {
     }
 
     const checkCategory = await prisma.category.findFirst({
-      where: {
-        OR: [{ categoryName: request.categoryName }],
-      },
+      where: { categoryName: request.categoryName },
     });
 
     if (checkCategory) {
@@ -45,20 +43,22 @@ export class CategoryService {
         "categoryName",
       ]);
     }
+    let imageUrl: string =
+      "https://ik.imagekit.io/vyck38py3/Category/image.png?updatedAt=1728397802757";
+    if (file) {
+      const validFileTypes = ["image/jpeg", "image/png"];
+      if (validFileTypes.includes(file.mimetype)) {
+        try {
+          const result = await imagekit.upload({
+            file: file.buffer,
+            fileName: `${file.originalname}`,
+            folder: "/Category",
+          });
 
-    let imageUrl: string = "";
-    const validFileTypes = ["image/jpeg", "image/png"];
-    if (file && validFileTypes.includes(file.mimetype)) {
-      try {
-        const result = await imagekit.upload({
-          file: file.buffer,
-          fileName: `${file.originalname}`,
-          folder: "/Category",
-        });
-
-        imageUrl = result.url;
-      } catch (error) {
-        throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
+          imageUrl = result.url;
+        } catch (error) {
+          throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
+        }
       }
     }
 
