@@ -43,22 +43,20 @@ export class CategoryService {
         "categoryName",
       ]);
     }
-    let imageUrl: string =
-      "https://ik.imagekit.io/vyck38py3/Category/image.png?updatedAt=1728397802757";
-    if (file) {
-      const validFileTypes = ["image/jpeg", "image/png"];
-      if (validFileTypes.includes(file.mimetype)) {
-        try {
-          const result = await imagekit.upload({
-            file: file.buffer,
-            fileName: `${file.originalname}`,
-            folder: "/Category",
-          });
 
-          imageUrl = result.url;
-        } catch (error) {
-          throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
-        }
+    let imageUrl: string = "";
+    const validFileTypes = ["image/jpeg", "image/png"];
+    if (validFileTypes.includes(file.mimetype)) {
+      try {
+        const result = await imagekit.upload({
+          file: file.buffer,
+          fileName: `${file.originalname}`,
+          folder: "/Category",
+        });
+
+        imageUrl = result.url;
+      } catch (error) {
+        throw new ErrorResponse("Failed to upload image", 500, ["upload"]);
       }
     }
 
