@@ -28,9 +28,7 @@ export class CategoryService {
     }
 
     const checkCategory = await prisma.category.findFirst({
-      where: {
-        OR: [{ categoryName: request.categoryName }],
-      },
+      where: { categoryName: request.categoryName },
     });
 
     if (checkCategory) {
