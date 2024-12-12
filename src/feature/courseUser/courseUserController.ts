@@ -24,6 +24,9 @@ export class CourseUserController {
     try {
       const { id } = req.params;
       const user = res.locals.user;
+      if (!user || !user.uid) {
+        return res.status(404).json({ message: "User not found or invalid" });
+      }
       const courseUser = id;
       const courseUserDetail = await CourseUserService.getCourseUserDetail(
         courseUser,

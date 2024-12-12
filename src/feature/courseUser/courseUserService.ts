@@ -98,9 +98,6 @@ export class CourseUserService {
     if (!id) {
       throw new ErrorResponse("id is required", 400);
     }
-    if (!uid) {
-      throw new ErrorResponse("userId is required", 400);
-    }
     const courseUser = await prisma.courseUser.findUnique({
       where: {
         id,
