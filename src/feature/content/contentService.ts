@@ -22,27 +22,15 @@ export class ContentService {
       );
     }
     let interpreterId: number | null = null;
-    if (
-      (data.interpreterStatus === false && data.sourceCode) ||
-      data.languageInterpreterId
-    ) {
-      throw new ErrorResponse(
-        "interpreterStatus must be true and both sourceCode and languageInterpreter must be filled in",
-        400,
-        ["sourceCode", "languageInterpreterId", "interpreterStatus"]
-      );
-    }
-
-    if (
-      data.interpreterStatus === true ||
-      (data.sourceCode && data.languageInterpreterId)
-    ) {
+    if (data.interpreterStatus === true) {
       if (!data.sourceCode || !data.languageInterpreterId) {
         throw new ErrorResponse(
-          "Both sourceCode and languageInterpreter must be filled in",
-          400
+          "Both sourceCode and languageInterpreter must be filled in when interpreterStatus is true",
+          400,
+          ["sourceCode", "languageInterpreterId"]
         );
       }
+
       const createInterpreter = await prisma.interpreter.create({
         data: {
           languageInterpreterId: data.languageInterpreterId,
@@ -51,6 +39,16 @@ export class ContentService {
       });
 
       interpreterId = createInterpreter.id;
+    } else if (data.interpreterStatus === false) {
+      if (data.sourceCode || data.languageInterpreterId) {
+        throw new ErrorResponse(
+          "When interpreterStatus is false, sourceCode and languageInterpreterId should not be filled in",
+          400,
+          ["sourceCode", "languageInterpreterId"]
+        );
+      }
+    } else {
+      throw new ErrorResponse("interpreterStatus must be true or false", 400);
     }
 
     const existSort = await prisma.content.findFirst({
