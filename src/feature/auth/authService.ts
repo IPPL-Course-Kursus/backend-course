@@ -277,12 +277,20 @@ export class AuthService {
     }
 
     try {
-      await adminAuth.getUserByEmail(data.email);
-
       const { email, password } = Validation.validate(
         AuthValidation.LOGIN,
         data
       );
+
+      const userRecord = await adminAuth.getUserByEmail(email);
+
+      const uidUser = await prisma.user.findUnique({
+        where: { uid: userRecord.uid },
+      });
+
+      if (!uidUser) {
+        return this.handleUserNotFound(data);
+      }
 
       const userCredential = await signInWithEmailAndPassword(
         auth,
