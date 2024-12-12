@@ -58,12 +58,9 @@ export class AuthService {
     }
 
     if (checkProhibitedWords(user.fullName)) {
-      user.fullName = "fullName contains prohibited words";
-      throw new ErrorResponse(
-        `${user},fullName contains prohibited words`,
-        400,
-        ["fullName"]
-      );
+      throw new ErrorResponse("fullName contains prohibited words", 400, [
+        "fullName",
+      ]);
     }
     if (checkProhibitedWords(user.email)) {
       throw new ErrorResponse("email contains prohibited words", 400, [
