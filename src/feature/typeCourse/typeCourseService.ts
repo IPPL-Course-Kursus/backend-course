@@ -95,6 +95,15 @@ export class TypeCourseService {
       if (!request) {
         throw new ErrorResponse("Request body is empty", 400);
       }
+
+      const existingTypeCourse = await prisma.typeCourse.findFirst({
+        where: { typeName: request.typeName },
+      });
+
+      if (existingTypeCourse) {
+        throw new ErrorResponse("Type course already exists", 400);
+      }
+
       const updatedTypeCourse = await prisma.typeCourse.update({
         where: {
           id: request.id,

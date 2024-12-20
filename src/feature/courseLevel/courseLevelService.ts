@@ -102,6 +102,15 @@ export class CourseLevelService {
         ["levelName"]
       );
     }
+
+    const existingCourseLevel = await prisma.courseLevel.findFirst({
+      where: { levelName: requestCourseLevel.levelName },
+    });
+
+    if (existingCourseLevel) {
+      throw new ErrorResponse("Course level already exists", 400);
+    }
+
     const courseLevel = await prisma.courseLevel.findUnique({
       where: { id },
     });
