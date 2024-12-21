@@ -96,14 +96,73 @@ export class TransactionService {
     });
 
     if (existingTransaction) {
-      return {
-        success: true,
-        data: {
-          token: existingTransaction.paymentToken,
-          paymentUrl: existingTransaction.linkPayment,
-          orderId: existingTransaction.orderId,
-        },
-      };
+      const updatedAtTime = new Date(existingTransaction.updatedAt).getTime();
+      const currentTime = Date.now();
+      const timeDifference = currentTime - updatedAtTime;
+      const oneDay = 24 * 60 * 60 * 1000;
+      if (timeDifference > oneDay) {
+        let isUnique = false;
+        while (!isUnique) {
+          const randomNumber = Math.floor(100000 + Math.random() * 90000);
+          orderId = `ORDER-${Date.now()}${randomNumber}`;
+          const existingTransaction = await prisma.transaction.findUnique({
+            where: { orderId },
+          });
+          if (!existingTransaction) {
+            isUnique = true;
+          }
+        }
+
+        const parameter = {
+          transaction_details: {
+            order_id: orderId,
+            gross_amount: Math.round(grossAmount),
+          },
+          item_details: [
+            {
+              id: courseId,
+              price: Math.round(grossAmount),
+              quantity: 1,
+              name: course.courseName,
+            },
+          ],
+          customer_details: {
+            first_name: user.fullName,
+            phone: user.phoneNumber,
+          },
+        };
+
+        const transaction = await midtransSnap.createTransaction(parameter);
+        await prisma.transaction.update({
+          where: { id: existingTransaction.id },
+          data: {
+            orderId,
+            ppn: ppn,
+            price: priceCourse,
+            totalPrice: grossAmount,
+            linkPayment: transaction.redirect_url,
+            paymentToken: transaction.token,
+          },
+        });
+
+        return {
+          success: true,
+          data: {
+            token: transaction.token,
+            paymentUrl: transaction.redirect_url,
+            orderId: orderId,
+          },
+        };
+      } else {
+        return {
+          success: true,
+          data: {
+            token: existingTransaction.paymentToken,
+            paymentUrl: existingTransaction.linkPayment,
+            orderId: existingTransaction.orderId,
+          },
+        };
+      }
     }
 
     let isUnique = false;
@@ -138,26 +197,6 @@ export class TransactionService {
     };
 
     const transaction = await midtransSnap.createTransaction(parameter);
-
-    const transactionData = await prisma.transaction.findFirst({
-      where: { userId, courseId },
-    });
-
-    if (transactionData) {
-      await prisma.transaction.update({
-        where: { id: transactionData.id },
-        data: {
-          orderId: orderId,
-          ppn: ppn,
-          price: priceCourse,
-          totalPrice: grossAmount,
-          paymentStatus: "pending",
-          paymentMethod: "snapMidtrans",
-          linkPayment: transaction.redirect_url,
-          paymentToken: transaction.token,
-        },
-      });
-    }
 
     await prisma.transaction.create({
       data: {
