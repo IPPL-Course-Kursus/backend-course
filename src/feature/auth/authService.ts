@@ -80,15 +80,6 @@ export class AuthService {
     const { email, password, fullName, phoneNumber, tanggalLahir, city } =
       requests;
 
-    const validateUsername = await prisma.user.findFirst({
-      where: { fullName },
-    });
-    if (validateUsername) {
-      throw new ErrorResponse("User with this name already exists", 400, [
-        "fullName",
-      ]);
-    }
-
     return createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const uid = userCredential.user.uid;
@@ -172,13 +163,6 @@ export class AuthService {
     return createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const uid = userCredential.user.uid;
-
-        const findUser = await prisma.user.findFirst({ where: { fullName } });
-        if (findUser) {
-          throw new ErrorResponse("User with this name already exists", 400, [
-            "fullName",
-          ]);
-        }
 
         await prisma.user.create({
           data: {
