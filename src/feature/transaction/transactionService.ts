@@ -318,7 +318,20 @@ export class TransactionService {
     if (!transactions) {
       throw new ErrorResponse("No transactions found", 404, ["transactions"]);
     }
-    return transactions;
+
+    const totalAmount = transactions.reduce(
+      (sum, transaction) => sum + transaction.totalPrice,
+      0
+    );
+
+    return {
+      success: true,
+      message: "Transactions retrieved successfully",
+      data: {
+        transactions,
+        totalAmount,
+      },
+    };
   }
   static async getTransactionByUserId(userId: string): Promise<any> {
     if (!userId) {
