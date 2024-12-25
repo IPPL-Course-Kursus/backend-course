@@ -105,13 +105,25 @@ export class CategoryService {
       }
     }
 
-    await prisma.category.update({
-      where: { id },
-      data: {
-        categoryName: request.categoryName,
-        image: imageUrl,
-      },
-    });
+    try {
+      await prisma.category.update({
+        where: { id },
+        data: {
+          categoryName: request.categoryName,
+          image: imageUrl,
+        },
+      });
+    } catch (error: any) {
+      if (
+        error.code === "P2002" &&
+        error.meta.target.includes("categoryName")
+      ) {
+        throw new ErrorResponse("Category name already exists", 400, [
+          "categoryName",
+        ]);
+      }
+      throw new ErrorResponse("Failed to update category", 500);
+    }
   }
 
   static async deleteCategory(id: number): Promise<void> {
