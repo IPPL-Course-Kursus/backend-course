@@ -76,19 +76,6 @@ export class InterpreterLanguageService {
       );
     }
 
-    const existingLanguage = await prisma.interpreterLanguage.findFirst({
-      where: {
-        languageInterpreter:
-          interpreterLanguage.languageInterpreter.toLowerCase(),
-      },
-    });
-
-    if (existingLanguage) {
-      throw new ErrorResponse("Language already exists", 400, [
-        "languageInterpreter",
-      ]);
-    }
-
     await prisma.interpreterLanguage.update({
       where: { id: id },
       data: {
