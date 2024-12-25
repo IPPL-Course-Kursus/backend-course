@@ -70,14 +70,6 @@ export class CategoryService {
     request: updateCategoryRequest,
     file?: any
   ): Promise<void> {
-    const checkCategory = await prisma.category.findFirst({
-      where: { categoryName: request.categoryName },
-    });
-
-    if (checkCategory) {
-      throw new ErrorResponse("Category already exists", 400, ["categoryName"]);
-    }
-
     const category = await prisma.category.findUnique({
       where: { id },
     });
