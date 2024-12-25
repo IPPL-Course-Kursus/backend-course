@@ -585,6 +585,7 @@ export class AuthService {
     const instrukturCount = await prisma.user.count({
       where: {
         role: "Instruktur",
+        isDeleted: null,
       },
     });
     if (!userCount || !instrukturCount) {
