@@ -325,12 +325,8 @@ export class TransactionService {
     );
 
     return {
-      success: true,
-      message: "Transactions retrieved successfully",
-      data: {
-        transactions,
-        totalAmount,
-      },
+      transactions,
+      totalAmount,
     };
   }
   static async getTransactionByUserId(userId: string): Promise<any> {
