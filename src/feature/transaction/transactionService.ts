@@ -333,10 +333,9 @@ export class TransactionService {
 
     delete groupedByPaymentMethod["Free"];
 
-    const totalAmount = transactions.reduce(
-      (sum, transaction) => sum + transaction.totalPrice,
-      0
-    );
+    const totalAmount = transactions
+      .filter((transaction) => transaction.paymentStatus === "settlement")
+      .reduce((sum, transaction) => sum + transaction.totalPrice, 0);
 
     return {
       transactions,
