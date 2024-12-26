@@ -331,6 +331,8 @@ export class TransactionService {
       return acc;
     }, {} as Record<string, number>);
 
+    delete groupedByPaymentMethod["Free"];
+
     const totalAmount = transactions.reduce(
       (sum, transaction) => sum + transaction.totalPrice,
       0
