@@ -213,7 +213,7 @@ model Transaction {
 
 model InterpreterLanguage {
   id Int @id @default(autoincrement())
-  languageInterpreter String
+  languageInterpreter String @unique
   version String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -75,15 +75,26 @@ export class InterpreterLanguageService {
         ["languageInterpreter", "version"]
       );
     }
-
-    await prisma.interpreterLanguage.update({
-      where: { id: id },
-      data: {
-        languageInterpreter:
-          interpreterLanguage.languageInterpreter.toLowerCase(),
-        version: interpreterLanguage.version,
-      },
-    });
+    try {
+      await prisma.interpreterLanguage.update({
+        where: { id: id },
+        data: {
+          languageInterpreter:
+            interpreterLanguage.languageInterpreter.toLowerCase(),
+          version: interpreterLanguage.version,
+        },
+      });
+    } catch (error: any) {
+      if (
+        error.code === "P2002" &&
+        error.meta.target.includes("interpreterLanguage")
+      ) {
+        throw new ErrorResponse("Interpreter Language already exists", 400, [
+          "interpreterLanguage",
+        ]);
+      }
+      throw new ErrorResponse("Failed to update Interpreter Language", 500);
+    }
   }
 
   static async deleteLanguage(id: number): Promise<any> {
