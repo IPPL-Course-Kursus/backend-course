@@ -320,14 +320,14 @@ export class TransactionService {
     }
 
     const groupedByPaymentMethod = transactions.reduce((acc, transaction) => {
-      const { paymentMethod, totalPrice } = transaction;
-
-      if (acc[paymentMethod]) {
-        acc[paymentMethod] += totalPrice;
-      } else {
-        acc[paymentMethod] = totalPrice;
+      if (transaction.paymentStatus === "settlement") {
+        const { paymentMethod, totalPrice } = transaction;
+        if (acc[paymentMethod]) {
+          acc[paymentMethod] += totalPrice;
+        } else {
+          acc[paymentMethod] = totalPrice;
+        }
       }
-
       return acc;
     }, {} as Record<string, number>);
 
