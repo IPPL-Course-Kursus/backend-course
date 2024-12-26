@@ -470,6 +470,21 @@ export class TransactionService {
         "transactions",
       ]);
     }
+    const groupedByPaymentMethod = transactions.reduce((acc, transaction) => {
+      if (transaction.paymentStatus === "settlement") {
+        const { paymentMethod, totalPrice } = transaction;
+        if (acc[paymentMethod]) {
+          acc[paymentMethod] += totalPrice;
+        } else {
+          acc[paymentMethod] = totalPrice;
+        }
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const totalAmount = transactions
+      .filter((transaction) => transaction.paymentStatus === "settlement")
+      .reduce((sum, transaction) => sum + transaction.totalPrice, 0);
 
     const transactionCountByType = transactions.reduce((acc, transaction) => {
       const typeName = transaction.typeCourseName || "Unknown";
@@ -483,6 +498,8 @@ export class TransactionService {
       transactions,
       transactionCountByType,
       totalTransactions,
+      groupedByPaymentMethod,
+      totalAmount,
     };
   }
 
