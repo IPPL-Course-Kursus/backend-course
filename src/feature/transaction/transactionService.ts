@@ -319,6 +319,18 @@ export class TransactionService {
       throw new ErrorResponse("No transactions found", 404, ["transactions"]);
     }
 
+    const groupedByPaymentMethod = transactions.reduce((acc, transaction) => {
+      const { paymentMethod, totalPrice } = transaction;
+
+      if (acc[paymentMethod]) {
+        acc[paymentMethod] += totalPrice;
+      } else {
+        acc[paymentMethod] = totalPrice;
+      }
+
+      return acc;
+    }, {} as Record<string, number>);
+
     const totalAmount = transactions.reduce(
       (sum, transaction) => sum + transaction.totalPrice,
       0
@@ -326,6 +338,7 @@ export class TransactionService {
 
     return {
       transactions,
+      groupedByPaymentMethod,
       totalAmount,
     };
   }
