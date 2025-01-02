@@ -22,6 +22,13 @@ export class ContentService {
       );
     }
     let interpreterId: number | null = null;
+    const existContent = await prisma.content.findFirst({
+      where: { chapterId: chapterId, contentTitle: data.contentTitle },
+    });
+
+    if (existContent) {
+      throw new ErrorResponse("Content already exists", 400);
+    }
     if (data.interpreterStatus === true) {
       if (!data.sourceCode || !data.languageInterpreterId) {
         throw new ErrorResponse(
@@ -56,7 +63,22 @@ export class ContentService {
     });
 
     if (existSort) {
-      throw new ErrorResponse("Sort must be unique", 400);
+      const contentsToUpdate = await prisma.content.findMany({
+        where: { chapterId: chapterId, sort: { gte: data.sort } },
+      });
+
+      if (contentsToUpdate.length > 0) {
+        await prisma.content.updateMany({
+          where: {
+            id: { in: contentsToUpdate.map((content) => content.id) },
+          },
+          data: {
+            sort: {
+              increment: 1,
+            },
+          },
+        });
+      }
     }
 
     if (
@@ -183,6 +205,50 @@ export class ContentService {
           interpreterId: null,
         },
       });
+    }
+
+    if (existingContent.sort !== data.sort) {
+      if (data.sort < existingContent.sort) {
+        const contentsToUpdate = await prisma.content.findMany({
+          where: {
+            chapterId: existingContent.chapterId,
+            sort: { gte: data.sort },
+          },
+        });
+
+        if (contentsToUpdate.length > 0) {
+          await prisma.content.updateMany({
+            where: {
+              id: { in: contentsToUpdate.map((content) => content.id) },
+            },
+            data: {
+              sort: {
+                increment: 1,
+              },
+            },
+          });
+        }
+      } else if (data.sort > existingContent.sort) {
+        const contentsToUpdate = await prisma.content.findMany({
+          where: {
+            chapterId: existingContent.chapterId,
+            sort: { gt: existingContent.sort, lte: data.sort },
+          },
+        });
+
+        if (contentsToUpdate.length > 0) {
+          await prisma.content.updateMany({
+            where: {
+              id: { in: contentsToUpdate.map((content) => content.id) },
+            },
+            data: {
+              sort: {
+                decrement: 1,
+              },
+            },
+          });
+        }
+      }
     }
 
     await prisma.content.update({

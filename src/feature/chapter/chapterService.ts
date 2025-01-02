@@ -11,6 +11,14 @@ export class ChapterService {
       throw new ErrorResponse("Chapter title & Sort is required", 400);
     }
 
+    const existChapter = await prisma.chapter.findFirst({
+      where: { courseId: courseId, chapterTitle: chapterTitle },
+    });
+
+    if (existChapter) {
+      throw new ErrorResponse("Chapter already exists", 400);
+    }
+
     const existSort = await prisma.chapter.findFirst({
       where: { courseId: courseId, sort: sort },
     });
@@ -76,14 +84,6 @@ export class ChapterService {
       throw new ErrorResponse("Chapter not found", 404);
     }
     if (currentChapter.sort !== sort) {
-      const existSort = await prisma.chapter.findFirst({
-        where: { courseId: currentChapter.courseId, sort: sort },
-      });
-
-      if (existSort) {
-        throw new ErrorResponse("Sort must be unique", 400);
-      }
-
       if (sort < currentChapter.sort) {
         const chaptersToUpdate = await prisma.chapter.findMany({
           where: { courseId: currentChapter.courseId, sort: { gte: sort } },
