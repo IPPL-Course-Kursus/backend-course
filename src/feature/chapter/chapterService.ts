@@ -16,7 +16,22 @@ export class ChapterService {
     });
 
     if (existSort) {
-      throw new ErrorResponse("Sort must be unique", 400);
+      const chaptersToUpdate = await prisma.chapter.findMany({
+        where: { courseId: courseId, sort: { gte: sort } },
+      });
+
+      if (chaptersToUpdate.length > 0) {
+        await prisma.chapter.updateMany({
+          where: {
+            id: { in: chaptersToUpdate.map((chapter) => chapter.id) },
+          },
+          data: {
+            sort: {
+              increment: 1,
+            },
+          },
+        });
+      }
     }
 
     if (checkProhibitedWords(chapterTitle)) {
@@ -51,6 +66,62 @@ export class ChapterService {
         400,
         ["chapterTitle"]
       );
+    }
+
+    const currentChapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+    });
+
+    if (!currentChapter) {
+      throw new ErrorResponse("Chapter not found", 404);
+    }
+    if (currentChapter.sort !== sort) {
+      const existSort = await prisma.chapter.findFirst({
+        where: { courseId: currentChapter.courseId, sort: sort },
+      });
+
+      if (existSort) {
+        throw new ErrorResponse("Sort must be unique", 400);
+      }
+
+      if (sort < currentChapter.sort) {
+        const chaptersToUpdate = await prisma.chapter.findMany({
+          where: { courseId: currentChapter.courseId, sort: { gte: sort } },
+        });
+
+        if (chaptersToUpdate.length > 0) {
+          await prisma.chapter.updateMany({
+            where: {
+              id: { in: chaptersToUpdate.map((chapter) => chapter.id) },
+            },
+            data: {
+              sort: {
+                increment: 1,
+              },
+            },
+          });
+        }
+      } else if (sort > currentChapter.sort) {
+        const chaptersToUpdate = await prisma.chapter.findMany({
+          where: {
+            courseId: currentChapter.courseId,
+            sort: { gt: currentChapter.sort, lte: sort },
+          },
+        });
+
+        if (chaptersToUpdate.length > 0) {
+          await prisma.chapter.updateMany({
+            where: {
+              id: { in: chaptersToUpdate.map((chapter) => chapter.id) },
+            },
+            data: {
+              sort: {
+                decrement: 1,
+              },
+            },
+          });
+        }
+      }
     }
 
     await prisma.chapter.update({
