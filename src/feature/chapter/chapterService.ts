@@ -149,6 +149,37 @@ export class ChapterService {
       );
     }
 
+    const chapterToDelete = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+    });
+
+    if (!chapterToDelete) {
+      throw new ErrorResponse("Chapter not found", 404);
+    }
+
+    const relatedChapters = await prisma.chapter.findMany({
+      where: { courseId: chapterToDelete.courseId },
+      orderBy: { sort: "asc" },
+    });
+
+    const chapterIndex = relatedChapters.findIndex(
+      (chapter) => chapter.id === chapterId
+    );
+
+    if (chapterIndex !== -1) {
+      const chaptersToUpdate = relatedChapters.slice(chapterIndex + 1);
+
+      await prisma.chapter.updateMany({
+        where: {
+          id: { in: chaptersToUpdate.map((chapter) => chapter.id) },
+        },
+        data: {
+          sort: {
+            decrement: 1,
+          },
+        },
+      });
+    }
     await prisma.chapter.delete({
       where: { id: chapterId },
     });

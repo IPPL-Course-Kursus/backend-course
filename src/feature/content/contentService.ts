@@ -287,7 +287,47 @@ export class ContentService {
     if (!contentId) {
       throw new ErrorResponse("Content not found", 404);
     }
-    await prisma.content.delete({ where: { id: contentId } });
+
+    const content = await prisma.content.findUnique({
+      where: { id: contentId },
+      include: {
+        interpreter: true,
+      },
+    });
+
+    if (!content) {
+      throw new ErrorResponse("Content not found", 404);
+    }
+
+    if (content.interpreterId) {
+      await prisma.interpreter.delete({
+        where: { id: content.interpreterId },
+      });
+    }
+
+    await prisma.content.delete({
+      where: { id: contentId },
+    });
+
+    const contentsToUpdate = await prisma.content.findMany({
+      where: {
+        chapterId: content.chapterId,
+        sort: { gte: content.sort },
+      },
+    });
+
+    if (contentsToUpdate.length > 0) {
+      await prisma.content.updateMany({
+        where: {
+          id: { in: contentsToUpdate.map((content) => content.id) },
+        },
+        data: {
+          sort: {
+            decrement: 1,
+          },
+        },
+      });
+    }
   }
 
   static async getContentById(contentId: string): Promise<any> {
